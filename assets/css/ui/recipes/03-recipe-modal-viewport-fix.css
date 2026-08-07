@@ -1,0 +1,15 @@
+
+/* Viewport / scroll management for Recipe CreateModal (desktop + mobile) */
+#recipeCreateOverlay{ overflow:auto; -webkit-overflow-scrolling:touch; }
+#recipeCreateModal{
+  max-height: calc(100vh - 36px);
+  display:flex;
+  flex-direction:column;
+}
+#recipeCreateModal .createBody{
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow:auto;
+  -webkit-overflow-scrolling:touch;
+}
+/* Keep clean_v3 native width: width is controlled by .createModal { width:min(680px,100%) } */

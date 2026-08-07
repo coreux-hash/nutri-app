@@ -1,0 +1,619 @@
+/* ==========================================================================
+   NutriApp — Top Trumps / variante finale : FENÊTRE + INDEX HIÉRARCHISÉ
+   Couche autonome : charger ce fichier seul, en dernier.
+   Base : fenêtre chromatique (variante 02).
+   Ajout validé : une tranche catégorie sur chaque géométrie existante,
+   modulée selon son importance dans la carte.
+   ========================================================================== */
+
+:root{
+  --skin-card-bg:#faf8f2;
+  --skin-card-bg-soft:#f3eee4;
+  --skin-line:var(--surfaceBorder, rgba(216,210,198,.92));
+  --skin-line-strong:var(--surfaceBorderStrong, rgba(31,42,36,.10));
+  --skin-ink:var(--ink900, #1f2a24);
+  --skin-ink-mid:var(--ink700, #4c5a52);
+  --skin-ink-soft:var(--ink500, #7a887f);
+  --skin-radius-card:var(--radiusCard, 20px);
+  --skin-radius-block:var(--radiusBlock, 18px);
+  --skin-radius-control:var(--radiusControl, 16px);
+  --skin-kpi-height:66px;
+  /* Intensités ajustables de l'index hiérarchisé. */
+  --skin-index-card:100%;
+  --skin-index-media:70%;
+  --skin-index-category:50%;
+  --skin-index-macros:30%;
+  --skin-index-secondary:18%;
+  /* Typographie macro commune aux deux familles. */
+  --skin-kpi-value-size:16px;
+  --skin-kpi-unit-size:8px;
+  --skin-kpi-label-size:7px;
+  /* Géométrie compacte : valeurs communes aux commandes du top rail. */
+  --skin-compact-rail-height:20px;
+  --skin-compact-control-size:20px;
+  --skin-compact-identity-height:28px;
+  --skin-compact-identity-gap:1px;
+  --skin-compact-footer-gap:2px;
+  --skin-shadow:
+    0 1px 2px rgba(46,34,20,.05),
+    0 9px 24px rgba(46,34,20,.075),
+    0 26px 52px rgba(46,34,20,.07);
+}
+
+#pageIngredients #ingGrid > .card.libCardShell.ingredient-card,
+#pageRecipes #recipeList > .recipeCard.libCardShell{
+  border:1px solid color-mix(in srgb, var(--cat, var(--cat-main)) 32%, var(--skin-line)) !important;
+  border-radius:var(--skin-radius-card) !important;
+  background:var(--skin-card-bg) !important;
+  box-shadow:var(--skin-shadow) !important;
+}
+
+#pageIngredients #ingGrid > .card.libCardShell.ingredient-card::before{
+  background:linear-gradient(180deg, rgba(255,255,255,.36), transparent 22%) !important;
+  opacity:1 !important;
+}
+
+#pageRecipes #recipeList > .recipeCard.libCardShell::before{
+  border:0 !important;
+  background:none !important;
+}
+
+#pageIngredients #ingGrid > .card.libCardShell.ingredient-card .card-inner,
+#pageRecipes #recipeList > .recipeCard.libCardShell::after{
+  border:1px solid var(--skin-line-strong) !important;
+  border-radius:var(--skin-radius-block) !important;
+  background:rgba(255,255,255,.22) !important;
+}
+
+/* Petit témoin d'usage, teinté mais toujours en creux. */
+#pageIngredients #ingGrid .top-rail.libCardTop .usage-band.usageStars{
+  background:color-mix(in srgb, var(--cat) 16%, var(--skin-card-bg-soft)) !important;
+  color:var(--skin-ink) !important;
+  border:1px solid color-mix(in srgb, var(--cat) 42%, var(--skin-line)) !important;
+  border-radius:var(--skin-radius-control) !important;
+  box-shadow:inset 0 1px 2px rgba(31,42,36,.055) !important;
+}
+
+/* Fenêtre : teinte catégorie plus présente, mais contenue au média. */
+#pageIngredients #ingGrid .thumb.thumb--hero.libCardMedia,
+#pageRecipes #recipeList > .recipeCard.libCardShell .thumb.libCardMedia.recipeCardMedia{
+  border:1px solid color-mix(in srgb, var(--cat, var(--cat-main)) 46%, var(--skin-line)) !important;
+  border-radius:var(--skin-radius-block) !important;
+  background:
+    radial-gradient(circle at 50% 32%, rgba(255,255,255,.92), transparent 38%),
+    color-mix(in srgb, var(--cat, var(--cat-main)) 18%, var(--skin-card-bg-soft)) !important;
+  box-shadow:
+    inset 0 1px 2px rgba(31,42,36,.05),
+    inset 0 -24px 42px color-mix(in srgb, var(--cat, var(--cat-main)) 8%, transparent) !important;
+}
+
+#pageIngredients #ingGrid .thumbPlaceholder,
+#pageRecipes #recipeList .recipeCardMedia .thumbPlaceholder{
+  color:color-mix(in srgb, var(--cat-deep) 72%, var(--skin-ink)) !important;
+}
+
+/* Quatre champs en creux réguliers, comme les choix du create modal. */
+#pageIngredients #ingGrid .macro.kpiRow.libCardStats,
+#pageRecipes #recipeList > .recipeCard.libCardShell > .recipeOpenHit.libCardOpenHit > .recipeMain.libCardBody > .macro.kpiRow.libCardStats{
+  height:var(--skin-kpi-height) !important;
+  min-height:var(--skin-kpi-height) !important;
+  grid-auto-rows:var(--skin-kpi-height) !important;
+  gap:6px !important;
+  overflow:visible !important;
+  border:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+}
+
+#pageIngredients #ingGrid .macro.kpiRow.libCardStats > .kpi,
+#pageRecipes #recipeList > .recipeCard.libCardShell > .recipeOpenHit.libCardOpenHit > .recipeMain.libCardBody > .macro.kpiRow.libCardStats > .kpi,
+#pageIngredients #ingGrid .macro.kpiRow.libCardStats > .kpi:first-child,
+#pageRecipes #recipeList > .recipeCard.libCardShell > .recipeOpenHit.libCardOpenHit > .recipeMain.libCardBody > .macro.kpiRow.libCardStats > .kpi:first-child{
+  height:var(--skin-kpi-height) !important;
+  min-height:var(--skin-kpi-height) !important;
+  padding:12px 2px 2px !important;
+  border:1px solid color-mix(in srgb, var(--cat, var(--cat-main)) 26%, var(--skin-line)) !important;
+  border-radius:var(--skin-radius-control) !important;
+  background:color-mix(in srgb, var(--cat, var(--cat-main)) 8%, var(--skin-card-bg-soft)) !important;
+  box-shadow:
+    inset 0 1px 2px rgba(31,42,36,.05),
+    0 1px 0 rgba(255,255,255,.72) !important;
+  color:var(--skin-ink) !important;
+}
+
+#pageIngredients #ingGrid .macro.kpiRow.libCardStats .kpiVal,
+#pageRecipes #recipeList > .recipeCard.libCardShell > .recipeOpenHit.libCardOpenHit > .recipeMain.libCardBody > .macro.kpiRow.libCardStats .kpiVal{
+  color:var(--skin-ink) !important;
+}
+
+#pageIngredients #ingGrid .macro.kpiRow.libCardStats .stat-unit,
+#pageRecipes #recipeList > .recipeCard.libCardShell > .recipeOpenHit.libCardOpenHit > .recipeMain.libCardBody > .macro.kpiRow.libCardStats .statUnit{
+  color:var(--skin-ink-mid) !important;
+}
+
+#pageIngredients #ingGrid .macro.kpiRow.libCardStats .kpiLbl,
+#pageRecipes #recipeList > .recipeCard.libCardShell > .recipeOpenHit.libCardOpenHit > .recipeMain.libCardBody > .macro.kpiRow.libCardStats .statBase{
+  color:var(--skin-ink-soft) !important;
+  min-height:16px !important;
+}
+
+#pageIngredients #ingGrid .libCardFooterMeta .badge.bottom-ribbon,
+#pageRecipes #recipeList > .recipeCard.libCardShell .recipeCardFooterMeta .catPill[data-cat]{
+  background:color-mix(in srgb, var(--cat, var(--cat-main)) 15%, var(--skin-card-bg)) !important;
+  color:var(--skin-ink) !important;
+  border:1px solid color-mix(in srgb, var(--cat, var(--cat-main)) 44%, var(--skin-line)) !important;
+  border-radius:var(--skin-radius-control) !important;
+  box-shadow:inset 0 1px 1px rgba(31,42,36,.035) !important;
+  text-shadow:none !important;
+}
+
+@media (max-width:579px){
+  :root{ --skin-kpi-height:56px; }
+
+  #pageIngredients #ingGrid .macro.kpiRow.libCardStats,
+  #pageRecipes #recipeList > .recipeCard.libCardShell > .recipeOpenHit.libCardOpenHit > .recipeMain.libCardBody > .macro.kpiRow.libCardStats{
+    gap:4px !important;
+  }
+
+  #pageIngredients #ingGrid .macro.kpiRow.libCardStats > .kpi,
+  #pageRecipes #recipeList > .recipeCard.libCardShell > .recipeOpenHit.libCardOpenHit > .recipeMain.libCardBody > .macro.kpiRow.libCardStats > .kpi{
+    padding:10px 1px 1px !important;
+    border-radius:10px !important;
+  }
+
+  #pageIngredients #ingGrid .macro.kpiRow.libCardStats .kpiVal,
+  #pageRecipes #recipeList > .recipeCard.libCardShell .macro.kpiRow.libCardStats .kpiVal{
+    font-size:11px !important;
+  }
+
+  #pageIngredients #ingGrid .macro.kpiRow.libCardStats .stat-unit,
+  #pageRecipes #recipeList > .recipeCard.libCardShell .macro.kpiRow.libCardStats .statUnit{
+    font-size:7px !important;
+  }
+
+  #pageIngredients #ingGrid .macro.kpiRow.libCardStats .kpiLbl,
+  #pageRecipes #recipeList > .recipeCard.libCardShell .macro.kpiRow.libCardStats .statBase{
+    font-size:6.5px !important;
+    line-height:1.1 !important;
+  }
+}
+
+/* ==========================================================================
+   CLONAGE RESPONSIVE — BIBLIOTHÈQUE INGRÉDIENTS
+   Mobile : deux vignettes par ligne. Tablette et desktop : trois.
+   La carte compacte protège le média en plafonnant les autres zones.
+   ========================================================================== */
+
+/* La grille ne descend jamais à une colonne et ne monte jamais à quatre. */
+@media (max-width:699px){
+  #pageIngredients #ingGrid{
+    grid-template-columns:repeat(2, minmax(0,1fr)) !important;
+    gap:clamp(8px, 2.5vw, 10px) !important;
+    padding-inline:0 !important;
+    align-items:start !important;
+    justify-items:stretch !important;
+  }
+
+  #pageIngredients #ingGrid > .card.libCardShell.ingredient-card{
+    width:100% !important;
+    max-width:none !important;
+    min-width:0 !important;
+    border-left-width:5px !important;
+  }
+}
+
+/* Mobile très étroit : hauteur de sécurité pour conserver le pied de carte. */
+@media (max-width:339px){
+  #pageIngredients #ingGrid > .card.libCardShell.ingredient-card{
+    aspect-ratio:5 / 9 !important;
+  }
+}
+
+/* Mobile étroit : la fenêtre média reste dominante sans tasser les données. */
+@media (min-width:340px) and (max-width:379px){
+  #pageIngredients #ingGrid > .card.libCardShell.ingredient-card{
+    aspect-ratio:5 / 8 !important;
+  }
+}
+
+/* Mobile large : silhouette intermédiaire, toujours en deux colonnes. */
+@media (min-width:380px) and (max-width:699px){
+  #pageIngredients #ingGrid > .card.libCardShell.ingredient-card{
+    aspect-ratio:2 / 3 !important;
+  }
+}
+
+/* Tablette et desktop : trois cartes, silhouette canonique. */
+@media (min-width:700px){
+  #pageIngredients #ingGrid{
+    grid-template-columns:repeat(3, minmax(0,1fr)) !important;
+    gap:clamp(14px, 1.7vw, 22px) !important;
+  }
+
+  #pageIngredients #ingGrid > .card.libCardShell.ingredient-card{
+    aspect-ratio:5 / 7 !important;
+  }
+}
+
+/* Carte compacte : géométrie commandée par la largeur réelle de la carte. */
+@container (max-width:220px){
+  #pageIngredients .card-inner{
+    padding:6px 6px 7px !important;
+  }
+
+  #pageIngredients .card-frame{
+    grid-template-rows:var(--skin-compact-rail-height) minmax(82px,1fr) auto !important;
+    gap:5px !important;
+    align-content:stretch !important;
+  }
+
+  #pageIngredients .top-rail,
+  #pageIngredients .top-rail.libCardTop,
+  #pageIngredients .card .libCardTop{
+    height:var(--skin-compact-rail-height) !important;
+    min-height:var(--skin-compact-rail-height) !important;
+    --rail-side:var(--skin-compact-control-size);
+    --rail-gap:3px;
+  }
+
+  #pageIngredients .top-rail .infoDot,
+  #pageIngredients .top-rail .kebabBtn,
+  #pageIngredients .top-rail .menu-btn,
+  #pageIngredients .top-rail .info-dot-btn{
+    width:var(--skin-compact-control-size) !important;
+    height:var(--skin-compact-control-size) !important;
+    min-width:var(--skin-compact-control-size) !important;
+    min-height:var(--skin-compact-control-size) !important;
+  }
+
+  #pageIngredients .top-rail .infoDot::before{
+    font-size:11px !important;
+  }
+
+  #pageIngredients .top-rail.libCardTop .usage-band.usageStars,
+  #pageIngredients .usage-band,
+  #pageIngredients .usageStars{
+    height:var(--skin-compact-control-size) !important;
+    min-height:var(--skin-compact-control-size) !important;
+    padding:0 6px !important;
+    gap:0 !important;
+  }
+
+  #pageIngredients .usage-stars{
+    font-size:11px !important;
+    line-height:1 !important;
+  }
+
+  #pageIngredients .usage-label{
+    display:none !important;
+  }
+
+  #pageIngredients .thumb.thumb--hero.libCardMedia,
+  #pageIngredients .thumb.libCardMedia,
+  #pageIngredients .hero{
+    min-height:82px !important;
+    height:100% !important;
+    align-self:stretch !important;
+    padding:6px !important;
+  }
+
+  #pageIngredients .thumbPlaceholder{
+    font-size:clamp(28px, 20cqw, 36px) !important;
+  }
+
+  #pageIngredients .cardBody,
+  #pageIngredients .libCardBody{
+    display:grid !important;
+    grid-template-rows:var(--skin-compact-identity-height) 50px 22px !important;
+    gap:3px !important;
+    height:auto !important;
+    min-height:0 !important;
+    align-content:start !important;
+  }
+
+  #pageIngredients .libCardIdentity,
+  #pageIngredients .title-block{
+    display:grid !important;
+    grid-template-rows:16px 11px !important;
+    gap:var(--skin-compact-identity-gap) !important;
+    height:var(--skin-compact-identity-height) !important;
+    min-height:var(--skin-compact-identity-height) !important;
+    overflow:visible !important;
+  }
+
+  #pageIngredients .title,
+  #pageIngredients .cardTitle{
+    font-size:14px !important;
+    line-height:16px !important;
+    height:16px !important;
+  }
+
+  #pageIngredients .subtitle,
+  #pageIngredients .libCardMeta,
+  #pageIngredients .ingPills,
+  #pageIngredients .ingPills.ingPills--compact{
+    height:11px !important;
+    font-size:9px !important;
+    line-height:11px !important;
+    gap:3px !important;
+    overflow:visible !important;
+  }
+
+  /* Même grille, même hauteur et même padding pour Kcal, P, G et L. */
+  #pageIngredients #ingGrid .macro.kpiRow.libCardStats{
+    grid-template-columns:repeat(4, minmax(0,1fr)) !important;
+    grid-auto-rows:50px !important;
+    gap:3px !important;
+    width:100% !important;
+    max-width:100% !important;
+    height:50px !important;
+    min-height:50px !important;
+    margin:0 !important;
+  }
+
+  #pageIngredients #ingGrid .macro.kpiRow.libCardStats > .kpi,
+  #pageIngredients #ingGrid .macro.kpiRow.libCardStats > .kpi:first-child{
+    width:100% !important;
+    min-width:0 !important;
+    height:50px !important;
+    min-height:50px !important;
+    padding:13px 1px 2px 2px !important;
+    border-radius:8px !important;
+    border-left-width:3px !important;
+    gap:0 !important;
+    align-content:center !important;
+    justify-items:center !important;
+  }
+
+  #pageIngredients #ingGrid .macro.kpiRow.libCardStats > .kpi::before,
+  #pageIngredients #ingGrid .macro.kpiRow.libCardStats > .kpi:first-child::before{
+    top:3px !important;
+    font-size:11px !important;
+  }
+
+  #pageIngredients #ingGrid .macro.kpiRow.libCardStats .kpiVal{
+    width:100% !important;
+    font-size:11px !important;
+    line-height:1 !important;
+    text-align:center !important;
+  }
+
+  #pageIngredients #ingGrid .macro.kpiRow.libCardStats .kpiLbl{
+    display:block !important;
+    min-height:0 !important;
+    margin:2px 0 0 !important;
+    font-size:6.5px !important;
+    line-height:1 !important;
+    text-align:center !important;
+    white-space:nowrap !important;
+  }
+
+  #pageIngredients #ingGrid .macro.kpiRow.libCardStats .stat-unit{
+    display:block !important;
+    margin:0 !important;
+    font-size:7px !important;
+    line-height:1 !important;
+  }
+
+  #pageIngredients .bottom-ribbon-wrap,
+  #pageIngredients .libCardFooterMeta,
+  #pageIngredients .badgeRow,
+  #pageIngredients .libCardCategoryRow{
+    width:100% !important;
+    max-width:100% !important;
+    height:22px !important;
+    min-height:22px !important;
+    margin:0 !important;
+  }
+
+  /* Neutralise la marge 10px de 07-card-requalified.css sur carte compacte. */
+  #pageIngredients #ingGrid .libCardFooterMeta.bottom-ribbon-wrap,
+  #pageIngredients #ingGrid .libCardFooterMeta{
+    margin-top:var(--skin-compact-footer-gap) !important;
+  }
+
+  #pageIngredients .libCardFooterMeta .badge.bottom-ribbon,
+  #pageIngredients .bottom-ribbon,
+  #pageIngredients .badge{
+    width:100% !important;
+    height:22px !important;
+    min-height:22px !important;
+    padding:0 6px !important;
+    border-radius:999px !important;
+    font-size:7px !important;
+    line-height:1 !important;
+  }
+}
+
+/* Très petites cartes : second palier, sans sacrifier le média. */
+@container (max-width:170px){
+  #pageIngredients .card-frame{
+    grid-template-rows:var(--skin-compact-rail-height) minmax(74px,1fr) auto !important;
+    gap:3px !important;
+  }
+
+  #pageIngredients .top-rail,
+  #pageIngredients .top-rail.libCardTop,
+  #pageIngredients .card .libCardTop{
+    height:var(--skin-compact-rail-height) !important;
+    min-height:var(--skin-compact-rail-height) !important;
+  }
+
+  #pageIngredients .top-rail.libCardTop .usage-band.usageStars,
+  #pageIngredients .usage-band,
+  #pageIngredients .usageStars{
+    height:var(--skin-compact-control-size) !important;
+    min-height:var(--skin-compact-control-size) !important;
+  }
+
+  #pageIngredients .thumb.thumb--hero.libCardMedia,
+  #pageIngredients .thumb.libCardMedia,
+  #pageIngredients .hero{
+    min-height:74px !important;
+  }
+
+  #pageIngredients .cardBody,
+  #pageIngredients .libCardBody{
+    grid-template-rows:var(--skin-compact-identity-height) 48px 20px !important;
+    gap:1px !important;
+  }
+
+  #pageIngredients .libCardIdentity,
+  #pageIngredients .title-block{
+    grid-template-rows:16px 11px !important;
+    gap:var(--skin-compact-identity-gap) !important;
+    height:var(--skin-compact-identity-height) !important;
+    min-height:var(--skin-compact-identity-height) !important;
+  }
+
+  #pageIngredients .title,
+  #pageIngredients .cardTitle{
+    height:16px !important;
+    font-size:14px !important;
+    line-height:16px !important;
+  }
+
+  #pageIngredients .subtitle,
+  #pageIngredients .libCardMeta,
+  #pageIngredients .ingPills,
+  #pageIngredients .ingPills.ingPills--compact{
+    height:11px !important;
+    font-size:9px !important;
+    line-height:11px !important;
+  }
+
+  #pageIngredients #ingGrid .macro.kpiRow.libCardStats{
+    grid-auto-rows:48px !important;
+    height:48px !important;
+    min-height:48px !important;
+  }
+
+  #pageIngredients #ingGrid .macro.kpiRow.libCardStats > .kpi,
+  #pageIngredients #ingGrid .macro.kpiRow.libCardStats > .kpi:first-child{
+    height:48px !important;
+    min-height:48px !important;
+    padding-top:12px !important;
+  }
+
+  #pageIngredients .bottom-ribbon-wrap,
+  #pageIngredients .libCardFooterMeta,
+  #pageIngredients .badgeRow,
+  #pageIngredients .libCardCategoryRow,
+  #pageIngredients .libCardFooterMeta .badge.bottom-ribbon,
+  #pageIngredients .bottom-ribbon,
+  #pageIngredients .badge{
+    height:20px !important;
+    min-height:20px !important;
+  }
+}
+
+/* ==========================================================================
+   INDEX LATÉRAL HIÉRARCHISÉ
+   Même épaisseur sur les blocs intérieurs ; seule l'intensité chromatique
+   traduit leur importance. La tranche de coque reste plus large.
+   ========================================================================== */
+
+/* 1 — Coque : identité catégorie maximale. */
+#pageIngredients #ingGrid > .card.libCardShell.ingredient-card,
+#pageRecipes #recipeList > .recipeCard.libCardShell{
+  border-top:1px solid var(--skin-line) !important;
+  border-right:1px solid var(--skin-line) !important;
+  border-bottom:1px solid var(--skin-line) !important;
+  border-left:7px solid color-mix(
+    in srgb,
+    var(--cat, var(--cat-main, #b3a276)) var(--skin-index-card),
+    var(--skin-line)
+  ) !important;
+}
+
+/* 2 — Fenêtre média/photo : contenu visuel principal. */
+#pageIngredients #ingGrid .thumb.thumb--hero.libCardMedia,
+#pageRecipes #recipeList > .recipeCard.libCardShell .thumb.libCardMedia.recipeCardMedia{
+  box-sizing:border-box !important;
+  border-left:3px solid color-mix(
+    in srgb,
+    var(--cat, var(--cat-main, #b3a276)) var(--skin-index-media),
+    var(--skin-line)
+  ) !important;
+}
+
+/* 3 — Thumb catégorie : identité textuelle de la carte. */
+#pageIngredients #ingGrid .libCardFooterMeta .badge.bottom-ribbon,
+#pageRecipes #recipeList > .recipeCard.libCardShell .recipeCardFooterMeta .catPill[data-cat]{
+  box-sizing:border-box !important;
+  border-left:3px solid color-mix(
+    in srgb,
+    var(--cat, var(--cat-main, #b3a276)) var(--skin-index-category),
+    var(--skin-line)
+  ) !important;
+}
+
+/* 4 — Cellules macros : même tranche et même intensité pour les quatre KPI. */
+#pageIngredients #ingGrid .macro.kpiRow.libCardStats > .kpi,
+#pageIngredients #ingGrid .macro.kpiRow.libCardStats > .kpi:first-child,
+#pageRecipes #recipeList > .recipeCard.libCardShell > .recipeOpenHit.libCardOpenHit > .recipeMain.libCardBody > .macro.kpiRow.libCardStats > .kpi,
+#pageRecipes #recipeList > .recipeCard.libCardShell > .recipeOpenHit.libCardOpenHit > .recipeMain.libCardBody > .macro.kpiRow.libCardStats > .kpi:first-child{
+  box-sizing:border-box !important;
+  padding-right:2px !important;
+  padding-left:5px !important;
+  border-left:3px solid color-mix(
+    in srgb,
+    var(--cat, var(--cat-main, #b3a276)) var(--skin-index-macros),
+    var(--skin-line)
+  ) !important;
+}
+
+/* 5 — Thumb supérieur d'usage : accent le plus discret. */
+#pageIngredients #ingGrid .top-rail.libCardTop .usage-band.usageStars{
+  box-sizing:border-box !important;
+  border-left:3px solid color-mix(
+    in srgb,
+    var(--cat, #b3a276) var(--skin-index-secondary),
+    var(--skin-line)
+  ) !important;
+}
+
+/* ==========================================================================
+   RYTHME TYPOGRAPHIQUE MACRO COMMUN
+   Valeur, diminutif et grammage occupent les mêmes lignes dans les deux cartes.
+   ========================================================================== */
+
+#pageIngredients #ingGrid .macro.kpiRow.libCardStats .kpiVal,
+#pageRecipes #recipeList > .recipeCard.libCardShell > .recipeOpenHit.libCardOpenHit > .recipeMain.libCardBody > .macro.kpiRow.libCardStats .kpiVal{
+  display:block !important;
+  margin:0 !important;
+  font-size:var(--skin-kpi-value-size) !important;
+  line-height:1 !important;
+  font-variant-numeric:tabular-nums !important;
+}
+
+#pageIngredients #ingGrid .macro.kpiRow.libCardStats .stat-unit,
+#pageRecipes #recipeList > .recipeCard.libCardShell > .recipeOpenHit.libCardOpenHit > .recipeMain.libCardBody > .macro.kpiRow.libCardStats .statUnit{
+  display:block !important;
+  margin:2px 0 0 !important;
+  font-size:var(--skin-kpi-unit-size) !important;
+  line-height:1 !important;
+}
+
+#pageIngredients #ingGrid .macro.kpiRow.libCardStats .kpiLbl,
+#pageRecipes #recipeList > .recipeCard.libCardShell > .recipeOpenHit.libCardOpenHit > .recipeMain.libCardBody > .macro.kpiRow.libCardStats .statBase{
+  display:block !important;
+  min-height:0 !important;
+  margin:2px 0 0 !important;
+  font-size:var(--skin-kpi-label-size) !important;
+  line-height:1 !important;
+  white-space:nowrap !important;
+}
+
+@media (max-width:579px){
+  :root{
+    --skin-kpi-value-size:11px;
+    --skin-kpi-unit-size:7px;
+    --skin-kpi-label-size:6.5px;
+  }
+
+  #pageIngredients #ingGrid > .card.libCardShell.ingredient-card,
+  #pageRecipes #recipeList > .recipeCard.libCardShell{
+    border-left-width:5px !important;
+  }
+}

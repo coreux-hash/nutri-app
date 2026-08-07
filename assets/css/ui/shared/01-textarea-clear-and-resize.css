@@ -1,0 +1,11 @@
+
+.extensibleTextarea{
+  width:100%;
+  max-width:100%;
+  min-height:120px;
+  resize:vertical;
+  overflow:auto;
+  box-sizing:border-box;
+}
+#recipeCreateOverlay textarea.extensibleTextarea{min-height:120px;}
+#createOverlay textarea.extensibleTextarea{min-height:120px;}

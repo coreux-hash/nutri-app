@@ -1,0 +1,8 @@
+{
+  "base": "phase4_2_internal_subsystems",
+  "patches": [
+    "assets/js/features/ingredients/03-storage-and-backup.js",
+    "assets/js/features/recipes/04-filter-list-view.js",
+    "assets/js/features/recipes/05-scenario-actions-runtime.js"
+  ]
+}

@@ -1,0 +1,114 @@
+{
+  "source": "nutriapp_phase4_split.zip",
+  "version": "phase4.1",
+  "goals": [
+    "regrouper physiquement les assets par couche",
+    "supprimer une dépendance temporelle évidente sur RecipeEditor",
+    "documenter les composites legacy restants"
+  ],
+  "css": {
+    "core": [
+      "assets/css/core/01-core.css"
+    ],
+    "ui/shared": [
+      "assets/css/ui/shared/01-textarea-clear-and-resize.css",
+      "assets/css/ui/shared/02-unified-info-dots.css",
+      "assets/css/ui/shared/03-unify-modal-ui-patch.css",
+      "assets/css/ui/shared/04-modal-form-micro-hierarchy.css"
+    ],
+    "ui/ingredients": [
+      "assets/css/ui/ingredients/01-mobile-create-modal-no-xscroll-v2.css",
+      "assets/css/ui/ingredients/02-mobile-two-cols-ingredients.css",
+      "assets/css/ui/ingredients/03-mobile-cards-fixed-proportions.css",
+      "assets/css/ui/ingredients/04-ingredient-cards-thumb-title-ingpills.css"
+    ],
+    "ui/recipes": [
+      "assets/css/ui/recipes/01-recipes-page-scoped.css",
+      "assets/css/ui/recipes/02-recipe-editor-scoped.css",
+      "assets/css/ui/recipes/03-recipe-modal-viewport-fix.css",
+      "assets/css/ui/recipes/04-pills-quiet-patch.css",
+      "assets/css/ui/recipes/05-mobile-vertical-recipe-editor.css"
+    ]
+  },
+  "js_order": [
+    {
+      "layer": "core",
+      "file": "assets/js/core/00-app-shell.js"
+    },
+    {
+      "layer": "core",
+      "file": "assets/js/core/01-dom-refs-and-storage.js"
+    },
+    {
+      "layer": "ui",
+      "file": "assets/js/ui/app/01-filters-shell.js"
+    },
+    {
+      "layer": "core",
+      "file": "assets/js/core/02-modal-and-form-runtime.js"
+    },
+    {
+      "layer": "features",
+      "file": "assets/js/features/ingredients/01-ingredients-runtime-composite.js",
+      "composite": true
+    },
+    {
+      "layer": "features",
+      "file": "assets/js/features/ingredients/02-quick-import.js"
+    },
+    {
+      "layer": "core",
+      "file": "assets/js/core/03-file-button-bridge.js"
+    },
+    {
+      "layer": "ui",
+      "file": "assets/js/ui/recipes/01-create-modal-shell.js"
+    },
+    {
+      "layer": "domain",
+      "file": "assets/js/domain/01-recipe-domains.js"
+    },
+    {
+      "layer": "features",
+      "file": "assets/js/features/recipes/01-recipe-import-ocr.js"
+    },
+    {
+      "layer": "features",
+      "file": "assets/js/features/recipes/03-recipes-page-runtime.js",
+      "composite": true
+    },
+    {
+      "layer": "ui",
+      "file": "assets/js/ui/app/02-filters-modal-tabs.js"
+    },
+    {
+      "layer": "features",
+      "file": "assets/js/features/recipes/04-recipe-editor-runtime.js"
+    },
+    {
+      "layer": "ui",
+      "file": "assets/js/ui/recipes/02-safe-ui-modules.js"
+    },
+    {
+      "layer": "features",
+      "file": "assets/js/features/recipes/02-recipe-editor-init.js",
+      "dependency_cleanup": "moved after recipe editor runtime"
+    },
+    {
+      "layer": "features",
+      "file": "assets/js/features/shared/01-ocr-shared-patch.js"
+    },
+    {
+      "layer": "ui",
+      "file": "assets/js/ui/shared/01-unified-info-dots.js"
+    },
+    {
+      "layer": "core",
+      "file": "assets/js/core/99-layer-registry.js"
+    }
+  ],
+  "remaining_composites": [
+    "assets/js/features/ingredients/01-ingredients-runtime-composite.js",
+    "assets/js/features/recipes/03-recipes-page-runtime.js"
+  ]
+}

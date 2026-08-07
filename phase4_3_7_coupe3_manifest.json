@@ -1,0 +1,31 @@
+{
+  "phase": "4.3",
+  "cut": "3",
+  "label": "suppression des aliases recipes visibles",
+  "removed_window_aliases": [
+    "renderRecipeList",
+    "refreshRecipeFilter",
+    "RecipeListView",
+    "RecipeReadonlyView",
+    "openRecipeEditor",
+    "duplicateRecipe",
+    "deleteRecipe",
+    "openRecipeScenario",
+    "openThumbImportForRecipe",
+    "openKebabPopoverForRecipe",
+    "renderRecipeThumb"
+  ],
+  "kept_window_aliases": [
+    "RecipeEditor",
+    "RecipeEditorModal",
+    "resolveRecipeRow",
+    "recipeMacrosFromGrams",
+    "recipeFindIngredientByRow",
+    "recipeConvertQtyToGrams",
+    "refreshRecipesPage",
+    "setRecipeStatusSafe",
+    "seedDemoIngredients",
+    "seedDemoRecipes"
+  ],
+  "base": "phase4.3.6 coupe2"
+}

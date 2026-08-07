@@ -1,0 +1,176 @@
+
+@media (max-width: 680px){
+  html, body{ overflow-x:hidden !important; }
+
+  #createOverlay,
+  #recipeCreateOverlay{
+    overflow-x:hidden !important;
+    padding:0 !important;
+    inset:0;
+  }
+
+  #createOverlay .createModal,
+  #recipeCreateOverlay .createModal,
+  #createModal,
+  #recipeCreateModal{
+    width:100vw !important;
+    min-width:100vw !important;
+    max-width:100vw !important;
+    margin:0 !important;
+    border-radius:0 !important;
+    overflow-x:hidden !important;
+  }
+
+  #createOverlay .createBody,
+  #recipeCreateOverlay .createBody,
+  #createOverlay .createBody *,
+  #recipeCreateOverlay .createBody *{
+    box-sizing:border-box;
+    min-width:0 !important;
+  }
+
+  #createOverlay .formRow,
+  #createOverlay .inlineActions,
+  #createOverlay .dashed,
+  #createOverlay .row,
+  #recipeCreateOverlay .formRow,
+  #recipeCreateOverlay .inlineActions,
+  #recipeCreateOverlay .dashed,
+  #recipeCreateOverlay .row{
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:stretch !important;
+    gap:10px !important;
+    width:100% !important;
+  }
+
+  #createOverlay .formRow > *,
+  #createOverlay .inlineActions > *,
+  #createOverlay .dashed > *,
+  #createOverlay .row > *,
+  #recipeCreateOverlay .formRow > *,
+  #recipeCreateOverlay .inlineActions > *,
+  #recipeCreateOverlay .dashed > *,
+  #recipeCreateOverlay .row > *{
+    min-width:0 !important;
+    width:100% !important;
+    max-width:100% !important;
+    flex:1 1 auto !important;
+    margin-top : 12px
+  }
+
+  #createOverlay input,
+  #createOverlay select,
+  #createOverlay textarea,
+  #createOverlay button,
+  #recipeCreateOverlay input,
+  #recipeCreateOverlay select,
+  #recipeCreateOverlay textarea,
+  #recipeCreateOverlay button{
+    width:100%;
+    max-width:100% !important;
+  }
+
+  #recipeCreateOverlay .tableWrap{
+    overflow-x:visible !important;
+  }
+
+  #recipeCreateOverlay table,
+  #recipeCreateOverlay table[style],
+  #recipeCreateOverlay .tableWrap table{
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    border-collapse:separate;
+    border-spacing:0;
+    table-layout:fixed;
+  }
+
+  #recipeCreateOverlay thead{ display:none !important; }
+  #recipeCreateOverlay tbody,
+  #recipeCreateOverlay tr,
+  #recipeCreateOverlay td{
+    display:block;
+    width:100% !important;
+  }
+
+  #recipeCreateOverlay tr{
+    margin:0 0 12px;
+    padding:10px;
+    border:1px solid rgba(0,0,0,.08);
+    border-radius:16px;
+    background:rgba(255,255,255,.72);
+  }
+
+  #recipeCreateOverlay td{
+    border:0 !important;
+    padding:6px 0 !important;
+  }
+
+  #recipeCreateOverlay #cmRecipeBody td,
+  #recipeCreateOverlay #cmRecipeResults td{
+    display:grid;
+    grid-template-columns:92px minmax(0,1fr);
+    gap:8px;
+    align-items:center;
+  }
+
+  #recipeCreateOverlay #cmRecipeBody td::before,
+  #recipeCreateOverlay #cmRecipeResults td::before{
+    font-size:12px;
+    line-height:1.2;
+    font-weight:900;
+    color:var(--ink700);
+    opacity:.9;
+    content:'';
+  }
+
+  #recipeCreateOverlay #cmRecipeBody tr td:nth-child(1)::before{ content:'Catégorie'; }
+  #recipeCreateOverlay #cmRecipeBody tr td:nth-child(2)::before{ content:'Ingrédient'; }
+  #recipeCreateOverlay #cmRecipeBody tr td:nth-child(3)::before{ content:'Quantité'; }
+  #recipeCreateOverlay #cmRecipeBody tr td:nth-child(4)::before{ content:'Unité'; }
+  #recipeCreateOverlay #cmRecipeBody tr td:nth-child(5)::before{ content:'kcal/100'; }
+  #recipeCreateOverlay #cmRecipeBody tr td:nth-child(6)::before{ content:'P/100'; }
+  #recipeCreateOverlay #cmRecipeBody tr td:nth-child(7)::before{ content:'G/100'; }
+  #recipeCreateOverlay #cmRecipeBody tr td:nth-child(8)::before{ content:'L/100'; }
+  #recipeCreateOverlay #cmRecipeBody tr td:nth-child(9)::before{ content:'Suppr.'; }
+
+  #recipeCreateOverlay #cmRecipeResults tbody tr td:nth-child(1)::before{ content:'Base'; }
+  #recipeCreateOverlay #cmRecipeResults tbody tr td:nth-child(2)::before{ content:'kcal'; }
+  #recipeCreateOverlay #cmRecipeResults tbody tr td:nth-child(3)::before{ content:'P'; }
+  #recipeCreateOverlay #cmRecipeResults tbody tr td:nth-child(4)::before{ content:'G'; }
+  #recipeCreateOverlay #cmRecipeResults tbody tr td:nth-child(5)::before{ content:'L'; }
+
+  #recipeCreateOverlay #cmRecipeBody td:last-child,
+  #recipeCreateOverlay #cmRecipeResults td:last-child{
+    padding-bottom:0 !important;
+  }
+
+  #recipeCreateOverlay .kpiRow{
+    grid-template-columns:1fr !important;
+  }
+}
+/* ===== Patch 1D — neutralize artificial vertical inflation on mobile ===== */
+@media (max-width: 680px){
+  #createOverlay .formRow > *,
+  #createOverlay .inlineActions > *,
+  #createOverlay .dashed > *,
+  #createOverlay .row > *{
+    margin-top: 0 !important;
+  }
+
+  #createOverlay .formRow > * + *,
+  #createOverlay .inlineActions > * + *,
+  #createOverlay .dashed > * + *,
+  #createOverlay .row > * + *{
+    margin-top: 10px !important;
+  }
+
+  #createOverlay #panelManual .formRow{
+    gap: 8px !important;
+  }
+
+  #createOverlay #panelManual .inlineActions{
+    gap: 8px !important;
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "phase": "4.2",
+  "base": "phase4_1_1_clean_boundaries_fix",
+  "changes": {
+    "ingredients_composite_split_into": [
+      "assets/js/features/ingredients/01-create-modal-and-categories.js",
+      "assets/js/features/ingredients/02-cards-filters-manual.js",
+      "assets/js/features/ingredients/03-storage-and-backup.js",
+      "assets/js/features/ingredients/04-page-interactions-detail-thumb.js"
+    ],
+    "recipes_composite_split_into": [
+      "assets/js/features/recipes/03-store-runtime.js",
+      "assets/js/features/recipes/04-filter-list-view.js",
+      "assets/js/features/recipes/05-scenario-actions-runtime.js",
+      "assets/js/features/recipes/06-print-init.js"
+    ]
+  },
+  "kept_as_is": [
+    "assets/js/features/recipes/04-recipe-editor-runtime.js",
+    "assets/js/features/recipes/02-recipe-editor-init.js",
+    "assets/js/features/ingredients/02-quick-import.js"
+  ],
+  "notes": [
+    "No ES module imports/exports added",
+    "Behavior preserved through window namespaces: NutriIngredients and NutriRecipes",
+    "Legacy globals remain as compatibility proxies"
+  ]
+}

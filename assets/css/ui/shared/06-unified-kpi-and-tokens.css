@@ -1,0 +1,96 @@
+/* ============================================================================
+   NutriApp — Couche d'unification (étape 1 : tokens / étape 2 : KPI unifié)
+   Chargée en DERNIER dans index.html. Ne redéfinit aucune structure :
+   uniquement des variables + le skin canonique de la tuile KPI.
+   Décisions produit appliquées ici :
+     D-KPI = 1  -> le KPI macro adopte partout la tuile "chrome" des fiches
+                   (fond crème translucide + texte encre, police système sans-serif),
+                   pour les cartes ingrédient ET recette.
+   Réversible : supprimer ce fichier + son <link> restaure l'état précédent.
+   ========================================================================== */
+
+/* ---- Étape 1 — Tokens (étendent core, aucun effet visuel seul) ---- */
+:root{
+  /* Tuile KPI canonique = spec .ingMacroCell (fiches / scénario) */
+  --kpiTileBg:      rgba(238,233,222,.35);
+  --kpiTileBorder:  var(--surfaceBorder, rgba(216,210,198,.95));
+  --kpiTileRadius:  var(--radiusControl, 16px);
+  --kpiValColor:    var(--ink900, #1F2A24);
+  --kpiUnitColor:   var(--ink700, #4C5A52);
+  --kpiLblColor:    var(--ink500, #7A887F);
+  --kpiFont:        system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  /* Base crème sous la teinte catégorie de la tuile (D-CAT=A) */
+  --kpiTileBase:    #f6f2ea;
+}
+
+/* ---- Étape 2 — KPI unifié (cartes ingrédient + recette) ---- */
+
+/* Tuile : forme + texte encre "chrome" (D-KPI=1) MAIS teintée catégorie (D-CAT=A).
+   Teinte volontairement claire (15% fond / 42% filet) pour garder le texte encre lisible
+   sur toutes les catégories, y compris gris/bleu. % ajustables ci-dessous. */
+#pageIngredients .macro.kpiRow.libCardStats .kpi,
+#pageIngredients .macro.kpiRow.libCardStats .kpi:first-child{
+  background: color-mix(in srgb, var(--cat, #B3A276) 15%, var(--kpiTileBase)) !important;
+  border: 1px solid color-mix(in srgb, var(--cat, #B3A276) 42%, var(--kpiTileBorder)) !important;
+  border-radius: var(--kpiTileRadius) !important;
+  box-shadow: none !important;
+  color: var(--kpiValColor) !important;
+}
+#pageRecipes .recipeCard .macro.libCardStats .kpi,
+#pageRecipes .recipeCard .macro.libCardStats .kpi:first-child{
+  background: color-mix(in srgb, var(--cat-main, #B3A276) 15%, var(--kpiTileBase)) !important;
+  border: 1px solid color-mix(in srgb, var(--cat-main, #B3A276) 42%, var(--kpiTileBorder)) !important;
+  border-radius: var(--kpiTileRadius) !important;
+  box-shadow: none !important;
+  color: var(--kpiValColor) !important;
+}
+
+/* Valeur : police système (fin du Georgia), gras 950, encre foncée */
+#pageIngredients .macro.libCardStats .kpiVal,
+#pageIngredients .macro.libCardStats .stat-value,
+#pageRecipes .recipeCard .macro.libCardStats .kpiVal{
+  font-family: var(--kpiFont) !important;
+  font-weight: 950 !important;
+  color: var(--kpiValColor) !important;
+  letter-spacing: 0 !important;
+}
+
+/* Unité (KCAL/PROT…) : encre medium */
+#pageIngredients .macro.libCardStats .stat-unit,
+#pageRecipes .recipeCard .macro.libCardStats .statUnit{
+  color: var(--kpiUnitColor) !important;
+  opacity: 1 !important;
+}
+
+/* Label bas (énergie, g/100, g/portion…) : encre douce */
+#pageIngredients .macro.libCardStats .kpiLbl,
+#pageIngredients .macro.libCardStats .stat-label,
+#pageRecipes .recipeCard .macro.libCardStats .kpiLbl,
+#pageRecipes .recipeCard .macro.libCardStats .statBase{
+  color: var(--kpiLblColor) !important;
+  opacity: 1 !important;
+}
+
+/* ---- Étape 2 bis — Typographie carte alignée sur les fiches/modals (D-CAT : police identique) ----
+   La carte garde sa bordure catégorie (A) et sa silhouette ; seule la police bascule
+   du Georgia serif vers la police système, comme le titre d'élément et les valeurs des fiches. */
+
+/* Titre de carte (nom ingrédient / recette) */
+#pageIngredients .libCardIdentity .cardTitle,
+#pageIngredients .libCardIdentity .title,
+#pageRecipes .recipeCard .recipeTitle{
+  font-family: var(--kpiFont) !important;
+}
+
+/* Initiale hero (placeholder média) — ingrédient */
+#pageIngredients .thumbPlaceholder{
+  font-family: var(--kpiFont) !important;
+}
+
+/* Initiale hero (placeholder média) — recette : la police vient de .recipeCardMedia */
+#pageRecipes .recipeCard .recipeCardMedia,
+#pageRecipes .recipeCard .thumb.libCardMedia,
+#pageRecipes .recipeCard .recipeCardMedia .thumbPlaceholder,
+#pageRecipes .recipeCard .thumb.libCardMedia .thumbPlaceholder{
+  font-family: var(--kpiFont) !important;
+}

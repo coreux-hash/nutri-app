@@ -1,0 +1,210 @@
+
+/* ===== Phase 1 — Unifier sans casser ===== */
+:root{
+  --modal-shell-bg: linear-gradient(180deg, rgba(30,78,51,.16) 0%, rgba(30,78,51,.07) 36%, rgba(250,248,242,0) 100%);
+  --modal-shell-border: rgba(216,210,198,.92);
+  --modal-shell-tab-bg: rgba(244,240,232,.88);
+  --modal-shell-tab-border: rgba(216,210,198,.95);
+  --modal-shell-tab-btn: rgba(250,248,242,.96);
+  --modal-shell-tab-btn-border: rgba(31,42,36,.08);
+  --modal-shell-footer-bg: linear-gradient(180deg, rgba(250,248,242,.94), rgba(246,242,233,.98));
+  --modal-shell-shadow: 0 24px 64px rgba(16,24,20,.18), 0 4px 14px rgba(16,24,20,.08);
+}
+
+.overlay,
+.createOverlay{
+  background: rgba(31,42,36,.40);
+  backdrop-filter: blur(4px);
+}
+
+.modal,
+.createModal{
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.36), rgba(255,255,255,0) 22%),
+    var(--p100);
+  border: 1px solid var(--modal-shell-border);
+  border-radius: 28px;
+  box-shadow: var(--modal-shell-shadow);
+  overflow: hidden;
+}
+
+.modalTop,
+.createTop{
+  padding: 16px 18px 12px;
+  gap: 12px;
+  background: var(--modal-shell-bg);
+  border-bottom: 1px solid rgba(216,210,198,.72);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.22);
+}
+
+.modalTop .title,
+.createTop .ctitle{
+  font-size: clamp(24px, 3vw, 28px);
+  line-height: 1.08;
+  letter-spacing: .1px;
+  color: var(--g900);
+  font-weight: 900;
+}
+
+.createTop .ctitle{
+  text-wrap: balance;
+}
+
+.modalBody,
+.createBody{
+  padding: 14px 18px 18px;
+  background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,0));
+}
+
+.seg,
+.createSeg{
+  display: flex;
+  gap: 8px;
+  padding: 6px;
+  background: var(--modal-shell-tab-bg);
+  border: 1px solid var(--modal-shell-tab-border);
+  border-radius: 18px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.38);
+}
+
+.seg button,
+.createSeg button{
+  min-height: 42px;
+  padding: 10px 12px;
+  border-radius: 13px;
+  border: 1px solid var(--modal-shell-tab-btn-border);
+  background: var(--modal-shell-tab-btn);
+  font-size: 14px;
+  line-height: 1.15;
+  font-weight: 900;
+  color: var(--ink700);
+  box-shadow: none;
+  transition: background .16s ease, border-color .16s ease, color .16s ease, box-shadow .16s ease, transform .16s ease;
+}
+
+.seg button:hover,
+.createSeg button:hover{
+  border-color: rgba(30,78,51,.18);
+  color: var(--ink900);
+}
+
+.seg button.active,
+.createSeg button.active{
+  color: var(--ink900);
+  box-shadow: 0 8px 20px rgba(19,37,28,.08);
+  transform: translateY(-1px);
+}
+
+.bigTitle,
+.sectionTitle{
+  margin: 16px 0 10px;
+  font-size: clamp(20px, 2.5vw, 22px);
+  line-height: 1.15;
+  letter-spacing: .1px;
+}
+
+.bigTitle--withAction{
+  align-items: center;
+  gap: 12px;
+}
+
+.modalFooter,
+.createFooter{
+  padding: 12px 18px 18px;
+  background: var(--modal-shell-footer-bg);
+  border-top: 1px solid rgba(216,210,198,.78);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.26);
+}
+
+.modalFooter .btn,
+.createFooter .btn,
+.modalFooter button,
+.createFooter button{
+  min-height: 44px;
+}
+
+@media (max-width: 560px){
+  .modal,
+  .createModal{
+    border-radius: 22px;
+  }
+
+  .modalTop,
+  .createTop{
+    padding: 14px 14px 10px;
+  }
+
+  .modalBody,
+  .createBody,
+  .modalFooter,
+  .createFooter{
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .seg,
+  .createSeg{
+    gap: 6px;
+    padding: 5px;
+  }
+
+  .seg button,
+  .createSeg button{
+    min-height: 40px;
+    padding: 9px 10px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 520px){
+  .modal,
+  .createModal{
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .modalTop,
+  .createTop{
+    padding-top: calc(12px + env(safe-area-inset-top));
+  }
+
+  .modalFooter,
+  .createFooter{
+    padding-bottom: calc(14px + env(safe-area-inset-bottom));
+  }
+}
+
+.modalTop .modalIconBtn,
+.createTop .modalIconBtn{
+  flex: 0 0 auto;
+}
+
+.modalBody .hint,
+.createBody .hint{
+  margin-top: 0;
+}
+
+.modalFooter > *,
+.createFooter > *{
+  flex-shrink: 0;
+}
+
+@media (max-width: 560px){
+  .modalFooter,
+  .createFooter{
+    gap: 10px;
+  }
+}
+
+
+/* ===== Patch 1b — stronger mobile shell visibility ===== */
+@media (max-width: 680px){
+  #createOverlay .createModal{border-radius:24px}
+  #createOverlay .createBody{padding-top:10px}
+  #createOverlay .createSeg{background:rgba(244,240,232,.94);border-color:rgba(216,210,198,.88);box-shadow:none}
+  #createOverlay .createSeg button{box-shadow:none}
+  #createOverlay .createSeg button.active{box-shadow:0 8px 18px rgba(19,37,28,.08)}
+}
+@media (max-width: 520px){
+  #createOverlay .createModal{border-radius:0}
+}

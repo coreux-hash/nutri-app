@@ -1,0 +1,169 @@
+/* ==========================================================================
+   NutriApp — Top Trumps / variante 01 : REGISTRE ÉDITORIAL
+   Couche autonome : charger ce fichier seul, en dernier.
+   Idée forte : la couleur catégorie devient un filet ; les 4 macros fusionnent
+   visuellement en un seul registre segmenté.
+   ========================================================================== */
+
+:root{
+  --skin-card-bg:#faf8f2;
+  --skin-card-bg-soft:#f6f2ea;
+  --skin-line:var(--surfaceBorder, rgba(216,210,198,.92));
+  --skin-line-strong:var(--surfaceBorderStrong, rgba(31,42,36,.10));
+  --skin-ink:var(--ink900, #1f2a24);
+  --skin-ink-mid:var(--ink700, #4c5a52);
+  --skin-ink-soft:var(--ink500, #7a887f);
+  --skin-radius-card:var(--radiusCard, 20px);
+  --skin-radius-block:var(--radiusBlock, 18px);
+  --skin-radius-control:var(--radiusControl, 16px);
+  --skin-kpi-height:66px;
+  --skin-shadow:
+    0 1px 2px rgba(46,34,20,.05),
+    0 7px 18px rgba(46,34,20,.07),
+    0 22px 44px rgba(46,34,20,.08);
+}
+
+/* Coque : papier calme, bordure neutre, filet catégorie très mince. */
+#pageIngredients #ingGrid > .card.libCardShell.ingredient-card,
+#pageRecipes #recipeList > .recipeCard.libCardShell{
+  border:1px solid var(--skin-line) !important;
+  border-radius:var(--skin-radius-card) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.72), rgba(255,255,255,0) 24%),
+    var(--skin-card-bg) !important;
+  box-shadow:var(--skin-shadow) !important;
+}
+
+#pageIngredients #ingGrid > .card.libCardShell.ingredient-card::before,
+#pageRecipes #recipeList > .recipeCard.libCardShell::before{
+  content:"" !important;
+  position:absolute !important;
+  inset:0 18px auto !important;
+  width:auto !important;
+  height:3px !important;
+  border:0 !important;
+  border-radius:0 0 999px 999px !important;
+  background:var(--cat, var(--cat-main, #b3a276)) !important;
+  opacity:.9 !important;
+  pointer-events:none !important;
+}
+
+#pageIngredients #ingGrid > .card.libCardShell.ingredient-card .card-inner,
+#pageRecipes #recipeList > .recipeCard.libCardShell::after{
+  border:1px solid var(--skin-line-strong) !important;
+  border-radius:var(--skin-radius-block) !important;
+  background:rgba(255,255,255,.28) !important;
+}
+
+/* Rail d'usage : un champ en creux, non un bandeau saturé. */
+#pageIngredients #ingGrid .top-rail.libCardTop .usage-band.usageStars{
+  background:color-mix(in srgb, var(--cat) 11%, var(--skin-card-bg-soft)) !important;
+  color:var(--skin-ink) !important;
+  border:1px solid color-mix(in srgb, var(--cat) 30%, var(--skin-line)) !important;
+  border-radius:var(--skin-radius-control) !important;
+  box-shadow:inset 0 1px 2px rgba(31,42,36,.05) !important;
+}
+
+/* Hero : même panneau crème dans les deux familles. */
+#pageIngredients #ingGrid .thumb.thumb--hero.libCardMedia,
+#pageRecipes #recipeList > .recipeCard.libCardShell .thumb.libCardMedia.recipeCardMedia{
+  border:1px solid var(--skin-line) !important;
+  border-radius:var(--skin-radius-block) !important;
+  background:
+    radial-gradient(circle at 50% 32%, rgba(255,255,255,.94), transparent 42%),
+    var(--skin-card-bg-soft) !important;
+  box-shadow:
+    inset 0 1px 2px rgba(31,42,36,.04),
+    inset 0 -12px 28px rgba(31,42,36,.025) !important;
+}
+
+#pageIngredients #ingGrid .thumbPlaceholder,
+#pageRecipes #recipeList .recipeCardMedia .thumbPlaceholder{
+  color:var(--skin-ink-mid) !important;
+}
+
+/* Registre macro : un seul panneau, quatre cellules séparées par des filets. */
+#pageIngredients #ingGrid .macro.kpiRow.libCardStats,
+#pageRecipes #recipeList > .recipeCard.libCardShell > .recipeOpenHit.libCardOpenHit > .recipeMain.libCardBody > .macro.kpiRow.libCardStats{
+  height:var(--skin-kpi-height) !important;
+  min-height:var(--skin-kpi-height) !important;
+  grid-auto-rows:var(--skin-kpi-height) !important;
+  gap:0 !important;
+  overflow:hidden !important;
+  border:1px solid color-mix(in srgb, var(--cat, var(--cat-main)) 24%, var(--skin-line)) !important;
+  border-radius:var(--skin-radius-control) !important;
+  background:color-mix(in srgb, var(--cat, var(--cat-main)) 7%, var(--skin-card-bg-soft)) !important;
+  box-shadow:inset 0 1px 2px rgba(31,42,36,.045) !important;
+}
+
+#pageIngredients #ingGrid .macro.kpiRow.libCardStats > .kpi,
+#pageRecipes #recipeList > .recipeCard.libCardShell > .recipeOpenHit.libCardOpenHit > .recipeMain.libCardBody > .macro.kpiRow.libCardStats > .kpi{
+  position:relative !important;
+  height:var(--skin-kpi-height) !important;
+  min-height:var(--skin-kpi-height) !important;
+  padding:12px 2px 2px !important;
+  border:0 !important;
+  border-left:1px solid var(--skin-line) !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  color:var(--skin-ink) !important;
+}
+
+#pageIngredients #ingGrid .macro.kpiRow.libCardStats > .kpi:first-child,
+#pageRecipes #recipeList > .recipeCard.libCardShell > .recipeOpenHit.libCardOpenHit > .recipeMain.libCardBody > .macro.kpiRow.libCardStats > .kpi:first-child{
+  border-left:0 !important;
+  background:transparent !important;
+}
+
+#pageIngredients #ingGrid .macro.kpiRow.libCardStats .kpiVal,
+#pageRecipes #recipeList > .recipeCard.libCardShell > .recipeOpenHit.libCardOpenHit > .recipeMain.libCardBody > .macro.kpiRow.libCardStats .kpiVal{
+  color:var(--skin-ink) !important;
+}
+
+#pageIngredients #ingGrid .macro.kpiRow.libCardStats .stat-unit,
+#pageRecipes #recipeList > .recipeCard.libCardShell > .recipeOpenHit.libCardOpenHit > .recipeMain.libCardBody > .macro.kpiRow.libCardStats .statUnit{
+  color:var(--skin-ink-mid) !important;
+}
+
+#pageIngredients #ingGrid .macro.kpiRow.libCardStats .kpiLbl,
+#pageRecipes #recipeList > .recipeCard.libCardShell > .recipeOpenHit.libCardOpenHit > .recipeMain.libCardBody > .macro.kpiRow.libCardStats .statBase{
+  color:var(--skin-ink-soft) !important;
+  min-height:16px !important;
+}
+
+/* Catégorie : cartouche fin, sans aplat dominant. */
+#pageIngredients #ingGrid .libCardFooterMeta .badge.bottom-ribbon,
+#pageRecipes #recipeList > .recipeCard.libCardShell .recipeCardFooterMeta .catPill[data-cat]{
+  background:color-mix(in srgb, var(--cat, var(--cat-main)) 9%, var(--skin-card-bg)) !important;
+  color:var(--skin-ink) !important;
+  border:1px solid color-mix(in srgb, var(--cat, var(--cat-main)) 34%, var(--skin-line)) !important;
+  border-radius:var(--skin-radius-control) !important;
+  box-shadow:none !important;
+  text-shadow:none !important;
+}
+
+@media (max-width:579px){
+  :root{ --skin-kpi-height:56px; }
+
+  #pageIngredients #ingGrid .macro.kpiRow.libCardStats > .kpi,
+  #pageRecipes #recipeList > .recipeCard.libCardShell > .recipeOpenHit.libCardOpenHit > .recipeMain.libCardBody > .macro.kpiRow.libCardStats > .kpi{
+    padding:10px 1px 1px !important;
+  }
+
+  #pageIngredients #ingGrid .macro.kpiRow.libCardStats .kpiVal,
+  #pageRecipes #recipeList > .recipeCard.libCardShell .macro.kpiRow.libCardStats .kpiVal{
+    font-size:11px !important;
+  }
+
+  #pageIngredients #ingGrid .macro.kpiRow.libCardStats .stat-unit,
+  #pageRecipes #recipeList > .recipeCard.libCardShell .macro.kpiRow.libCardStats .statUnit{
+    font-size:7px !important;
+  }
+
+  #pageIngredients #ingGrid .macro.kpiRow.libCardStats .kpiLbl,
+  #pageRecipes #recipeList > .recipeCard.libCardShell .macro.kpiRow.libCardStats .statBase{
+    font-size:6.5px !important;
+    line-height:1.1 !important;
+  }
+}

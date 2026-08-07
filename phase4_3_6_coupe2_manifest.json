@@ -1,0 +1,20 @@
+{
+  "phase": "4.3.6",
+  "title": "Coupe 2 continued — internal recipe reroute",
+  "base": "phase4.3.5 coupe2 save fix",
+  "changed_files": [
+    "assets/js/ui/recipes/02-safe-ui-modules.js",
+    "assets/js/core/99-layer-registry.js",
+    "assets/js/features/recipes/04-filter-list-view.js",
+    "assets/js/features/recipes/05-scenario-actions-runtime.js",
+    "assets/js/features/recipes/06-print-init.js"
+  ],
+  "intent": [
+    "remove internal dependence on recipe globals where a namespace already exists",
+    "prefer NutriRecipes and NutriApp over visible legacy aliases",
+    "keep visible aliases for compatibility; do not remove them yet"
+  ],
+  "checks": [
+    "node --check passed on all JS files"
+  ]
+}

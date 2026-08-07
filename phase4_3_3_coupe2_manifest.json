@@ -1,0 +1,25 @@
+{
+  "version": "phase4.3.3-coupe2-internal-reroute",
+  "base": "phase4.3.2-print-fix",
+  "changes": [
+    "core/99-layer-registry.js rerouted to NutriApp ui/actions instead of legacy recipe globals",
+    "features/recipes/04-filter-list-view.js now resolves internal recipe actions via NutriRecipes/NutriApp instead of window.* recipe globals",
+    "features/recipes/05-scenario-actions-runtime.js now calls NutriApp ui/actions internally before legacy fallback and enriches NutriApp ui/actions",
+    "features/recipes/06-print-init.js now reads recipe views from NutriRecipes/NutriApp instead of legacy globals"
+  ],
+  "scope": "Phase 4.3 Coupe 2 — reroutage des dépendances recipes internes",
+  "globals_removed": [],
+  "globals_still_kept_for_compat": [
+    "renderRecipeList",
+    "refreshRecipeFilter",
+    "RecipeListView",
+    "RecipeReadonlyView",
+    "openRecipeEditor",
+    "duplicateRecipe",
+    "deleteRecipe",
+    "openRecipeScenario",
+    "openThumbImportForRecipe",
+    "openKebabPopoverForRecipe",
+    "renderRecipeThumb"
+  ]
+}

@@ -1,0 +1,844 @@
+/* === Phase 6 — Ingredient premium card transplanted & recalibrated === */
+#pageIngredients .grid{
+  width:100%;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+  align-items:start;
+  justify-items:stretch;
+}
+
+#pageIngredients .ingredient-card,
+#pageIngredients .card.libCardShell.ingredient-card,
+#pageIngredients .card.libCardShell{
+  width:100%;
+  max-width:none;
+  aspect-ratio:5 / 7;
+  min-height:0;
+  height:auto;
+  container-type:inline-size;
+  --card-border:clamp(8px, 2.8cqw, 10px);
+  --inner-offset:clamp(2px, 0.7cqw, 3px);
+  --inner-radius:clamp(14px, 4.7cqw, 17px);
+  --inner-pad-x:clamp(10px, 3.9cqw, 14px);
+  --inner-pad-top:clamp(10px, 3.9cqw, 14px);
+  --inner-pad-bottom:clamp(11px, 4.4cqw, 16px);
+  --frame-gap:clamp(9px, 3.4cqw, 13px);
+  --rail-side:clamp(24px, 8.4cqw, 30px);
+  --rail-gap:clamp(6px, 2.4cqw, 10px);
+  --rail-height:clamp(24px, 8.5cqw, 30px);
+  --hero-height:clamp(132px, 45.5cqw, 168px);
+  --hero-radius:clamp(12px, 4.4cqw, 15px);
+  --hero-pad-x:clamp(8px, 3.2cqw, 12px);
+  --hero-pad-bottom:clamp(9px, 3.5cqw, 12px);
+  --thumb-max-h:clamp(112px, 39cqw, 140px);
+  --usage-pad-y-top:clamp(4px, 1.4cqw, 5px);
+  --usage-pad-x:clamp(8px, 3.8cqw, 12px);
+  --usage-pad-y-bottom:clamp(4px, 1.8cqw, 6px);
+  --usage-radius:clamp(11px, 4.4cqw, 14px);
+  --usage-stars-size:clamp(9px, 3.4cqw, 11px);
+  --usage-label-size:clamp(7px, 2.6cqw, 9px);
+  --title-size:clamp(18px, 6.4cqw, 22px);
+  --title-gap:clamp(5px, 1.8cqw, 7px);
+  --meta-size:clamp(10px, 3.8cqw, 12px);
+  --meta-gap:clamp(4px, 1.8cqw, 6px);
+  --stats-gap:clamp(5px, 2.2cqw, 7px);
+  --kpi-height:clamp(62px, 22.5cqw, 74px);
+  --kpi-radius:clamp(8px, 3.2cqw, 10px);
+  --kpi-pad-top:clamp(6px, 2.5cqw, 8px);
+  --kpi-pad-bottom:clamp(5px, 2.3cqw, 7px);
+  --kpi-val-size:clamp(14px, 5.4cqw, 18px);
+  --kpi-unit-size:clamp(8px, 2.8cqw, 10px);
+  --kpi-label-size:clamp(7px, 2.5cqw, 9px);
+  --footer-pad-y:clamp(7px, 2.6cqw, 9px);
+  --footer-pad-x:clamp(10px, 4cqw, 13px);
+  --footer-size:clamp(10px, 3.5cqw, 11px);
+  --stats-inline:calc(100% - (var(--hero-pad-x) * 2));
+  border:var(--card-border) solid var(--cat);
+  border-radius:26px;
+  background:linear-gradient(180deg,#f8f4ec 0%,#f2ecdf 100%);
+  box-shadow:0 14px 30px rgba(48,35,22,.14);
+  position:relative;
+  overflow:hidden;
+  isolation:isolate;
+  display:flex;
+  flex-direction:column;
+}
+#pageIngredients .ingredient-card::before,
+#pageIngredients .card.libCardShell.ingredient-card::before,
+#pageIngredients .card.libCardShell::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,.44), transparent 32%),
+    linear-gradient(180deg, rgba(255,255,255,.14), transparent 18%, rgba(73,48,20,.03) 100%);
+  z-index:0;
+}
+#pageIngredients .card-inner{
+  position:relative;
+  z-index:1;
+  margin:var(--inner-offset);
+  padding:var(--inner-pad-top) var(--inner-pad-x) var(--inner-pad-bottom);
+  border-radius:var(--inner-radius);
+  border:1px solid rgba(98,72,44,.11);
+  background:linear-gradient(180deg,#fbf7ef 0%,#f6f0e5 100%);
+  overflow:visible;
+  height:calc(100% - (var(--inner-offset) * 2));
+}
+#pageIngredients .card-frame{display:grid;gap:var(--frame-gap);height:100%;align-content:start;}
+#pageIngredients .top-rail,
+#pageIngredients .top-rail.libCardTop,
+#pageIngredients .card .libCardTop{
+  min-height:var(--rail-height);
+  display:grid;
+  grid-template-columns:var(--rail-side) 1fr var(--rail-side);
+  align-items:center;
+  gap:var(--rail-gap);
+  padding:0 1px;
+  position:relative;
+  z-index:2;
+  width:100%;
+  min-width:0;
+}
+#pageIngredients .rail-left,
+#pageIngredients .rail-right,
+#pageIngredients .libCardActions{
+  display:flex;
+  align-items:center;
+  position:relative;
+  min-width:0;
+  margin-left:0;
+}
+#pageIngredients .rail-left{justify-content:flex-start;}
+#pageIngredients .rail-right,
+#pageIngredients .libCardActions{justify-content:flex-end;}
+#pageIngredients .info-dot-btn,
+#pageIngredients .menu-btn,
+#pageIngredients .infoDot,
+#pageIngredients .kebabBtn{
+  border:0;
+  background:transparent;
+  width:22px;
+  height:22px;
+  padding:0;
+  margin:0;
+  border-radius:999px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--cat-deep);
+  cursor:pointer;
+  opacity:.94;
+  flex:0 0 auto;
+  box-shadow:none;
+  backdrop-filter:none;
+}
+#pageIngredients .info-dot-btn:hover,
+#pageIngredients .menu-btn:hover,
+#pageIngredients .infoDot:hover,
+#pageIngredients .kebabBtn:hover{background:rgba(61,100,51,.08);}
+#pageIngredients .infoDot{font-size:0;letter-spacing:0;position:relative;}
+#pageIngredients .infoDot::before{content:"•••";font-size:10px;letter-spacing:2px;line-height:1;}
+#pageIngredients .menu-glyph,
+#pageIngredients .kebabBtn .menu-glyph{display:inline-grid;gap:3px;}
+#pageIngredients .menu-glyph span{width:4px;height:4px;border-radius:999px;background:currentColor;display:block;box-shadow:0 0 0 1px rgba(255,255,255,.12);}
+#pageIngredients .usage-band,
+#pageIngredients .usageStars{
+  min-width:0;
+  max-width:100%;
+  display:inline-grid;
+  justify-items:center;
+  gap:2px;
+  padding:var(--usage-pad-y-top) var(--usage-pad-x) var(--usage-pad-y-bottom);
+  border-radius:var(--usage-radius);
+  background:linear-gradient(180deg,var(--cat) 0%,var(--cat-deep) 100%);
+  color:#f3e2aa;
+  box-shadow:0 4px 10px rgba(52,39,24,.11);
+  border:1px solid rgba(255,255,255,.18);
+  line-height:1;
+  text-align:center;
+}
+#pageIngredients .usage-stars{font-size:var(--usage-stars-size);letter-spacing:.5px;font-weight:800;white-space:nowrap;}
+#pageIngredients .usage-label{font-size:var(--usage-label-size);text-transform:uppercase;letter-spacing:.1em;font-weight:800;white-space:nowrap;}
+#pageIngredients .hero,
+#pageIngredients .thumb.thumb--hero.libCardMedia,
+#pageIngredients .thumb.libCardMedia{
+  position:relative;
+  min-height:var(--hero-height);
+  height:var(--hero-height);
+  border-radius:var(--hero-radius);
+  overflow:hidden;
+  border:1px solid rgba(123,96,63,.10);
+  background:
+    radial-gradient(circle at 50% 30%, rgba(255,255,255,.92), rgba(249,242,230,.88) 36%, rgba(232,223,209,.76) 72%, rgba(215,203,185,.40) 100%),
+    linear-gradient(180deg, rgba(255,255,255,.42), rgba(222,210,191,.20));
+  display:grid;
+  place-items:center;
+  padding:var(--hero-pad-x) var(--hero-pad-x) var(--hero-pad-bottom);
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  margin:0;
+}
+#pageIngredients .hero img,
+#pageIngredients .thumbPreview{max-width:100%;max-height:var(--thumb-max-h);object-fit:contain;filter:drop-shadow(0 14px 14px rgba(54,39,21,.16));display:block;}
+#pageIngredients .thumbUpload{width:100%;height:100%;display:grid;place-items:center;cursor:pointer;}
+#pageIngredients .thumbInput{display:none;}
+#pageIngredients .thumbPlaceholder{color:#6e665b;font-size:clamp(11px, 3.5cqw, 12px);line-height:1.3;font-weight:600;text-align:center;padding:0 8px;}
+#pageIngredients .thumbRemove{position:absolute;top:8px;right:8px;width:24px;height:24px;border-radius:999px;border:0;background:rgba(47,39,31,.72);color:white;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:14px;z-index:2;}
+#pageIngredients .thumbError,
+#pageIngredients .notePop,
+#pageIngredients .kebabMenu{position:absolute;z-index:20;border-radius:12px;background:rgba(41,34,28,.96);color:#f6f0e6;box-shadow:0 14px 30px rgba(18,13,9,.24);}
+#pageIngredients .thumbError{left:10px;bottom:10px;padding:6px 8px;font-size:11px;line-height:1.2;}
+#pageIngredients .notePop{top:calc(100% + 8px);left:0;width:220px;padding:10px 12px;font-size:12px;line-height:1.35;text-align:left;}
+#pageIngredients .kebabMenu{top:calc(100% + 8px);right:0;min-width:172px;padding:6px;display:grid;gap:4px;text-align:left;}
+#pageIngredients .kebabMenu.hidden{display:none !important;}
+#pageIngredients .kebabMenu button{border:0;background:transparent;color:inherit;border-radius:10px;padding:9px 10px;display:grid;grid-template-columns:18px 1fr;gap:8px;align-items:center;cursor:pointer;font-size:13px;}
+#pageIngredients .kebabMenu button:hover{background:rgba(255,255,255,.08);}
+#pageIngredients .kebabMenu button.danger{color:#ffb2a5;}
+#pageIngredients .cardBody,
+#pageIngredients .libCardBody{display:grid;gap:var(--title-gap);align-content:start;min-width:0;height:100%;padding:0 !important;margin:0 !important;width:100%;}
+#pageIngredients .libCardIdentity,
+#pageIngredients .title-block{display:grid;gap:var(--title-gap);align-content:start;min-width:0;}
+#pageIngredients .libCardTitleRow{display:block;min-width:0;}
+#pageIngredients .title,
+#pageIngredients .cardTitle{
+  margin:0;
+  color:#2e261e;
+  text-align:center;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:var(--title-size);
+  line-height:1.08;
+  letter-spacing:-.018em;
+  font-weight:800;
+}
+#pageIngredients .cardTitleText{display:block;width:100%;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+#pageIngredients .subtitle,
+#pageIngredients .libCardMeta,
+#pageIngredients .ingPills,
+#pageIngredients .ingPills.ingPills--compact{color:#6e665b;font-size:var(--meta-size);line-height:1.15;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:var(--meta-gap);min-width:0;margin:0;}
+#pageIngredients .subtitle .sep,
+#pageIngredients .libCardMeta .sep,
+#pageIngredients .ingPills .sep{color:#8d7d67;padding:0 1px;}
+#pageIngredients .pill,
+#pageIngredients .ingPill{display:inline-flex;align-items:center;min-width:0;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:transparent;border:0;border-radius:0;padding:0;box-shadow:none;color:inherit;font:inherit;}
+#pageIngredients .ingPillText{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+#pageIngredients .stats,
+#pageIngredients .macro.kpiRow.libCardStats{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:var(--stats-gap);
+  width:var(--stats-inline);
+  max-width:var(--stats-inline);
+  min-width:0;
+  margin:0;
+  margin-top:auto;
+  margin-inline:auto;
+  grid-auto-rows:var(--kpi-height);
+}
+#pageIngredients .stat,
+#pageIngredients .kpi{
+  min-width:0;
+  height:var(--kpi-height);
+  min-height:var(--kpi-height);
+  padding:var(--kpi-pad-top) 4px var(--kpi-pad-bottom);
+  border-radius:var(--kpi-radius);
+  text-align:center;
+  color:#fff7e6;
+  background:linear-gradient(180deg,color-mix(in srgb, var(--cat) 90%, #000 0%) 0%, color-mix(in srgb, var(--cat) 76%, #000 10%) 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.13);
+  display:grid;
+  gap:2px;
+  align-content:center;
+  justify-items:center;
+}
+#pageIngredients .stat-value,
+#pageIngredients .kpiVal{font-family:Georgia,"Times New Roman",serif;font-size:var(--kpi-val-size);line-height:1.08;letter-spacing:-.02em;font-weight:700;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#pageIngredients .stat-unit{display:block;font-size:var(--kpi-unit-size);line-height:1;opacity:.96;font-weight:700;text-transform:uppercase;}
+#pageIngredients .stat-label,
+#pageIngredients .kpiLbl{display:block;margin:2px 0 0;font-size:var(--kpi-label-size);line-height:1;opacity:.94;font-weight:600;}
+#pageIngredients .bottom-ribbon-wrap,
+#pageIngredients .libCardFooterMeta,
+#pageIngredients .badgeRow,
+#pageIngredients .libCardCategoryRow{display:grid;width:var(--stats-inline);max-width:var(--stats-inline);min-width:0;margin-inline:auto;}
+#pageIngredients .bottom-ribbon,
+#pageIngredients .badge{display:flex;align-items:center;justify-content:center;width:100%;max-width:none;min-width:0;text-align:center;padding:var(--footer-pad-y) var(--footer-pad-x);border-radius:999px;background:linear-gradient(180deg,color-mix(in srgb, var(--cat) 92%, #000 0%) 0%, color-mix(in srgb, var(--cat) 78%, #000 8%) 100%);color:#f3de98;box-shadow:inset 0 1px 0 rgba(255,255,255,.15);font-size:var(--footer-size);line-height:1;text-transform:uppercase;letter-spacing:.06em;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border:0;box-sizing:border-box;}
+#pageIngredients .badgeText{display:block;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;align-items:center;}
+#pageIngredients .libCardSelectWrap{display:none;}
+#pageIngredients .cardSelectCtl{display:grid;place-items:center;width:24px;height:24px;border-radius:999px;border:1px solid rgba(61,100,51,.18);background:rgba(255,255,255,.84);cursor:pointer;}
+#pageIngredients .cardSelectInput{position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;clip:rect(0 0 0 0);overflow:hidden;}
+#pageIngredients .cardSelectBox{width:14px;height:14px;border-radius:5px;border:1.5px solid rgba(61,100,51,.35);background:rgba(255,255,255,.92);position:relative;}
+#pageIngredients .cardSelectBox::after{content:"";position:absolute;left:3px;top:0;width:4px;height:8px;border-right:2px solid transparent;border-bottom:2px solid transparent;transform:rotate(45deg);opacity:0;}
+#pageIngredients .cardSelectInput:checked + .cardSelectBox{border-color:rgba(61,100,51,.84);}
+#pageIngredients .cardSelectInput:checked + .cardSelectBox::after{border-color:rgba(61,100,51,.84);opacity:1;}
+#pageIngredients.is-recipe-compose-mode .libCardSelectWrap{display:block;}
+#pageIngredients.is-recipe-compose-mode .rail-left .infoDot{display:none !important;}
+#pageIngredients.is-recipe-compose-mode .rail-right.libCardActions{display:none;}
+#pageIngredients.is-recipe-compose-mode .top-rail,
+#pageIngredients.is-recipe-compose-mode .top-rail.libCardTop{grid-template-columns:var(--rail-side) 1fr 0px;}
+#pageIngredients.is-recipe-compose-mode .cardBody{cursor:pointer;}
+#pageIngredients .card[data-selected-for-recipe="true"]{box-shadow:0 0 0 2px rgba(61,100,51,.16), 0 14px 30px rgba(48,35,22,.14);}
+
+/* === Progressive alignment pass: side infos around usage band + fixed KPI sizing === */
+#pageIngredients .top-rail,
+#pageIngredients .top-rail.libCardTop,
+#pageIngredients .card .libCardTop{
+  grid-template-columns:var(--rail-side) 1fr var(--rail-side) !important;
+  align-items:center !important;
+}
+#pageIngredients .rail-left{justify-content:flex-start !important;}
+#pageIngredients .rail-right,
+#pageIngredients .rail-right.libCardActions,
+#pageIngredients .libCardActions{justify-content:flex-end !important;}
+#pageIngredients .top-rail .infoDot,
+#pageIngredients .top-rail .kebabBtn,
+#pageIngredients .top-rail .menu-btn,
+#pageIngredients .top-rail .info-dot-btn{
+  position:static !important;
+  width:22px !important;
+  height:22px !important;
+  padding:0 !important;
+  margin:0 !important;
+  border:0 !important;
+  border-radius:999px !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  backdrop-filter:none !important;
+  outline:none !important;
+}
+#pageIngredients .top-rail .infoDot::before{
+  font-size:10px !important;
+  letter-spacing:2px !important;
+  line-height:1 !important;
+}
+#pageIngredients .top-rail .menu-glyph,
+#pageIngredients .top-rail .kebabBtn .menu-glyph{display:inline-grid !important;gap:3px !important;}
+#pageIngredients .top-rail .usage-band,
+#pageIngredients .top-rail .usageStars{justify-self:stretch !important;align-self:center !important;width:100% !important;max-width:100% !important;}
+#pageIngredients .macro.kpiRow.libCardStats,
+#pageIngredients .stats{gap:var(--stats-gap) !important;margin-bottom:0 !important;}
+#pageIngredients .macro.libCardStats .kpi,
+#pageIngredients .stat,
+#pageIngredients .kpi{
+  min-height:var(--kpi-height) !important;
+  height:var(--kpi-height) !important;
+  padding:var(--kpi-pad-top) 4px var(--kpi-pad-bottom) !important;
+  border-radius:var(--kpi-radius) !important;
+  background:linear-gradient(180deg, color-mix(in srgb, var(--cat) 90%, #000 0%) 0%, color-mix(in srgb, var(--cat) 76%, #000 10%) 100%) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.13) !important;
+  display:grid !important;
+  gap:2px !important;
+  align-content:center !important;
+}
+#pageIngredients .macro.libCardStats .kpiVal,
+#pageIngredients .stat-value,
+#pageIngredients .kpiVal{font-size:var(--kpi-val-size) !important;line-height:1.08 !important;}
+#pageIngredients .macro.libCardStats .stat-unit,
+#pageIngredients .stat-unit{font-size:var(--kpi-unit-size) !important;line-height:1 !important;}
+#pageIngredients .macro.libCardStats .kpiLbl,
+#pageIngredients .stat-label,
+#pageIngredients .kpiLbl{font-size:var(--kpi-label-size) !important;line-height:1 !important;margin:2px 0 0 !important;}
+
+@media (max-width:579px){
+  #pageIngredients .card.libCardShell,
+  #pageIngredients .card.libCardShell.ingredient-card,
+  #pageIngredients .ingredient-card{max-width:min(100%, 360px);}
+}
+
+
+/* === Mirror alignment pass from standalone original === */
+#pageIngredients .card-inner{
+  display:flex;
+  flex-direction:column;
+}
+#pageIngredients .card-frame{
+  flex:1 1 auto;
+  min-height:0;
+  display:grid;
+  grid-template-rows:auto minmax(0,1fr) auto;
+  gap:var(--frame-gap);
+  align-content:stretch;
+}
+#pageIngredients .top-rail,
+#pageIngredients .top-rail.libCardTop,
+#pageIngredients .card .libCardTop{
+  padding-inline:clamp(1px, .7cqw, 2px);
+}
+#pageIngredients .usage-band,
+#pageIngredients .usageStars{
+  padding:5px 10px 6px;
+  border-radius:16px;
+  width:100%;
+  min-width:0;
+}
+#pageIngredients .thumb.thumb--hero.libCardMedia,
+#pageIngredients .thumb.libCardMedia,
+#pageIngredients .hero{
+  min-height:var(--hero-height);
+  height:100%;
+  align-self:stretch;
+  padding:12px 14px 14px;
+}
+#pageIngredients .thumbUpload{
+  min-height:100%;
+}
+#pageIngredients .hero img,
+#pageIngredients .thumbPreview{
+  max-height:100%;
+}
+#pageIngredients .cardBody,
+#pageIngredients .libCardBody{
+  height:auto;
+  gap:12px;
+  align-content:start;
+  padding-inline:14px;
+  box-sizing:border-box;
+}
+#pageIngredients .libCardIdentity,
+#pageIngredients .title-block{
+  gap:5px;
+  padding:8px 0 0;
+}
+#pageIngredients .title,
+#pageIngredients .cardTitle{
+  text-transform:uppercase;
+}
+#pageIngredients .stats,
+#pageIngredients .macro.kpiRow.libCardStats{
+  margin-top:0;
+  margin-bottom:8px;
+  grid-auto-rows:var(--kpi-height);
+  width:100%;
+}
+#pageIngredients .bottom-ribbon-wrap,
+#pageIngredients .libCardFooterMeta,
+#pageIngredients .badgeRow,
+#pageIngredients .libCardCategoryRow{
+  margin-top:0;
+}
+#pageIngredients .bottom-ribbon,
+#pageIngredients .badge{
+  padding:9px 16px;
+}
+
+@container (max-width: 300px){
+  #pageIngredients .cardBody,
+  #pageIngredients .libCardBody{ gap:10px; padding-inline:11px; }
+  #pageIngredients .libCardIdentity,
+  #pageIngredients .title-block{ padding:6px 0 0; }
+  #pageIngredients .usage-band,
+  #pageIngredients .usageStars{ padding:4px 9px 5px; border-radius:14px; }
+  #pageIngredients .thumb.thumb--hero.libCardMedia,
+  #pageIngredients .thumb.libCardMedia,
+  #pageIngredients .hero{ padding:10px 11px 11px; }
+  #pageIngredients .bottom-ribbon,
+  #pageIngredients .badge{ padding:8px 12px; }
+}
+
+
+/* === body inset removal + hero readjustment === */
+#pageIngredients .cardBody,
+#pageIngredients .libCardBody{
+  padding:0 !important;
+  margin:0 !important;
+  gap:var(--title-gap) !important;
+}
+#pageIngredients .libCardIdentity,
+#pageIngredients .title-block{
+  padding:0 !important;
+  margin:0 !important;
+}
+#pageIngredients .stats,
+#pageIngredients .macro.kpiRow.libCardStats,
+#pageIngredients .bottom-ribbon-wrap,
+#pageIngredients .libCardFooterMeta,
+#pageIngredients .badgeRow,
+#pageIngredients .libCardCategoryRow{
+  margin:0 !important;
+}
+#pageIngredients .thumb.thumb--hero.libCardMedia,
+#pageIngredients .thumb.libCardMedia,
+#pageIngredients .hero{
+  width:100% !important;
+  max-width:100% !important;
+  margin:0 !important;
+  padding:clamp(10px, 3.8cqw, 12px) clamp(11px, 4.2cqw, 14px) clamp(11px, 4.2cqw, 14px) !important;
+}
+#pageIngredients .thumbUpload{
+  width:100%;
+  height:100%;
+  min-height:0 !important;
+}
+
+
+/* === Phase 6 — Mobile micro-refonte for dense two-column cards === */
+@media (max-width:579px){
+  #pageIngredients .grid{
+    gap:10px;
+  }
+
+  #pageIngredients .ingredient-card,
+  #pageIngredients .card.libCardShell.ingredient-card,
+  #pageIngredients .card.libCardShell{
+    --card-border:clamp(6px, 2.2vw, 8px);
+    --inner-offset:1px;
+    --inner-radius:12px;
+    --inner-pad-x:7px;
+    --inner-pad-top:7px;
+    --inner-pad-bottom:7px;
+    --frame-gap:6px;
+    --rail-side:18px;
+    --rail-gap:4px;
+    --rail-height:18px;
+    --hero-height:clamp(118px, 35vw, 140px);
+    --hero-radius:11px;
+    --hero-pad-x:6px;
+    --hero-pad-bottom:7px;
+    --thumb-max-h:clamp(98px, 30vw, 116px);
+    --usage-pad-y-top:4px;
+    --usage-pad-x:12px;
+    --usage-pad-y-bottom:4px;
+    --usage-radius:999px;
+    --usage-stars-size:11px;
+    --title-size:clamp(12px, 4.9vw, 15px);
+    --title-gap:4px;
+    --meta-size:10px;
+    --meta-gap:4px;
+    --stats-gap:5px;
+    --kpi-height:44px;
+    --kpi-radius:8px;
+    --kpi-pad-top:4px;
+    --kpi-pad-bottom:4px;
+    --kpi-val-size:10px;
+    --kpi-unit-size:7px;
+    --kpi-label-size:6px;
+    --footer-pad-y:5px;
+    --footer-pad-x:10px;
+    --footer-size:8px;
+    --stats-inline:calc(100% - 14px);
+    border-radius:22px;
+  }
+
+  #pageIngredients .card-inner{
+    border-radius:12px;
+  }
+
+  #pageIngredients .top-rail,
+  #pageIngredients .top-rail.libCardTop,
+  #pageIngredients .card .libCardTop{
+    padding:0;
+  }
+
+  #pageIngredients .info-dot-btn,
+  #pageIngredients .menu-btn,
+  #pageIngredients .infoDot,
+  #pageIngredients .kebabBtn{
+    width:18px;
+    height:18px;
+  }
+
+  #pageIngredients .infoDot::before{
+    font-size:8px;
+    letter-spacing:1px;
+  }
+
+  #pageIngredients .usage-band,
+  #pageIngredients .usageStars{
+    gap:0;
+    min-height:26px;
+    align-content:center;
+  }
+
+  #pageIngredients .usage-label{
+    display:none;
+  }
+
+  #pageIngredients .usage-stars{
+    letter-spacing:.8px;
+    line-height:1;
+  }
+
+  #pageIngredients .thumbPlaceholder{
+    font-size:10px;
+    line-height:1.2;
+    padding:0 4px;
+  }
+
+  #pageIngredients .title,
+  #pageIngredients .cardTitle{
+    line-height:1.02;
+    letter-spacing:-.01em;
+  }
+
+  #pageIngredients .subtitle,
+  #pageIngredients .libCardMeta,
+  #pageIngredients .ingPills,
+  #pageIngredients .ingPills.ingPills--compact{
+    line-height:1.05;
+  }
+
+  #pageIngredients .stat,
+  #pageIngredients .kpi{
+    padding-left:2px;
+    padding-right:2px;
+    gap:1px;
+  }
+
+  #pageIngredients .stat-value,
+  #pageIngredients .kpiVal{
+    line-height:1;
+  }
+
+  #pageIngredients .stat-unit{
+    margin-bottom:1px;
+  }
+
+  #pageIngredients .stat-label,
+  #pageIngredients .kpiLbl{
+    margin-top:1px;
+  }
+
+  #pageIngredients .bottom-ribbon,
+  #pageIngredients .badge{
+    letter-spacing:.03em;
+  }
+}
+
+/* === Mobile tuning pass: tighter lower stack, shared stats/footer width, hero fills remaining space === */
+#pageIngredients .card-frame{
+  grid-template-rows:auto minmax(0,1fr) auto;
+}
+#pageIngredients .thumb.thumb--hero.libCardMedia,
+#pageIngredients .thumb.libCardMedia,
+#pageIngredients .hero{
+  height:auto !important;
+  min-height:var(--hero-height);
+}
+#pageIngredients .cardBody,
+#pageIngredients .libCardBody{
+  gap:clamp(3px, 1.4cqw, 5px) !important;
+}
+#pageIngredients .libCardIdentity,
+#pageIngredients .title-block{
+  gap:clamp(2px, 1cqw, 4px) !important;
+}
+
+#pageIngredients .macro.kpiRow.libCardStats{
+  --stats-tight-gap:clamp(4px, 1.7cqw, 6px);
+  gap:var(--stats-tight-gap) !important;
+  grid-auto-rows:clamp(54px, 19.5cqw, 66px) !important;
+}
+#pageIngredients .macro.libCardStats .kpi,
+#pageIngredients .stat,
+#pageIngredients .kpi{
+  min-height:clamp(54px, 19.5cqw, 66px) !important;
+  height:clamp(54px, 19.5cqw, 66px) !important;
+  padding-top:clamp(4px, 1.7cqw, 6px) !important;
+  padding-bottom:clamp(4px, 1.7cqw, 6px) !important;
+}
+#pageIngredients .bottom-ribbon,
+#pageIngredients .badge{
+  width:100% !important;
+  max-width:100% !important;
+}
+#pageIngredients .pageBody--library .libraryGrid,
+#pageIngredients .libraryGrid,
+#ingGrid{
+  margin-top:6px;
+}
+
+@media (max-width:579px){
+  #pageIngredients .pageBody--library .libraryGrid,
+  #pageIngredients .libraryGrid,
+  #ingGrid{
+    margin-top:8px;
+  }
+
+  #pageIngredients .card-inner{
+    padding:6px 6px 7px !important;
+  }
+
+  #pageIngredients .card-frame{
+    gap:5px !important;
+  }
+
+  #pageIngredients .thumb.thumb--hero.libCardMedia,
+  #pageIngredients .thumb.libCardMedia,
+  #pageIngredients .hero{
+    min-height:0 !important;
+    padding:7px 7px 8px !important;
+  }
+
+  #pageIngredients .cardBody,
+  #pageIngredients .libCardBody{
+    gap:3px !important;
+  }
+
+  #pageIngredients .libCardIdentity,
+  #pageIngredients .title-block{
+    gap:2px !important;
+  }
+
+  #pageIngredients .title,
+  #pageIngredients .cardTitle{
+    font-size:clamp(11px, 4.4vw, 14px) !important;
+    line-height:1 !important;
+  }
+
+  #pageIngredients .subtitle,
+  #pageIngredients .libCardMeta,
+  #pageIngredients .ingPills,
+  #pageIngredients .ingPills.ingPills--compact{
+    font-size:9px !important;
+    line-height:1 !important;
+    gap:3px !important;
+  }
+
+
+  #pageIngredients .macro.kpiRow.libCardStats{
+    gap:4px !important;
+    grid-auto-rows:38px !important;
+  }
+
+  #pageIngredients .macro.libCardStats .kpi,
+  #pageIngredients .stat,
+  #pageIngredients .kpi{
+    min-height:38px !important;
+    height:38px !important;
+    border-radius:7px !important;
+    padding:3px 1px !important;
+    gap:0 !important;
+  }
+
+  #pageIngredients .macro.libCardStats .kpiVal,
+  #pageIngredients .stat-value,
+  #pageIngredients .kpiVal{
+    font-size:9px !important;
+    line-height:1 !important;
+  }
+
+  #pageIngredients .macro.libCardStats .stat-unit,
+  #pageIngredients .stat-unit{
+    font-size:5.5px !important;
+    line-height:1 !important;
+  }
+
+  #pageIngredients .macro.libCardStats .kpiLbl,
+  #pageIngredients .stat-label,
+  #pageIngredients .kpiLbl{
+    font-size:5px !important;
+    line-height:1 !important;
+    margin:0 !important;
+  }
+
+  #pageIngredients .bottom-ribbon,
+  #pageIngredients .badge{
+    padding:5px 8px !important;
+    font-size:7px !important;
+    line-height:1 !important;
+    border-radius:999px !important;
+  }
+}
+
+/* === Footer width transfer: copied from working badge-bottom version, without touching libCardStats === */
+#pageIngredients .bottom-ribbon-wrap,
+#pageIngredients .libCardFooterMeta,
+#pageIngredients .badgeRow,
+#pageIngredients .libCardCategoryRow{
+  display:grid !important;
+  width:100% !important;
+  max-width:100% !important;
+  min-width:0 !important;
+  margin:0 !important;
+}
+#pageIngredients .bottom-ribbon,
+#pageIngredients .badge{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:100% !important;
+  max-width:100% !important;
+  min-width:0 !important;
+  box-sizing:border-box !important;
+}
+
+
+/* === Final targeted fix: libCardStats to libCardBody width; bottom-ribbon full width on mobile/desktop === */
+#pageIngredients .stats,
+#pageIngredients .macro.kpiRow.libCardStats{
+  width:100% !important;
+  max-width:100% !important;
+  min-width:0 !important;
+  margin-left:0 !important;
+  margin-right:0 !important;
+}
+#pageIngredients .bottom-ribbon-wrap,
+#pageIngredients .libCardFooterMeta,
+#pageIngredients .badgeRow,
+#pageIngredients .libCardCategoryRow{
+  width:100% !important;
+  max-width:100% !important;
+  min-width:0 !important;
+}
+#pageIngredients .bottom-ribbon,
+#pageIngredients .badge{
+  display:flex !important;
+  width:100% !important;
+  max-width:100% !important;
+  min-width:0 !important;
+  inline-size:100% !important;
+  flex:0 0 100% !important;
+  justify-self:stretch !important;
+}
+
+
+/* === Final mobile footer-only fix: badge-bottom must fill libCardBody width === */
+@media (max-width:579px){
+  #pageIngredients .bottom-ribbon-wrap,
+  #pageIngredients .libCardFooterMeta,
+  #pageIngredients .badgeRow,
+  #pageIngredients .libCardCategoryRow{
+    display:block !important;
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    inline-size:100% !important;
+    flex:none !important;
+    margin:0 !important;
+  }
+
+  #pageIngredients .libCardCategoryRow .badge,
+  #pageIngredients .bottom-ribbon,
+  #pageIngredients .badge{
+    display:flex !important;
+    width:100% !important;
+    max-width:100% !important;
+    min-width:100% !important;
+    inline-size:100% !important;
+    flex:0 0 100% !important;
+    justify-content:center !important;
+    align-self:stretch !important;
+    justify-self:stretch !important;
+    box-sizing:border-box !important;
+  }
+}
+
+
+/* === Targeted refinement: ingredient thumbPlaceholder initials aligned to recipe size === */
+#pageIngredients .thumbPlaceholder{
+  font-family:Georgia, "Times New Roman", serif;
+  font-size:clamp(34px, 8.5cqw, 56px);
+  line-height:1;
+  font-weight:700;
+  letter-spacing:.01em;
+  text-transform:uppercase;
+}
+
+@media (max-width:579px){
+  #pageIngredients .thumbPlaceholder{
+    font-size:clamp(28px, 8.8vw, 42px);
+  }
+}

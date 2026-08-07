@@ -1,0 +1,1309 @@
+
+/* Scoped recipe editor styles extracted from patched_v3_5_4 */
+#recipeCreateOverlay .tableWrap{overflow:auto;border-radius:12px}
+#recipeCreateOverlay table{width:100%;border-collapse:separate;border-spacing:0;min-width:760px}
+#recipeCreateOverlay thead th{position:sticky;top:0;background:#f3f4f6;font-weight:600;padding:10px;border-bottom:1px solid #e5e7eb}
+#recipeCreateOverlay td{padding:8px;border-bottom:1px solid #eef0f2}
+#recipeCreateOverlay td input,
+#recipeCreateOverlay td select{width:100%;padding:8px;border-radius:10px;border:1px solid #e5e7eb;background:#fff}
+
+#recipeCreateOverlay .kpiRow{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px}
+#recipeCreateOverlay .kpi{background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:10px;text-align:center;font-size:.9rem}
+#recipeCreateOverlay .kpiWide{grid-column:span 2}
+
+#recipeCreateOverlay .ocrGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+#recipeCreateOverlay .ocrCard{border:1px dashed #d1d5db;border-radius:12px;padding:12px;background:#fafafa}
+#recipeCreateOverlay .ocrPreview{max-height:260px;overflow:auto;font-family:monospace;font-size:.85rem;white-space:pre-wrap}
+
+/* Mobile: stack OCR cards, avoid horizontal overflow and inner scroll */
+@media (max-width: 560px){
+  #recipeCreateOverlay .ocrGrid{grid-template-columns:1fr}
+  #recipeCreateOverlay .ocrCard{min-width:0}
+  #recipeCreateOverlay .ocrCard *{max-width:100%}
+  #recipeCreateOverlay .ocrPreview{max-height:none;overflow:visible}
+}
+
+#recipeCreateOverlay .control textarea{width:100%;min-height:110px;border-radius:14px;border:1px solid #e5e7eb;padding:12px;background:#fff}
+
+/* ===== R2 — recipe manual as cmStepRail / cmStepPanel pages ===== */
+#recipeCreateOverlay #recipePanelManual{
+  display:grid;
+  gap:12px;
+}
+
+#recipeCreateOverlay #recipePanelManual > .createHint{
+  margin-bottom:0;
+}
+
+#recipeCreateOverlay #recipePanelManual > .cmStepRail{
+  margin-top:0;
+  margin-bottom:0;
+}
+
+#recipeCreateOverlay #recipePanelManual .cmStepPanel{
+  min-width:0;
+  align-content:start;
+}
+
+#recipeCreateOverlay #recipePanelManual .cmStepPanel .bigTitle:first-child,
+#recipeCreateOverlay #recipePanelManual .cmStepPanel .bigTitle--withAction:first-child{
+  margin-top:0 !important;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="prep"] .control{
+  margin-top:6px;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="prep"] textarea{
+  min-height:160px;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .inlineActions--manualNative{
+  margin-top:14px;
+  padding-top:12px;
+  border-top:1px solid rgba(31,42,36,.06);
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .inlineActions--manualNative .pillBtn{
+  min-width:180px;
+}
+
+#recipeCreateOverlay #recipePanelManual #cmRecipeResults{
+  margin-top:10px;
+}
+
+@media (max-width: 680px){
+  #recipeCreateOverlay #recipePanelManual{
+    gap:10px;
+  }
+
+  #recipeCreateOverlay #recipePanelManual [data-manual-step-panel="prep"] textarea{
+    min-height:140px;
+  }
+
+  #recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .inlineActions--manualNative{
+    gap:8px !important;
+  }
+
+  #recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .inlineActions--manualNative .pillBtn{
+    flex:1 1 100%;
+    min-width:0;
+  }
+}
+
+@media (max-width: 420px){
+  #recipeCreateOverlay #recipePanelManual{
+    gap:8px;
+  }
+}
+
+
+/* ===== L4 — recipe lines page as ingredient cards ===== */
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"]{
+  gap:14px;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLinesToolbar{
+  display:grid;
+  gap:8px;
+  padding:12px 14px;
+  border-radius:20px;
+  background:rgba(250,248,242,.92);
+  border:1px solid rgba(31,42,36,.06);
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLinesToolbarMain{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:10px;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLinesToolbarMain .pillBtn{
+  min-height:40px;
+  padding:0 14px;
+  border-radius:14px;
+  box-shadow:none;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLinesToolbarMain .pillBtn.green{
+  background:linear-gradient(180deg, rgba(30,78,51,.94), rgba(30,78,51,1));
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLinesToolbarMain .pillBtn.danger{
+  background:rgba(255,255,255,.85);
+  color:#8a2d2d;
+  border:1px solid rgba(138,45,45,.14);
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLinesToolbarHint{
+  font-size:12px;
+  line-height:1.35;
+  color:var(--ink600);
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLinesComposer{
+  display:grid;
+  gap:12px;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLinesEmpty{
+  padding:18px 16px;
+  border-radius:22px;
+  border:1px dashed rgba(31,42,36,.16);
+  background:rgba(255,255,255,.72);
+  color:var(--ink600);
+  font-size:13px;
+  line-height:1.45;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLinesList{
+  display:grid;
+  gap:12px;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineCard{
+  display:grid;
+  gap:12px;
+  padding:14px;
+  border-radius:22px;
+  border:1px solid rgba(31,42,36,.08);
+  background:linear-gradient(180deg, #fff, rgba(250,248,242,.95));
+  box-shadow:0 10px 22px rgba(31,42,36,.05);
+  transition:border-color .18s ease, box-shadow .18s ease, background .18s ease;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineCard.is-unresolved{
+  border-color:rgba(217,119,6,.28);
+  background:linear-gradient(180deg, rgba(255,251,235,.98), rgba(255,246,228,.96));
+  box-shadow:0 10px 22px rgba(180,83,9,.08);
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineCard.is-resolved{
+  border-color:rgba(30,78,51,.12);
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineTop{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineTitleWrap{
+  min-width:0;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineEyebrow{
+  font-size:12px;
+  line-height:1.1;
+  letter-spacing:.02em;
+  text-transform:uppercase;
+  font-weight:900;
+  color:var(--ink600);
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineState{
+  margin-top:4px;
+  font-size:13px;
+  line-height:1.35;
+  color:var(--ink700);
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineRemove{
+  width:42px;
+  min-width:42px;
+  height:42px;
+  border-radius:16px;
+  border:1px solid rgba(31,42,36,.08);
+  background:rgba(255,255,255,.88);
+  color:var(--ink700);
+  font:inherit;
+  font-weight:900;
+  cursor:pointer;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineRemove:hover{
+  border-color:rgba(138,45,45,.2);
+  color:#8a2d2d;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineInputGrid{
+  display:grid;
+  grid-template-columns:minmax(0, 1fr) minmax(0, 1.25fr) minmax(136px, .72fr) minmax(132px, .7fr);
+  gap:10px;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineField{
+  display:grid;
+  gap:6px;
+  padding:12px;
+  border-radius:18px;
+  border:1px solid rgba(31,42,36,.08);
+  background:rgba(255,255,255,.72);
+  box-shadow:0 8px 20px rgba(31,41,55,.04);
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineFieldLabel{
+  font-size:11px;
+  line-height:1.2;
+  letter-spacing:.02em;
+  text-transform:uppercase;
+  font-weight:900;
+  color:var(--ink600);
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineField input,
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineField select{
+  width:100%;
+  min-height:42px;
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px solid rgba(31,42,36,.08);
+  background:#fff;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineMetrics{
+  display:grid;
+  grid-template-columns:repeat(4, minmax(0, 1fr)) minmax(180px, 1.25fr);
+  gap:10px;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineMetric{
+  display:grid;
+  gap:4px;
+  padding:10px 12px;
+  border-radius:16px;
+  border:1px solid rgba(31,42,36,.06);
+  background:rgba(255,255,255,.7);
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineMetric small{
+  font-size:11px;
+  line-height:1.1;
+  letter-spacing:.02em;
+  text-transform:uppercase;
+  font-weight:900;
+  color:var(--ink500);
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineMetric b{
+  font-size:15px;
+  line-height:1.15;
+  color:var(--ink900);
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineMetric--detail{
+  background:rgba(243,240,232,.72);
+}
+
+#recipeCreateOverlay #recipePanelManual #cmRecipeResults{
+  display:grid;
+  gap:10px;
+}
+
+#recipeCreateOverlay #recipePanelManual #cmRecipeResults .recipeResultsGrid{
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+  gap:12px;
+}
+
+#recipeCreateOverlay #recipePanelManual #cmRecipeResults .recipeSummaryCard{
+  display:grid;
+  gap:12px;
+  padding:14px;
+  border-radius:22px;
+  background:linear-gradient(180deg, rgba(255,255,255,.94), rgba(250,248,242,.94));
+  border:1px solid rgba(31,42,36,.06);
+  box-shadow:0 8px 18px rgba(31,42,36,.04);
+}
+
+#recipeCreateOverlay #recipePanelManual #cmRecipeResults .recipeSummaryHead{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+}
+
+#recipeCreateOverlay #recipePanelManual #cmRecipeResults .recipeSummaryHead b{
+  display:block;
+  font-size:16px;
+  line-height:1.15;
+  color:var(--ink900);
+}
+
+#recipeCreateOverlay #recipePanelManual #cmRecipeResults .recipeSummaryHead small{
+  display:block;
+  margin-top:3px;
+  font-size:12px;
+  line-height:1.35;
+  color:var(--ink500);
+}
+
+#recipeCreateOverlay #recipePanelManual #cmRecipeResults .recipeSummaryMetrics{
+  display:grid;
+  grid-template-columns:repeat(4, minmax(0, 1fr));
+  gap:10px;
+}
+
+#recipeCreateOverlay #recipePanelManual #cmRecipeResults .recipeSummaryMetric{
+  display:grid;
+  gap:4px;
+  padding:12px;
+  border-radius:16px;
+  background:rgba(255,255,255,.78);
+  border:1px solid rgba(31,42,36,.06);
+}
+
+#recipeCreateOverlay #recipePanelManual #cmRecipeResults .recipeSummaryMetric span{
+  font-size:11px;
+  line-height:1.1;
+  letter-spacing:.02em;
+  text-transform:uppercase;
+  font-weight:900;
+  color:var(--ink500);
+}
+
+#recipeCreateOverlay #recipePanelManual #cmRecipeResults .recipeSummaryMetric strong{
+  font-size:18px;
+  line-height:1.15;
+  color:var(--ink900);
+}
+
+#recipeCreateOverlay #recipePanelManual #cmRecipeResults .recipeSummaryDetail{
+  padding:10px 12px;
+  border-radius:16px;
+  background:rgba(243,240,232,.72);
+  border:1px solid rgba(31,42,36,.06);
+  color:var(--ink700);
+  font-size:13px;
+  line-height:1.35;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .cmPageActions{
+  margin-top:2px;
+}
+
+@media (max-width: 980px){
+  #recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineInputGrid{
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+  }
+
+  #recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineMetrics,
+  #recipeCreateOverlay #recipePanelManual #cmRecipeResults .recipeSummaryMetrics{
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+  }
+
+  #recipeCreateOverlay #recipePanelManual #cmRecipeResults .recipeResultsGrid{
+    grid-template-columns:1fr;
+  }
+}
+
+@media (max-width: 680px){
+  #recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLinesToolbar{
+    padding:10px;
+    gap:10px;
+  }
+
+  #recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLinesToolbarMain{
+    gap:8px;
+  }
+
+  #recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLinesToolbarMain .pillBtn{
+    flex:1 1 calc(50% - 4px);
+    min-width:0;
+  }
+
+  #recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineCard,
+  #recipeCreateOverlay #recipePanelManual #cmRecipeResults .recipeSummaryCard{
+    padding:12px;
+    border-radius:20px;
+  }
+
+  #recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineInputGrid,
+  #recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineMetrics,
+  #recipeCreateOverlay #recipePanelManual #cmRecipeResults .recipeSummaryMetrics{
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+  }
+
+  #recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineRemove{
+    width:40px;
+    min-width:40px;
+    height:40px;
+  }
+}
+
+@media (max-width: 480px){
+  #recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineInputGrid,
+  #recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineMetrics,
+  #recipeCreateOverlay #recipePanelManual #cmRecipeResults .recipeSummaryMetrics{
+    grid-template-columns:1fr;
+  }
+
+  #recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLinesToolbarMain .pillBtn{
+    flex:1 1 100%;
+  }
+}
+
+/* ===== L4.1 — recipe line accordion cards ===== */
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineCard{
+  gap:10px;
+  padding:10px;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineTop{
+  align-items:stretch;
+  gap:10px;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineAccordionToggle{
+  flex:1 1 auto;
+  min-width:0;
+  display:grid;
+  grid-template-columns:minmax(0, 1fr) auto;
+  align-items:center;
+  gap:12px;
+  padding:12px 14px;
+  border-radius:18px;
+  border:1px solid rgba(31,42,36,.08);
+  background:rgba(255,255,255,.82);
+  color:inherit;
+  text-align:left;
+  cursor:pointer;
+  box-shadow:0 8px 18px rgba(31,42,36,.04);
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineAccordionToggle:hover{
+  border-color:rgba(30,78,51,.16);
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineSummaryMain{
+  min-width:0;
+  display:grid;
+  gap:8px;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineTitleWrap{
+  min-width:0;
+  display:grid;
+  gap:3px;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineTitle{
+  min-width:0;
+  font-size:18px;
+  line-height:1.15;
+  font-weight:900;
+  color:var(--g900);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineState{
+  margin-top:0;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineSummaryMeta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineSummaryChip{
+  display:inline-flex;
+  align-items:center;
+  min-height:28px;
+  padding:0 10px;
+  border-radius:999px;
+  border:1px solid rgba(31,42,36,.08);
+  background:rgba(246,244,238,.9);
+  font-size:12px;
+  line-height:1;
+  font-weight:800;
+  color:var(--ink700);
+  white-space:nowrap;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineSummaryChip--state.is-ok{
+  background:rgba(30,78,51,.10);
+  border-color:rgba(30,78,51,.16);
+  color:var(--g900);
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineSummaryChip--state.is-warn{
+  background:rgba(180,83,9,.10);
+  border-color:rgba(180,83,9,.18);
+  color:#8b4b10;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineSummaryChip--state.is-idle{
+  background:rgba(243,240,232,.92);
+  border-color:rgba(31,42,36,.08);
+  color:var(--ink600);
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineChevron{
+  width:34px;
+  min-width:34px;
+  height:34px;
+  border-radius:12px;
+  display:grid;
+  place-items:center;
+  background:rgba(246,244,238,.95);
+  border:1px solid rgba(31,42,36,.06);
+  color:var(--ink700);
+  font-size:16px;
+  font-weight:900;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineRemove{
+  align-self:stretch;
+  height:auto;
+  min-height:100%;
+  border-radius:18px;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLinePanel{
+  display:grid;
+  gap:10px;
+  padding:2px 2px 0;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineCard:not(.is-open) .recipeLinePanel{
+  display:none;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineCard.is-open{
+  border-color:rgba(30,78,51,.12);
+  box-shadow:0 14px 24px rgba(31,42,36,.07);
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineCard.is-open .recipeLineAccordionToggle{
+  background:linear-gradient(180deg, rgba(255,255,255,.98), rgba(250,248,242,.95));
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineMetrics{
+  grid-template-columns:repeat(5, minmax(0, 1fr));
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineMetric--detail{
+  grid-column:span 2;
+}
+
+@media (max-width: 860px){
+  #recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineInputGrid{
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+  }
+
+  #recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineMetrics{
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+  }
+
+  #recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineMetric--detail{
+    grid-column:1 / -1;
+  }
+}
+
+
+/* ===== L4.2 — accordion cleanup / less visual noise ===== */
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLinesToolbarMain{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:8px;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] #btnAddRow.pillBtn{
+  min-height:34px;
+  padding:0 12px;
+  border-radius:12px;
+  font-size:13px;
+  line-height:1;
+  box-shadow:none;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineCard{
+  padding:10px;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineTop{
+  align-items:stretch;
+  gap:8px;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineAccordionToggle{
+  grid-template-columns:1fr;
+  gap:8px;
+  padding:10px 12px;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineSummaryMain{
+  gap:6px;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineTitleWrap{
+  gap:6px;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineEyebrowRow{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineEyebrow{
+  margin:0;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineChevron{
+  width:28px;
+  min-width:28px;
+  height:28px;
+  border-radius:10px;
+  font-size:14px;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineTitle{
+  font-size:17px;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineSummaryMeta{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:6px;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineSummaryChip{
+  min-width:0;
+  justify-content:center;
+  padding:0 8px;
+  font-size:11px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineRemove{
+  width:42px;
+  min-width:42px;
+  height:auto;
+  border-radius:16px;
+  align-self:stretch;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineMetrics{
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:10px;
+  padding:10px 12px;
+  border-radius:16px;
+  border:1px solid rgba(31,42,36,.06);
+  background:rgba(255,255,255,.62);
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineMetric,
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineMetric--detail{
+  padding:0;
+  border:none;
+  background:transparent;
+  box-shadow:none;
+  border-radius:0;
+  min-width:0;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineMetric small{
+  font-size:10px;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineMetric b{
+  font-size:14px;
+}
+
+@media (max-width: 860px){
+  #recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineMetrics{
+    grid-template-columns:repeat(4,minmax(0,1fr));
+  }
+}
+
+@media (max-width: 680px){
+  #recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLinesToolbarMain{
+    flex-direction:row;
+    align-items:center;
+  }
+
+  #recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] #btnAddRow.pillBtn{
+    min-height:32px;
+    padding:0 10px;
+    font-size:12px;
+  }
+
+  #recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineSummaryMeta{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+
+  #recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineMetrics{
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:8px;
+    padding:8px 10px;
+  }
+
+  #recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineMetric b{
+    font-size:13px;
+  }
+}
+
+@media (max-width: 420px){
+  #recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineSummaryChip{
+    font-size:10px;
+    padding:0 6px;
+  }
+
+  #recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineMetrics{
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:6px;
+    padding:8px;
+  }
+
+  #recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineMetric small{
+    font-size:9px;
+  }
+
+  #recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineMetric b{
+    font-size:12px;
+  }
+}
+
+
+/* ===== Recipe Scan / OCR aligned with ingredient assist paradigm ===== */
+#recipeCreateOverlay .recipeSceneBody--scan{
+  grid-template-columns:1fr;
+  align-items:start;
+}
+
+#recipeCreateOverlay .recipeAssistCard{
+  min-width:0;
+}
+
+#recipeCreateOverlay .recipeAssistCard--scanEntry,
+#recipeCreateOverlay .recipeAssistCard--scanResult{
+  align-content:start;
+}
+
+#recipeCreateOverlay .recipeScanTriggerRow{
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+  gap:10px;
+}
+
+#recipeCreateOverlay .recipeScanTriggerRow > .pillBtn{
+  width:100%;
+  min-width:0;
+  min-height:52px;
+  padding:0 14px;
+  white-space:nowrap;
+  font-size:13px;
+  line-height:1.1;
+}
+
+#recipeCreateOverlay .recipeScanEditors{
+  display:grid;
+  gap:12px;
+}
+
+#recipeCreateOverlay .recipeScanEditorBlock{
+  display:grid;
+  gap:10px;
+  padding:12px;
+  border-radius:20px;
+  background:linear-gradient(180deg, rgba(250,248,242,.94), rgba(255,255,255,.98));
+  border:1px solid rgba(31,42,36,.08);
+}
+
+#recipeCreateOverlay .recipeScanEditorBlock.is-active{
+  border-color:rgba(30,78,51,.18);
+  box-shadow:0 0 0 2px rgba(30,78,51,.05);
+}
+
+#recipeCreateOverlay .recipeScanEditorTop{
+  display:block;
+}
+
+#recipeCreateOverlay .recipeScanEditorTitle{
+  font-size:15px;
+  line-height:1.1;
+  font-weight:900;
+  color:var(--g900);
+}
+
+#recipeCreateOverlay .recipeScanEditorHint{
+  margin-top:4px;
+  font-size:12px;
+  line-height:1.35;
+  color:var(--ink600);
+}
+
+#recipeCreateOverlay .recipeScanEditorBox{
+  padding:8px;
+  border-radius:18px;
+  background:rgba(255,255,255,.9);
+}
+
+#recipeCreateOverlay .recipeScanEditorBox textarea{
+  width:100%;
+  min-height:126px;
+  margin:0;
+  padding:12px 13px;
+  border-radius:14px;
+  border:1px solid rgba(31,42,36,.12);
+  background:#fff;
+  font-size:13px;
+  line-height:1.45;
+}
+
+#recipeCreateOverlay .recipeScanEditorActions{
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0, 1fr));
+  gap:8px;
+}
+
+#recipeCreateOverlay .recipeScanEditorActions .pillBtn{
+  width:100%;
+  min-width:0;
+  min-height:42px;
+  padding-inline:10px;
+  font-size:13px;
+  line-height:1.1;
+}
+
+#recipeCreateOverlay .recipeScanEditorActions--prep #btnRecipeOcrPrepApply{
+  grid-column:span 2;
+}
+
+#recipeCreateOverlay .recipeScanPreview{
+  padding:10px 12px;
+  border-radius:16px;
+  background:linear-gradient(180deg, rgba(255,255,255,.94), rgba(250,248,242,.98));
+  border:1px solid rgba(31,42,36,.08);
+  color:var(--ink700);
+  font-size:12px;
+  line-height:1.35;
+}
+
+#recipeCreateOverlay .recipeScanPreview > div + div{
+  margin-top:6px;
+}
+
+#recipeCreateOverlay .recipeScanStatus{
+  min-height:18px;
+  color:var(--ink600);
+}
+
+#recipeCreateOverlay [data-recipe-assist-actions="scan"]{
+  margin-top:12px;
+}
+
+
+/* ===== Recipe Scan / OCR hierarchy + vertical tightening v4 ===== */
+#recipeCreateOverlay .recipeSceneBody--scan{
+  gap:12px;
+}
+
+#recipeCreateOverlay .recipeAssistCard--scanEntry,
+#recipeCreateOverlay .recipeAssistCard--scanResult{
+  padding:16px 18px;
+}
+
+#recipeCreateOverlay .recipeAssistCard--scanResult .subtle{
+  margin-bottom:4px;
+}
+
+#recipeCreateOverlay .recipeScanEditors{
+  gap:10px;
+}
+
+#recipeCreateOverlay .recipeScanEditorBlock{
+  gap:8px;
+  padding:10px;
+}
+
+#recipeCreateOverlay .recipeScanEditorBox{
+  padding:6px;
+  border-radius:16px;
+}
+
+#recipeCreateOverlay .recipeScanEditorBox textarea{
+  min-height:112px;
+  padding:10px 12px;
+}
+
+#recipeCreateOverlay .recipeScanEditorActions .pillBtn{
+  min-height:40px;
+}
+
+#recipeCreateOverlay .recipeScanEditorActions--ingredient #btnRecipeOcrIngsApply,
+#recipeCreateOverlay .recipeScanEditorActions--prep #btnRecipeOcrPrepApply{
+  background:linear-gradient(180deg, #2f6e48 0%, #275c3c 100%);
+  color:#fff;
+  border-color:rgba(30,78,51,.24);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12);
+}
+
+#recipeCreateOverlay .recipeScanEditorActions--ingredient #btnRecipeOcrIngsApply:hover,
+#recipeCreateOverlay .recipeScanEditorActions--prep #btnRecipeOcrPrepApply:hover{
+  filter:brightness(.98);
+}
+
+#recipeCreateOverlay .recipeScanEditorActions--ingredient #btnRecipeOcrIngsPreview{
+  background:rgba(255,255,255,.96);
+  color:#22322a;
+  border-color:rgba(31,42,36,.12);
+}
+
+#recipeCreateOverlay .recipeScanEditorActions--ingredient #btnRecipeOcrClear,
+#recipeCreateOverlay .recipeScanEditorActions--prep #btnRecipeOcrPrepClear{
+  background:rgba(246,243,236,.72);
+  color:#6e786f;
+  border-color:rgba(31,42,36,.08);
+  box-shadow:none;
+}
+
+#recipeCreateOverlay .recipeScanPreview{
+  padding:8px 10px;
+  font-size:11px;
+  line-height:1.3;
+}
+
+#recipeCreateOverlay .recipeScanStatus{
+  min-height:16px;
+  margin-top:2px;
+}
+
+#recipeCreateOverlay .recipeAssistCard--scanResult .cmSceneNav{
+  margin-top:8px;
+}
+
+#recipeCreateOverlay [data-recipe-assist-actions="scan"]{
+  margin-top:8px;
+}
+
+
+/* ===== Recipe Scan / OCR flow exit + micro-typo v5 ===== */
+#recipeCreateOverlay .recipeAssistCard--scanEntry .createHint{
+  margin-top:6px;
+  font-size:13px;
+  line-height:1.42;
+  color:var(--ink600);
+  max-width:60ch;
+}
+
+#recipeCreateOverlay .recipeAssistCard--scanEntry .cmAssistText{
+  margin-top:2px;
+  font-size:13px;
+  line-height:1.46;
+  color:var(--ink600);
+  max-width:58ch;
+}
+
+#recipeCreateOverlay .recipeAssistCard--scanEntry .cmSceneMicroNote{
+  margin-top:2px;
+  font-size:12px;
+  line-height:1.38;
+  color:var(--ink500);
+}
+
+#recipeCreateOverlay .recipeAssistCard--scanResult{
+  padding-bottom:14px;
+}
+
+#recipeCreateOverlay .recipeAssistCard--scanResult .subtle{
+  margin-top:2px;
+  margin-bottom:2px;
+  font-size:13px;
+  line-height:1.42;
+  color:var(--ink600);
+  max-width:62ch;
+}
+
+#recipeCreateOverlay .recipeScanEditors{
+  gap:8px;
+}
+
+#recipeCreateOverlay .recipeScanEditorBlock{
+  padding:9px;
+  gap:7px;
+}
+
+#recipeCreateOverlay .recipeScanEditorHint{
+  margin-top:3px;
+  font-size:11.5px;
+  line-height:1.34;
+  color:var(--ink500);
+}
+
+#recipeCreateOverlay .recipeScanStatus{
+  min-height:0;
+  margin-top:0;
+}
+
+#recipeCreateOverlay .recipeAssistCard--scanResult .cmSceneNav{
+  margin-top:4px;
+  gap:10px;
+}
+
+#recipeCreateOverlay .recipeAssistCard--scanResult .cmSceneNav .cmStepAction{
+  min-height:42px;
+  font-size:13px;
+}
+
+#recipeCreateOverlay [data-recipe-assist-actions="scan"]{
+  margin-top:8px;
+}
+
+#recipeCreateOverlay [data-recipe-assist-actions="scan"] .pillBtn{
+  min-height:44px;
+}
+
+
+/* ===== Recipe Import rapide aligned with scan paradigm v6 ===== */
+#recipeCreateOverlay .recipeSceneBody--import{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:12px;
+  align-items:start;
+}
+
+#recipeCreateOverlay .recipeAssistCard--importEntry,
+#recipeCreateOverlay .recipeAssistCard--importResult{
+  min-width:0;
+  padding:16px 18px;
+}
+
+#recipeCreateOverlay .recipeAssistCard--importEntry{
+  align-content:start;
+}
+
+#recipeCreateOverlay .recipeAssistCard--importResult{
+  padding-bottom:14px;
+}
+
+#recipeCreateOverlay .recipeAssistCard--importEntry .createHint{
+  margin-top:6px;
+  font-size:13px;
+  line-height:1.42;
+  color:var(--ink600);
+  max-width:62ch;
+}
+
+#recipeCreateOverlay .recipeAssistCard--importEntry .cmAssistText{
+  margin-top:2px;
+  font-size:13px;
+  line-height:1.46;
+  color:var(--ink600);
+  max-width:58ch;
+}
+
+#recipeCreateOverlay .recipeAssistCard--importEntry .cmSceneMicroNote{
+  margin-top:2px;
+  font-size:12px;
+  line-height:1.38;
+  color:var(--ink500);
+}
+
+#recipeCreateOverlay .recipeImportTriggerRow{
+  display:grid;
+  grid-template-columns:minmax(220px, 320px);
+  justify-content:start;
+  gap:10px;
+}
+
+#recipeCreateOverlay .recipeImportTriggerRow > .pillBtn{
+  min-height:48px;
+  width:100%;
+  padding-inline:14px;
+  font-size:13px;
+  line-height:1.1;
+}
+
+#recipeCreateOverlay .recipeAssistCard--importResult .subtle{
+  margin-top:2px;
+  margin-bottom:2px;
+  font-size:13px;
+  line-height:1.42;
+  color:var(--ink600);
+  max-width:62ch;
+}
+
+#recipeCreateOverlay .recipeQuickEditorBlock{
+  display:grid;
+  gap:7px;
+  padding:9px;
+  border-radius:20px;
+  background:linear-gradient(180deg, rgba(250,248,242,.94), rgba(255,255,255,.98));
+  border:1px solid rgba(31,42,36,.08);
+}
+
+#recipeCreateOverlay .recipeQuickEditorTitle{
+  font-size:15px;
+  line-height:1.1;
+  font-weight:900;
+  color:var(--g900);
+}
+
+#recipeCreateOverlay .recipeQuickEditorHint{
+  margin-top:3px;
+  font-size:11.5px;
+  line-height:1.34;
+  color:var(--ink500);
+}
+
+#recipeCreateOverlay .recipeQuickEditorBox{
+  padding:6px;
+  border-radius:16px;
+  background:rgba(255,255,255,.9);
+}
+
+#recipeCreateOverlay .recipeQuickEditorBox textarea{
+  width:100%;
+  min-height:112px;
+  margin:0;
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px solid rgba(31,42,36,.12);
+  background:#fff;
+  font-size:13px;
+  line-height:1.45;
+}
+
+#recipeCreateOverlay .recipeQuickEditorActions{
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0, 1fr));
+  gap:8px;
+}
+
+#recipeCreateOverlay .recipeQuickEditorActions .pillBtn{
+  width:100%;
+  min-width:0;
+  min-height:40px;
+  padding-inline:10px;
+  font-size:13px;
+  line-height:1.1;
+}
+
+#recipeCreateOverlay .recipeQuickEditorActions #btnRecipeQuickApply{
+  background:linear-gradient(180deg, #2f6e48 0%, #275c3c 100%);
+  color:#fff;
+  border-color:rgba(30,78,51,.24);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12);
+}
+
+#recipeCreateOverlay .recipeQuickEditorActions #btnRecipeQuickApply:hover{
+  filter:brightness(.98);
+}
+
+#recipeCreateOverlay .recipeQuickEditorActions #btnRecipeQuickPreview{
+  background:rgba(255,255,255,.96);
+  color:#22322a;
+  border-color:rgba(31,42,36,.12);
+}
+
+#recipeCreateOverlay .recipeQuickEditorActions #btnRecipeQuickClear{
+  background:rgba(246,243,236,.72);
+  color:#6e786f;
+  border-color:rgba(31,42,36,.08);
+  box-shadow:none;
+}
+
+#recipeCreateOverlay .recipeQuickPreview{
+  margin-top:0;
+}
+
+#recipeCreateOverlay .recipeQuickStatus{
+  min-height:0;
+  margin-top:4px;
+  color:var(--ink600);
+}
+
+#recipeCreateOverlay .recipeAssistCard--importResult .cmSceneNav{
+  margin-top:4px;
+  gap:10px;
+}
+
+#recipeCreateOverlay .recipeAssistCard--importResult .cmSceneNav .cmStepAction{
+  min-height:42px;
+  font-size:13px;
+}
+
+#recipeCreateOverlay [data-recipe-assist-actions="import"]{
+  margin-top:8px;
+}
+
+#recipeCreateOverlay [data-recipe-assist-actions="import"] .pillBtn{
+  min-height:44px;
+}
+
+
+/* ===== Recipe custom category color picker ===== */
+#recipeCreateOverlay .recipeCustomCategoryRow{ align-items:center; }
+#recipeCreateOverlay .recipeCustomColorWrap{ position:relative; display:flex; align-items:center; }
+#recipeCreateOverlay .recipeColorBubble{
+  width:42px; height:42px; padding:0; border-radius:999px; border:1px solid rgba(31,42,36,.10);
+  background:rgba(255,255,255,.92); box-shadow:0 8px 20px rgba(31,42,36,.08); display:grid; place-items:center; cursor:pointer;
+}
+#recipeCreateOverlay .recipeColorBubble__swatch{
+  width:24px; height:24px; border-radius:999px; background:var(--recipe-custom-color, #D7A27E); box-shadow:inset 0 1px 0 rgba(255,255,255,.22);
+}
+#recipeCreateOverlay .recipeColorPopover{
+  position:absolute; top:calc(100% + 8px); right:0; z-index:40; width:220px; padding:12px; border-radius:16px;
+  background:#fff; border:1px solid rgba(31,42,36,.08); box-shadow:0 18px 38px rgba(31,42,36,.14);
+}
+#recipeCreateOverlay .recipeColorPopover__title{ font-size:12px; font-weight:800; color:var(--ink700); margin-bottom:10px; }
+#recipeCreateOverlay .recipeColorPalette{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+#recipeCreateOverlay .recipeColorChip{
+  width:100%; aspect-ratio:1; border-radius:999px; border:2px solid transparent; background:var(--chip, #D7A27E); cursor:pointer; padding:0;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.25), 0 4px 12px rgba(31,42,36,.08);
+}
+#recipeCreateOverlay .recipeColorChip.is-active{ border-color:rgba(31,42,36,.72); }
+
+/* ===== Recipe → Ingredient conversion modal ===== */
+#recipeConvertOverlay{
+  position:fixed; inset:0; z-index:10030; background:rgba(19,22,20,.44); padding:18px; display:grid; place-items:center;
+}
+#recipeConvertOverlay.hidden{ display:none !important; }
+#recipeConvertOverlay .recipeConvertModal{
+  width:min(760px, calc(100vw - 24px)); max-height:calc(100vh - 24px); overflow:auto; border-radius:28px; padding:18px;
+  background:linear-gradient(180deg,#fcfaf5 0%, #f5efe3 100%); border:1px solid rgba(31,42,36,.08); box-shadow:0 24px 60px rgba(19,22,20,.24);
+}
+#recipeConvertOverlay .recipeConvertHead{ display:flex; align-items:flex-start; justify-content:space-between; gap:14px; margin-bottom:14px; }
+#recipeConvertOverlay .recipeConvertBody{ display:grid; gap:14px; }
+#recipeConvertOverlay .recipeConvertModeRow{ gap:10px; }
+#recipeConvertOverlay .recipeConvertModeCard{
+  flex:1 1 0; min-width:220px; display:flex; gap:10px; align-items:flex-start; padding:12px 14px; border-radius:18px;
+  background:rgba(255,255,255,.78); border:1px solid rgba(31,42,36,.08); cursor:pointer;
+}
+#recipeConvertOverlay .recipeConvertModeCard input{ margin-top:3px; }
+#recipeConvertOverlay .recipeConvertModeCard span{ display:grid; gap:4px; }
+#recipeConvertOverlay .recipeConvertModeCard small{ color:var(--ink500); line-height:1.25; }
+#recipeConvertOverlay .recipeConvertSummaryCard{
+  min-width:240px; border-radius:18px; padding:12px 14px; background:rgba(255,255,255,.78); border:1px solid rgba(31,42,36,.08); color:var(--ink700); display:grid; gap:6px;
+}
+#recipeConvertOverlay .recipeConvertPreview{ display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:10px; }
+#recipeConvertOverlay .recipeConvertPreview__kpi{
+  border-radius:18px; padding:12px 10px; background:rgba(255,255,255,.84); border:1px solid rgba(31,42,36,.08); display:grid; gap:4px; text-align:center;
+}
+#recipeConvertOverlay .recipeConvertPreview__kpi span{ font-size:11px; font-weight:800; text-transform:uppercase; color:var(--ink500); letter-spacing:.06em; }
+#recipeConvertOverlay .recipeConvertPreview__kpi b{ font-family:Georgia, "Times New Roman", serif; font-size:24px; line-height:1; color:var(--ink900); }
+#recipeConvertOverlay .recipeConvertPreview__kpi small{ color:var(--ink500); font-size:11px; }
+#recipeConvertOverlay .recipeConvertActions{ display:flex; justify-content:flex-end; gap:10px; margin-top:16px; }
+
+@media (max-width: 680px){
+  #recipeCreateOverlay .recipeColorPopover{ right:auto; left:0; }
+  #recipeConvertOverlay .recipeConvertPreview{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+}
+@media (max-width: 520px){
+  #recipeConvertOverlay{ padding:10px; }
+  #recipeConvertOverlay .recipeConvertModal{ width:calc(100vw - 20px); padding:14px; border-radius:22px; }
+  #recipeConvertOverlay .recipeConvertPreview{ grid-template-columns:1fr 1fr; gap:8px; }
+  #recipeConvertOverlay .recipeConvertActions{ flex-direction:column-reverse; }
+  #recipeConvertOverlay .recipeConvertActions .pillBtn{ width:100%; }
+}

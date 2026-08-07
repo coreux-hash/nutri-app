@@ -1,0 +1,18 @@
+/* === Phase 6 — Ingredient ratio compatibility patch === */
+/* Mobile stays in two columns as requested. No forced single-column fallback. */
+@media (max-width:579px){
+  #pageIngredients .grid{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:12px;
+    padding:0;
+    justify-items:stretch;
+    align-items:start;
+  }
+  #pageIngredients .card.libCardShell,
+  #pageIngredients .card.libCardShell.ingredient-card,
+  #pageIngredients .ingredient-card{
+    max-width:none;
+    width:100%;
+    min-width:0;
+  }
+}

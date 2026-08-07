@@ -1,0 +1,325 @@
+
+/* ===== Phase 2 — Débruiter les pills sans casser ===== */
+:root{
+  --pill-soft-bg: rgba(250,248,242,.82);
+  --pill-soft-bg-strong: rgba(250,248,242,.94);
+  --pill-soft-border: rgba(30,42,36,.08);
+  --pill-soft-text: var(--ink700);
+  --pill-soft-text-strong: var(--ink900);
+  --pill-soft-shadow: 0 1px 0 rgba(255,255,255,.55);
+}
+
+.pill,
+.pageHeadPill,
+.ingPill,
+#pageRecipes .badge,
+#pageRecipes .pillk,
+#pageRecipes .pillp,
+#pageRecipes .pillg,
+#pageRecipes .pilll{
+  box-shadow: var(--pill-soft-shadow);
+}
+
+.pill,
+.pageHeadPill{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--pill-soft-border);
+  background: var(--pill-soft-bg);
+  color: var(--pill-soft-text);
+  font-size: 12px;
+  line-height: 1.1;
+  font-weight: 800;
+}
+
+.pill b,
+.pageHeadPill b{
+  color: var(--pill-soft-text-strong);
+  font-weight: 900;
+}
+
+.pageHeadPill{
+  min-height: 30px;
+  padding-inline: 11px;
+  background: rgba(246,242,233,.88);
+}
+
+.badgeRow,
+.ingPills{
+  align-items: center;
+  gap: 6px;
+}
+
+.ingPills{
+  margin: 4px 0 8px;
+}
+
+.ingPill{
+  min-height: 22px;
+  padding: 3px 8px;
+  border-width: 1px;
+  border-color: var(--pill-soft-border);
+  font-size: 11px;
+  line-height: 1.1;
+  font-weight: 800;
+  letter-spacing: .01em;
+}
+
+.ingPill.info{
+  background: rgba(238,245,255,.74);
+  color: #33558f;
+}
+
+.ingPill.ok{
+  background: rgba(236,248,231,.78);
+  color: #356326;
+}
+
+.ingPill.k{
+  background: rgba(255,242,214,.80);
+  color: #8a5b08;
+}
+
+#pageRecipes .badgeRow{
+  gap: 6px;
+  margin: 6px 0 8px;
+}
+
+#pageRecipes .badge{
+  padding: 4px 8px;
+  min-height: 24px;
+  border-color: rgba(30,42,36,.10);
+  background: rgba(250,248,242,.74);
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--ink700);
+}
+
+#pageRecipes .badge .unit{
+  color: var(--ink500);
+  font-weight: 800;
+}
+
+#pageRecipes .pills{
+  gap: 6px;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+#pageRecipes .pillk,
+#pageRecipes .pillp,
+#pageRecipes .pillg,
+#pageRecipes .pilll{
+  min-width: 70px;
+  padding: 5px 9px;
+  border-width: 1px;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+#pageRecipes .pillk small,
+#pageRecipes .pillp small,
+#pageRecipes .pillg small,
+#pageRecipes .pilll small{
+  font-size: 9px;
+  letter-spacing: .02em;
+}
+
+#pageRecipes .metaRow{
+  row-gap: 8px;
+}
+
+#pageRecipes .metaRow .pill{
+  padding: 5px 10px;
+  background: rgba(250,248,242,.78);
+  border-color: rgba(30,42,36,.08);
+}
+
+#pageRecipes #results .pill{
+  padding: 5px 10px;
+}
+
+#pageRecipes #results .topRow,
+#pageRecipes #results .metaRow,
+#pageRecipes .rowCardHead{
+  align-items: flex-start;
+}
+
+.pillBtn{
+  min-height: 38px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 850;
+  box-shadow: none;
+  margin-top : 12px
+}
+
+.bigTitle--withAction,
+.createBody .bigTitle,
+.modalBody .bigTitle,
+#createRecipeManualPanel .bigTitle,
+#recipePanelManual .bigTitle,
+#manualPanel .bigTitle{
+  row-gap: 8px;
+}
+
+#createRecipeManualPanel .bigTitle + .row,
+#recipePanelManual .bigTitle + .row,
+#manualPanel .bigTitle + .row{
+  margin-top: 10px;
+}
+
+@media (max-width: 720px){
+  .pageHeadPill{
+    margin-top: 4px;
+  }
+
+  #pageRecipes .pills{
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  #pageRecipes .topRow,
+  #pageRecipes .metaRow{
+    gap: 8px;
+  }
+}
+
+@media (max-width: 560px){
+  .pill,
+  .pageHeadPill{
+    min-height: 26px;
+    padding: 4px 9px;
+    font-size: 11px;
+  }
+
+  .ingPills,
+  .badgeRow,
+  #pageRecipes .pills{
+    gap: 5px;
+  }
+
+  #pageRecipes .badge{
+    padding: 4px 7px;
+    font-size: 10px;
+  }
+
+  #pageRecipes .pillk,
+  #pageRecipes .pillp,
+  #pageRecipes .pillg,
+  #pageRecipes .pilll{
+    min-width: 62px;
+    padding: 5px 8px;
+    font-size: 11px;
+  }
+
+  .pillBtn{
+    min-height: 36px;
+    padding: 8px 11px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 420px){
+  .badgeRow,
+  .ingPills,
+  #pageRecipes .pills{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  #pageRecipes .badge{
+    max-width: 100%;
+  }
+}
+
+
+/* === Scenario results use recipe detail blocks + ingredient macro grid === */
+#pageRecipes #results.scenarioResults{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  margin-top:14px;
+}
+
+#pageRecipes #results.scenarioResults .scenarioResultsBlock{
+  margin-top:0;
+}
+
+#pageRecipes #results.scenarioResults .scenarioMacroGrid{
+  margin-top:0;
+}
+
+#pageRecipes #results.scenarioResults .ingMacroCell{
+  min-height:74px;
+}
+
+#pageRecipes #results.scenarioResults .ingMacroVal{
+  font-size:20px;
+}
+
+#pageRecipes #results.scenarioResults .ingMacroLbl{
+  line-height:1.15;
+}
+
+#pageRecipes #results:not(.scenarioResults){
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+#pageRecipes #results:not(.scenarioResults) .row{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  margin-bottom:0;
+}
+
+#pageRecipes #results:not(.scenarioResults) .pill{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  width:100%;
+  min-height:40px;
+  padding:8px 12px;
+}
+
+#pageRecipes #results:not(.scenarioResults) .pill > span[id]{
+  margin-left:auto;
+}
+
+/* === Phase C — scénario recette : quiet pill calibration === */
+#pageRecipes .scenarioPrepTime.pill,
+#pageRecipes .scenarioExportBtn,
+#pageRecipes .scenarioPartsReadout{
+  box-shadow: var(--pill-soft-shadow);
+}
+
+#pageRecipes .scenarioPrepTime.pill{
+  min-height: 32px;
+  padding: 5px 10px;
+  border-color: rgba(30,42,36,.08);
+  background: linear-gradient(180deg, rgba(255,255,255,.28), rgba(255,255,255,0) 26%), rgba(250,248,242,.80);
+  color: var(--ink700);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+#pageRecipes .scenarioPrepTime.pill b{
+  color: var(--ink900);
+}
+
+#pageRecipes .scenarioExportBtn{
+  background: linear-gradient(180deg, rgba(255,255,255,.30), rgba(255,255,255,0) 28%), rgba(250,248,242,.82);
+  color: var(--ink800);
+}
+
+#pageRecipes .scenarioPartsReadout{
+  box-shadow: none;
+}

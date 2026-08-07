@@ -1,0 +1,16 @@
+{
+  "phase": "4.3-coupe1",
+  "base": "4.2.2",
+  "changes": [
+    "ui/recipes/02-safe-ui-modules.js no longer exports NutriUI or Recipe*Module globals",
+    "safe modules moved under window.NutriApp.ui.safe.*",
+    "core/99-layer-registry.js now registers app.ui.safe from NutriApp.ui.safe"
+  ],
+  "expected_console": {
+    "NutriUI": "undefined",
+    "RecipeListViewModule": "undefined",
+    "RecipeScenarioViewModule": "undefined",
+    "RecipeEditorModalModule": "undefined",
+    "NutriApp.ui.safe.recipeList": "function-object"
+  }
+}

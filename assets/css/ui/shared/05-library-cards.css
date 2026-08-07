@@ -1,0 +1,225 @@
+
+/* === Phase 6 — Shared library cards shell (ingredients + recipes) === */
+#pageIngredients .libCardShell,
+#pageRecipes .libCardShell{
+  position: relative;
+  border-radius: 26px;
+  border: 1px solid rgba(31,42,36,.10);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.62), rgba(255,255,255,.18) 28%),
+    var(--p100);
+  box-shadow: var(--shadowSoft);
+  overflow: visible;
+  isolation: isolate;
+}
+
+#pageIngredients .libCardTop,
+#pageRecipes .libCardTop{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  padding:12px 12px 0;
+  position:relative;
+  z-index:2;
+}
+
+#pageIngredients .libCardCategoryRow,
+#pageRecipes .libCardCategoryRow{
+  min-width:0;
+  flex:1 1 auto;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+#pageIngredients .libCardCategoryRow .badge,
+#pageRecipes .libCardCategoryRow .catPill{
+  min-width:0;
+  max-width:100%;
+  display:inline-flex;
+  align-items:center;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+#pageIngredients .libCardMedia,
+#pageRecipes .libCardMedia{
+  position:relative;
+  margin:10px 12px 0;
+  border-radius:22px;
+  overflow:hidden;
+  background: linear-gradient(180deg, rgba(250,248,242,.94), rgba(238,233,222,.92));
+  border:1px solid rgba(31,42,36,.08);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.68);
+}
+
+#pageIngredients .libCardBody,
+#pageRecipes .libCardBody{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  padding:14px 14px 14px;
+  min-height:0;
+}
+
+#pageIngredients .libCardIdentity,
+#pageRecipes .libCardIdentity{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  min-width:0;
+}
+
+#pageIngredients .libCardMeta,
+#pageRecipes .libCardMeta{
+  min-width:0;
+}
+
+#pageIngredients .libCardStats,
+#pageRecipes .libCardStats{
+  display:grid;
+  grid-template-columns:repeat(4, minmax(0,1fr));
+  gap:6px;
+  min-width:0;
+  margin-top:auto;
+}
+
+#pageIngredients .libCardStats .kpi,
+#pageRecipes .libCardStats .kpi{
+  min-width:0;
+  padding:8px 6px;
+  border-radius:16px;
+  border:1px solid rgba(31,42,36,.10);
+  background:rgba(255,255,255,.64);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.72);
+}
+
+#pageIngredients .libCardStats .kpi:first-child,
+#pageRecipes .libCardStats .kpi:first-child{
+  background:rgba(245,227,180,.42);
+  border-color:rgba(167,120,32,.18);
+}
+
+#pageIngredients .libCardStats .kpiVal,
+#pageRecipes .libCardStats .kpiVal{
+  font-size:18px;
+  line-height:1;
+  font-weight:950;
+}
+
+#pageIngredients .libCardStats .kpiLbl,
+#pageRecipes .libCardStats .kpiLbl{
+  margin-top:4px;
+  font-size:10px;
+  line-height:1;
+  letter-spacing:.03em;
+  text-transform:uppercase;
+  color:var(--ink700);
+}
+
+#pageIngredients .libCardStatsCaption,
+#pageRecipes .libCardStatsCaption{
+  font-size:11px;
+  line-height:1.2;
+  color:var(--ink500);
+  font-weight:800;
+  letter-spacing:.01em;
+}
+
+#pageIngredients .libCardActions,
+#pageRecipes .libCardActions{
+  position:relative;
+  flex:0 0 auto;
+}
+
+#pageIngredients .libCardShell .kebabBtn,
+#pageRecipes .libCardShell .kebabBtn{
+  display:grid;
+  place-items:center;
+  width:34px;
+  height:34px;
+  border-radius:14px;
+  border:1px solid rgba(31,42,36,.10);
+  background:rgba(255,255,255,.84);
+  box-shadow:var(--shadowSoft);
+  backdrop-filter: blur(10px);
+}
+
+#pageIngredients .libCardShell .kebabBtn:hover,
+#pageRecipes .libCardShell .kebabBtn:hover{
+  background:rgba(255,255,255,.96);
+}
+
+#pageIngredients .libCardShell .kebabMenu,
+#pageRecipes .libCardShell .kebabMenu{
+  border-radius:18px;
+}
+
+@media (max-width: 860px){
+  #pageIngredients .libCardTop,
+  #pageRecipes .libCardTop{
+    padding:10px 10px 0;
+  }
+
+  #pageIngredients .libCardMedia,
+  #pageRecipes .libCardMedia{
+    margin:8px 10px 0;
+    border-radius:20px;
+  }
+
+  #pageIngredients .libCardBody,
+  #pageRecipes .libCardBody{
+    padding:12px 12px 12px;
+    gap:9px;
+  }
+
+  #pageIngredients .libCardStats .kpi,
+  #pageRecipes .libCardStats .kpi{
+    border-radius:14px;
+    padding:7px 5px;
+  }
+
+  #pageIngredients .libCardStats .kpiVal,
+  #pageRecipes .libCardStats .kpiVal{
+    font-size:16px;
+  }
+}
+
+
+#pageIngredients .usageStars{
+  flex:0 0 auto;
+  display:inline-flex;
+  align-items:center;
+  gap:2px;
+  min-height:30px;
+  padding:0 2px;
+  color:rgba(31,42,36,.24);
+}
+
+#pageIngredients .usageStar{
+  display:inline-block;
+  font-size:12px;
+  line-height:1;
+  transform:translateY(-.5px);
+}
+
+#pageIngredients .usageStar.is-on{
+  color:rgba(31,42,36,.78);
+}
+
+#fltUsageWrap select{
+  font-weight:800;
+}
+
+@media (max-width: 640px){
+  #pageIngredients .usageStars{
+    min-height:28px;
+    gap:1px;
+  }
+
+  #pageIngredients .usageStar{
+    font-size:11px;
+  }
+}

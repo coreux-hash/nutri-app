@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>NutriApp</title>
+<meta content="#1e4e33" name="theme-color"/>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<meta content="default" name="apple-mobile-web-app-status-bar-style"/>
+<meta content="NutriApp" name="apple-mobile-web-app-title"/>
+<link href="icons/icon-192.png" rel="apple-touch-icon" sizes="192x192"/>
+<link href="assets/css/core/01-core.css" rel="stylesheet"/>
+<link href="assets/css/ui/shared/05-library-cards.css" rel="stylesheet"/>
+<link href="assets/css/ui/recipes/01-recipes-page-scoped.css" rel="stylesheet"/>
+<script src="https://unpkg.com/tesseract.js@5.1.0/dist/tesseract.min.js"></script>
+<link href="assets/css/ui/recipes/02-recipe-editor-scoped.css" rel="stylesheet"/>
+<link href="assets/css/ui/recipes/03-recipe-modal-viewport-fix.css" rel="stylesheet"/>
+<link href="assets/css/ui/ingredients/01-mobile-create-modal-no-xscroll-v2.css" rel="stylesheet"/>
+<link href="assets/css/ui/shared/01-textarea-clear-and-resize.css" rel="stylesheet"/>
+<link href="assets/css/ui/shared/02-unified-info-dots.css" rel="stylesheet"/>
+<link href="assets/css/ui/shared/03-unify-modal-ui-patch.css" rel="stylesheet"/>
+<link href="assets/css/ui/recipes/04-pills-quiet-patch.css" rel="stylesheet"/>
+<link href="assets/css/ui/recipes/05-mobile-vertical-recipe-editor.css" rel="stylesheet"/>
+<link href="assets/css/ui/shared/04-modal-form-micro-hierarchy.css" rel="stylesheet"/>
+<link href="assets/css/ui/ingredients/02-mobile-two-cols-ingredients.css" rel="stylesheet"/>
+<link href="assets/css/ui/ingredients/03-mobile-cards-fixed-proportions.css" rel="stylesheet"/>
+<link href="assets/css/ui/ingredients/04-ingredient-cards-thumb-title-ingpills.css" rel="stylesheet"/>
+<link href="assets/css/ui/menus/02-menus-studio.css" rel="stylesheet"/>
+<link href="assets/css/ui/shared/06-unified-kpi-and-tokens.css" rel="stylesheet"/>
+<link href="assets/css/ui/shared/07-card-requalified.css" rel="stylesheet"/>
+<!-- Variante Top Trumps active. Remplacer 03 par 01 ou 02 pour tester une autre direction. -->
+<link href="assets/css/ui/shared/08-card-skin-04-fenetre-index.css" rel="stylesheet"/>
+<link href="assets/css/ui/shared/09-responsive-cousin-fix.css" rel="stylesheet"/>
+</head>
+<body>
+<div class="app app--nutri">
+<div class="top">
+<div class="topSticky">
+<div class="topbar">
+<div class="brand">
+<div class="logo">🥗</div>
+<div>NutriApp</div>
+</div>
+<div class="actions">
+<button class="iconbtn" title="Menu">⋯</button>
+</div>
+</div>
+<div class="hero">
+<div class="title" id="heroPageTitle">Mes Ingrédients</div>
+<div class="underline"></div>
+</div>
+</div>
+<div class="content appLayout">
+<div aria-hidden="true" class="drawerOverlay hidden" id="drawerOverlay"></div>
+<aside aria-label="Menu latéral (preview)" class="drawer">
+<div class="drawerHead">
+<div class="avatar">ND</div>
+<div class="meta">
+<div class="name">NutriApp</div>
+<div class="sub">Mode Avancé</div>
+</div>
+</div>
+<nav class="nav">
+<a class="active" data-page="ingredients" href="#ingredients"><span class="dot">🥕</span> Ingrédients</a>
+<a data-page="recipes" href="#recipes"><span class="dot">📒</span> Recettes</a>
+<a data-page="menus" href="#menus"><span class="dot">🍽️</span> Menus</a>
+<a href="#"><span class="dot">📊</span> Suivi nutritionnel</a>
+<a href="#"><span class="dot">⭐</span> Favoris</a>
+<a data-page="system" href="#system"><span class="dot">⇅</span> Système</a>
+<a href="#"><span class="dot">📈</span> Statistiques</a>
+<a href="#"><span class="dot">⚙️</span> Paramètres</a>
+<a href="#"><span class="dot">?</span> Aide / FAQ</a>
+</nav>
+<div class="drawerFoot">
+<span class="pill"><span class="battery"><span class="fill"></span></span> 13 jours</span>
+<span class="muted">85%</span>
+</div>
+</aside><main class="appMain" id="appMain"><div class="pageStack"><section aria-label="Bibliothèque ingrédients" class="page pagePanel active pageSpace pageSpace--ingredients" id="pageIngredients">
+<div class="pageHead">
+<div class="pageHeadTitleBlock">
+<h2>Bibliothèque Ingrédients</h2>
+<div class="pageHeadMeta">
+<span class="pageHeadPill">Ingrédients: <b id="ingCount">—</b></span>
+</div>
+</div>
+<div class="pageHeadActions">
+<button class="btn ghost hidden" id="btnReturnToRecipeFromIngredients" type="button">← Retour recette</button>
+<button class="btn btnGold btnPageFilter" id="btnOpenFilters"><span aria-hidden="true" class="filterChevron"></span><strong>Filtres</strong></button>
+</div>
+</div>
+<div class="pageBody pageBody--library"><div class="grid libraryGrid" id="ingGrid">
+<!-- (vide) les cartes sont générées par la CreateModal -->
+</div></div>
+</section><section aria-label="Bibliothèque recettes" class="page pagePanel pageSpace pageSpace--recipes" id="pageRecipes">
+<div class="pageHead">
+<div class="pageHeadTitleBlock">
+<h2>Bibliothèque Recettes</h2>
+<div class="pageHeadMeta">
+<span class="pageHeadPill">Recettes: <b id="recipeCount">—</b></span>
+</div>
+</div>
+<div class="pageHeadActions">
+<button class="btn btnGold btnPageFilter" id="btnOpenFiltersRecipes"><span aria-hidden="true" class="filterChevron"></span><strong>Filtres</strong></button>
+</div>
+</div><div class="pageBody pageBody--recipes"><section class="view show" id="viewList">
+<div aria-label="Liste recettes" class="listWrap" id="recipeList"></div>
+<div class="muted" id="recipeEmpty" style="display:none;margin-top:10px;">
+              Aucune recette en base. Clique ⇪ pour injecter des recettes démo.
+            </div>
+</section><section class="view" id="viewRecipe">
+<div class="recipeViewTop">
+<div class="recipeHeader">
+<div class="backRow">
+<button class="btn ghost" id="btnBackToList" type="button">← Recettes</button>
+<span class="scenarioFlag">Scénario du jour (non enregistré)</span>
+</div>
+<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end;">
+<span class="pill">Portions: <b id="partsValue">1</b></span>
+<button class="btn" id="btnPartsMinus" type="button">−</button>
+<button class="btn" id="btnPartsPlus" type="button">+</button>
+<button class="btn expert-only" id="btnRecipePdf" type="button">Exporter PDF</button>
+</div>
+</div>
+<!-- Nom readonly (sans input / sans recherche / sans poids cuit) -->
+<div class="recipeLead">
+<div class="recipeLeadTitle" id="recipeTitle">—</div>
+<div class="recipeLeadSub">Mode Ajuster : les portions recalculent les <b>grammages</b>, les macros des ingrédients et les totaux, sans modifier la recette sauvegardée.</div>
+</div>
+</div>
+<div class="recipeViewBody">
+<div class="prepCard">
+<div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap;">
+<div>
+<div class="recipeSectionTitle">Préparation</div>
+<div class="recipeSectionSub">Lecture seule.</div>
+</div>
+<span class="pill">Temps: <b id="prepTime">—</b></span>
+</div>
+<textarea id="recipePrep" placeholder="Préparation…" readonly=""></textarea>
+</div>
+<!-- Rowcards ingrédients (maintenues) -->
+<div aria-label="lignes recette" class="rowcards" id="recipeBody"></div>
+<!-- Résultats (ID conservé) -->
+<div id="results" style="margin-top:14px;">
+<div class="row">
+<div class="pill"><b>kcal/portion</b> <span id="kcalPerPortion">—</span></div>
+<div class="pill"><b>P/portion</b> <span id="pPerPortion">—</span> g</div>
+<div class="pill"><b>G/portion</b> <span id="gPerPortion">—</span> g</div>
+<div class="pill"><b>L/portion</b> <span id="lPerPortion">—</span> g</div>
+</div>
+<div class="row" style="margin-bottom:0;">
+<div class="pill"><b>Total</b> <span id="totKcal">—</span> kcal</div>
+<div class="pill"><b>P</b> <span id="totP">—</span> g</div>
+<div class="pill"><b>G</b> <span id="totG">—</span> g</div>
+<div class="pill"><b>L</b> <span id="totL">—</span> g</div>
+</div>
+</div>
+<div class="muted" id="recipeStatus" style="margin-top:12px;"></div>
+</div>
+</section></div>
+
+
+</section><section aria-label="Menus" class="page pagePanel pageSpace pageSpace--menus" id="pageMenus">
+<div class="pageHead menuPageHead">
+<div class="pageHeadTitleBlock">
+<h2>Menus</h2>
+<div class="pageHeadMeta">
+<span class="pageHeadPill">Menus: <b id="menuCount">0</b></span>
+<span class="pageHeadHint">Bibliothèque d'abord, composition ensuite. Même langage que Recettes, sans split flottant.</span>
+</div>
+</div>
+<div class="pageHeadActions">
+<button class="btn ghost" id="btnMenuJumpStudio" type="button">Nouveau menu</button>
+<button class="btn btnGold btnPageFilter" id="btnOpenFiltersMenus" type="button"><span aria-hidden="true" class="filterChevron"></span><strong>Filtres</strong></button>
+</div>
+</div>
+<div class="pageBody pageBody--menus"><div class="menusShell" id="menusShell">
+<section class="menusView menusView--library is-active" data-menu-view="library">
+<div class="menusHeroCard">
+<div>
+<div class="menusEyebrow">Explorer</div>
+<h3>Des cartes Menu qui ouvrent l'appétit</h3>
+<p>Chaque carte doit déjà raconter un rythme de journée. Le détail vient après, dans un vrai écran de composition.</p>
+</div>
+<div class="menusSearchBar">
+<span class="menusSearchIcon">🔎</span>
+<input id="menuSearchInput" placeholder="Rechercher un menu, une ambiance, une journée…" type="search"/>
+<button class="btn" id="btnMenuStart" type="button">Composer</button>
+</div>
+<div class="menusToneRail" id="menuToneRail">
+<button class="menuTone is-active" data-menu-search="">
+<span>Tous</span>
+</button>
+<button class="menuTone" data-menu-search="sport protéiné express">
+<span>Sport</span>
+</button>
+<button class="menuTone" data-menu-search="famille confort partage">
+<span>Famille</span>
+</button>
+<button class="menuTone" data-menu-search="batch quotidien rapide">
+<span>Batch</span>
+</button>
+<button class="menuTone" data-menu-search="léger végétal couleur">
+<span>Léger</span>
+</button>
+</div>
+</div>
+<div class="menusLibraryGrid" id="menusLibraryGrid">
+<article class="menuLibraryCard menuLibraryCard--draft" data-menu-search="nouveau brouillon menu" id="menuDraftCard">
+<div class="menuLibraryCover menuLibraryCover--draft">
+<div class="menuLibraryTopline">
+<span class="menuLibraryTag">Brouillon</span>
+<span class="menuLibraryMeta" id="menuDraftMeta">À composer</span>
+</div>
+<div class="menuLibraryTitleWrap">
+<h4 id="menuDraftTitle">Commencer un menu</h4>
+<p id="menuDraftDescription">Une journée simple, claire, structurée par repas. Ouvre le composer puis reviens à la bibliothèque.</p>
+</div>
+</div>
+<div class="menuLibraryBody">
+<div class="menuLibraryMealRail" id="menuDraftMealRail">
+<span>Matin</span><span>Midi</span><span>Soir</span><span>Snack</span>
+</div>
+<div class="menuLibraryListPreview" id="menuDraftPreviewList">
+<div>Le résumé de ton brouillon apparaîtra ici après enregistrement local.</div>
+</div>
+<div class="menuLibraryKpis" id="menuDraftKpis">
+<div><b id="menuDraftMeals">0</b><span>Repas</span></div>
+<div><b id="menuDraftRecipes">0</b><span>Recettes</span></div>
+<div><b id="menuDraftIngredients">0</b><span>Ingrédients</span></div>
+<div><b id="menuDraftNotes">0</b><span>Notes</span></div>
+</div>
+<div class="menuLibraryActions">
+<button class="btn" data-menu-open-editor="blank" type="button">Continuer</button>
+<button class="btn ghost" data-menu-open-editor="blank" type="button">Nouveau</button>
+</div>
+</div>
+</article>
+<article class="menuLibraryCard" data-breakfast="Porridge whey|Fruit frais" data-dinner="Wrap chaud poulet|Soupe minute" data-lunch="Chicken rice bowl|Crudités sauce légère" data-menu-category="Sport" data-menu-note="tenir la séance sans lourdeur" data-menu-search="journée protéinée sport rapide batch" data-menu-tags="protéiné, express, batch" data-menu-title="Journée protéinée souple" data-snack="Skyr + noix" id="menuShowcaseSport">
+<div class="menuLibraryCover menuLibraryCover--sport">
+<div class="menuLibraryTopline">
+<span class="menuLibraryTag menuLibraryTag--solid">Inspiration</span>
+<span class="menuLibraryMeta">3 repas + snack</span>
+</div>
+<div class="menuLibraryTitleWrap">
+<h4>Journée protéinée souple</h4>
+<p>Porridge rapide, bowl midi, dîner chaud, snack simple. Une carte dense mais lisible.</p>
+</div>
+</div>
+<div class="menuLibraryBody">
+<div class="menuLibraryMealRail">
+<span>Matin</span><span>Midi</span><span>Soir</span><span>Snack</span>
+</div>
+<div class="menuLibraryListPreview">
+<div>Porridge whey / fruits</div>
+<div>Chicken rice bowl</div>
+<div>Wrap chaud + crudités</div>
+</div>
+<div class="menuLibraryKpis">
+<div><b>2240</b><span>Kcal</span></div>
+<div><b>162</b><span>P</span></div>
+<div><b>188</b><span>G</span></div>
+<div><b>72</b><span>L</span></div>
+</div>
+<div class="menuLibraryActions">
+<button class="btn" data-menu-open-editor="seed" type="button">Ouvrir</button>
+<button class="btn ghost" data-menu-open-editor="seed-copy" type="button">Dupliquer l'idée</button>
+</div>
+</div>
+</article>
+<article class="menuLibraryCard" data-breakfast="Pain perdu léger|Compote chaude" data-dinner="Gratin simple|Salade croquante" data-lunch="Plat central familial|Légume partagé" data-menu-category="Famille" data-menu-note="faire simple sans perdre le plaisir" data-menu-search="famille confort partage plats centraux" data-menu-tags="famille, confort, simple" data-menu-title="Confort famille sans bruit" data-snack="Yaourt / fruit" id="menuShowcaseFamily">
+<div class="menuLibraryCover menuLibraryCover--family">
+<div class="menuLibraryTopline">
+<span class="menuLibraryTag menuLibraryTag--solid">Inspiration</span>
+<span class="menuLibraryMeta">3 repas + option snack</span>
+</div>
+<div class="menuLibraryTitleWrap">
+<h4>Confort famille sans bruit</h4>
+<p>Un menu qui rassure, partageable, avec variations légères sans refaire toute la cuisine.</p>
+</div>
+</div>
+<div class="menuLibraryBody">
+<div class="menuLibraryMealRail">
+<span>Matin</span><span>Midi</span><span>Soir</span>
+</div>
+<div class="menuLibraryListPreview">
+<div>Pain perdu léger / compote</div>
+<div>Plat central familial</div>
+<div>Gratin simple + salade</div>
+</div>
+<div class="menuLibraryKpis">
+<div><b>2410</b><span>Kcal</span></div>
+<div><b>118</b><span>P</span></div>
+<div><b>236</b><span>G</span></div>
+<div><b>86</b><span>L</span></div>
+</div>
+<div class="menuLibraryActions">
+<button class="btn" data-menu-open-editor="seed" type="button">Ouvrir</button>
+<button class="btn ghost" data-menu-open-editor="seed-copy" type="button">Dupliquer l'idée</button>
+</div>
+</div>
+</article>
+</div>
+<div class="menusSearchEmpty" hidden="" id="menusSearchEmpty">
+<h4>Aucun menu visible</h4>
+<p>Essaie un autre mot-clé ou repars d'un nouveau brouillon.</p>
+<button class="btn" data-menu-open-editor="blank" type="button">Créer un menu</button>
+</div>
+</section>
+<section class="menusView menusView--editor" data-menu-view="editor">
+<div class="menusEditorTop">
+<button class="btn ghost" id="btnMenusBackToLibrary" type="button">← Bibliothèque Menus</button>
+<div class="menusEditorStatus" id="menuEditorStatus">Composer d'abord. La bibliothèque récupère ensuite ton brouillon local.</div>
+<div class="menusEditorActions">
+<button class="btn btnGold" id="btnSaveMeal" type="button">Enregistrer</button>
+<button class="btn ghost" id="btnMealDuplicate" type="button">Dupliquer</button>
+<button class="btn ghost" id="btnMealReset" type="button">Vider</button>
+</div>
+</div>
+<div class="menusEditorStack">
+<section class="menuEditorCard menuEditorCard--meta">
+<div class="menuEditorCardHead">
+<div>
+<div class="menusEyebrow">Détail / composition</div>
+<h3>Construis ton menu</h3>
+</div>
+</div>
+<div class="menuComposerHeader">
+<label class="menuField menuField--name">
+<span>Nom du menu</span>
+<input id="mealName" placeholder="ex: Journée padel / Batch malin / Confort famille" type="text"/>
+</label>
+<div class="menuMetaGrid">
+<label class="menuField">
+<span>Catégorie</span>
+<select id="mealCategory">
+<option value="">Choisir</option>
+<option>Quotidien</option>
+<option>Sport</option>
+<option>Batch</option>
+<option>Famille</option>
+<option>Léger</option>
+</select>
+</label>
+<label class="menuField">
+<span>Tags</span>
+<input id="mealTags" placeholder="ex: protéiné, express, midi froid" type="text"/>
+</label>
+<label class="menuField">
+<span>Objectif</span>
+<input id="mealNote" placeholder="ex: tenir jusqu'au match, journée légère, grosse faim" type="text"/>
+</label>
+</div>
+</div>
+</section>
+<section class="menuEditorCard menuEditorCard--source">
+<div class="menuSectionTop">
+<h4>Puise dans la bibliothèque</h4>
+<span>Ajoute une recette ou un ingrédient réel au repas actif. Les notes restent libres et explicites.</span>
+</div>
+<div class="menuSourceToolbar">
+<div aria-label="Type de source" class="menuSourceKinds" role="tablist">
+<button aria-selected="true" class="menuSourceKind is-active" data-menu-source-kind="recipe" role="tab" type="button">Recettes</button>
+<button aria-selected="false" class="menuSourceKind" data-menu-source-kind="ingredient" role="tab" type="button">Ingrédients</button>
+<button aria-selected="false" class="menuSourceKind" data-menu-source-kind="note" role="tab" type="button">Note libre</button>
+</div>
+<label class="menuSourceSearchField">
+<input id="menuSourceSearch" placeholder="Rechercher dans la bibliothèque active…" type="search"/>
+</label>
+</div>
+<div hidden="" class="menuSourceNoteRow" id="menuSourceNoteRow">
+<input id="menuQuickNoteText" placeholder="ex: sauce à part, cuisson minute, option enfant" type="text"/>
+<button class="btn" id="btnAddMealNote" type="button">Ajouter la note</button>
+</div>
+<div class="menuSourceResults" id="menuSourceResults"></div>
+</section>
+<section class="menuEditorCard menuEditorCard--canvas">
+<div aria-label="Repas du menu" class="menuSceneTabs" role="tablist">
+<button aria-selected="true" class="menuSceneTab is-active" data-menu-lane="breakfast" role="tab" type="button"><span>☀️</span><b>Matin</b><small>mise en route</small></button>
+<button aria-selected="false" class="menuSceneTab" data-menu-lane="lunch" role="tab" type="button"><span>🍽️</span><b>Midi</b><small>bloc central</small></button>
+<button aria-selected="false" class="menuSceneTab" data-menu-lane="dinner" role="tab" type="button"><span>🌙</span><b>Soir</b><small>atterrissage</small></button>
+<button aria-selected="false" class="menuSceneTab" data-menu-lane="snack" role="tab" type="button"><span>⚡</span><b>Snack</b><small>appoint</small></button>
+</div>
+<div class="menuCanvasCard">
+<div class="menuCanvasTop">
+<div>
+<h4>Lignes du menu</h4>
+<p>Un seul repas actif à la fois. Tu composes sans dispersion, puis tu reviens à la bibliothèque.</p>
+</div>
+<div class="menuCanvasActions">
+<button class="btn" id="btnAddMealRow" type="button">Depuis bibliothèque</button>
+<button class="btn ghost" id="btnCalcMeal" type="button">Résumé</button>
+</div>
+</div>
+<div class="menuLaneStack" id="mealBody">
+<section class="menuLane is-active" data-lane="breakfast">
+<div class="menuLaneHead">
+<div>
+<h5>Matin</h5>
+<p>Démarrage, satiété, énergie propre.</p>
+</div>
+<span class="menuLaneCount">0</span>
+</div>
+<div class="menuLaneItems"></div>
+</section>
+<section class="menuLane" data-lane="lunch">
+<div class="menuLaneHead">
+<div>
+<h5>Midi</h5>
+<p>Le noyau du menu, plus dense si besoin.</p>
+</div>
+<span class="menuLaneCount">0</span>
+</div>
+<div class="menuLaneItems"></div>
+</section>
+<section class="menuLane" data-lane="dinner">
+<div class="menuLaneHead">
+<div>
+<h5>Soir</h5>
+<p>Chaud, simple, récupération ou confort.</p>
+</div>
+<span class="menuLaneCount">0</span>
+</div>
+<div class="menuLaneItems"></div>
+</section>
+<section class="menuLane" data-lane="snack">
+<div class="menuLaneHead">
+<div>
+<h5>Snack</h5>
+<p>Complément, pré-effort ou encas secours.</p>
+</div>
+<span class="menuLaneCount">0</span>
+</div>
+<div class="menuLaneItems"></div>
+</section>
+</div>
+</div>
+</section>
+<div class="menuBottomGrid">
+<section class="menuNotesCard">
+<div class="menuSectionTop">
+<h4>Préparation / note libre</h4>
+<span>Ordre, batch, astuces, variantes</span>
+</div>
+<textarea id="mealPrep" placeholder="ex: cuire le riz la veille, garder la sauce à part, version légère pour le soir"></textarea>
+</section>
+<section class="menuSummaryCard" id="mealResults">
+<div class="menuSectionTop">
+<h4>Résumé du menu</h4>
+<span>État réel de la composition et des liens avec la bibliothèque</span>
+</div>
+<div class="menuNutritionGrid menuCompositionGrid">
+<div class="menuNutriBox"><b id="mealSummaryMeals">0</b><span>Repas</span></div>
+<div class="menuNutriBox"><b id="mealSummaryRecipes">0</b><span>Recettes</span></div>
+<div class="menuNutriBox"><b id="mealSummaryIngredients">0</b><span>Ingrédients</span></div>
+<div class="menuNutriBox"><b id="mealSummaryNotes">0</b><span>Notes</span></div>
+</div>
+<div class="menuSummaryNote" id="mealSummaryNote">Aucune ligne pour l'instant. Ajoute des éléments réels depuis la bibliothèque ou des notes libres.</div>
+</section>
+</div>
+</div>
+</section>
+</div></div>
+<template id="menuLineItemTemplate">
+<article class="menuLineItem">
+<div class="menuLineAccent"></div>
+<div class="menuLineMain">
+<div class="menuLineType">Recette</div>
+<div class="menuLineName">Nouvel élément</div>
+<div class="menuLineMeta">Source à préciser depuis la bibliothèque ou note libre</div>
+</div>
+<div class="menuLineActions">
+<button class="menuLineBtn" data-line-action="duplicate" type="button">Dupliquer</button>
+<button class="menuLineBtn menuLineBtn--danger" data-line-action="remove" type="button">Supprimer</button>
+</div>
+</article>
+</template>
+</section><section aria-label="Système" class="page pagePanel pageSpace pageSpace--system" id="pageSystem">
+<div class="pageHead">
+<div class="pageHeadTitleBlock">
+<h2>Système</h2>
+<div class="pageHeadMeta">
+<span class="pageHeadPill">Sauvegarde &amp; import</span>
+</div>
+</div>
+</div>
+<div class="pageBody pageBody--system">
+<section class="panel systemPanel">
+<div class="sectionTitle">Sauvegarde JSON</div>
+<p class="hint">Ouvre l’outil système déjà câblé pour exporter ou réimporter les ingrédients, recettes et menus.</p>
+<div class="inlineActions" style="margin-top:12px;">
+<button class="btn btnPrimary" id="btnOpenBackup" type="button">Ouvrir l’outil d’export / import</button>
+</div>
+</section>
+</div>
+</section></div></main>
+</div>
+</div>
+<!-- ===== CreateModal Recette (VIDE) — dissociée ===== -->
+<!-- ===== /CreateModal Recette ===== -->
+<div class="appFloatingActions"><button class="fab" id="btnOpenCreate" title="Créer">+</button><button class="fab" id="btnOpenCreateRecipe" style="display:none" title="Créer recette">+</button></div><div class="appOverlays"><div aria-hidden="true" class="ingDetailOverlay" id="ingredientDetailOverlay">
+<div aria-label="Fiche ingrédient" aria-modal="true" class="ingDetailModal" id="ingredientDetailModal" role="dialog">
+<div class="ingDetailHead">
+<h3 class="ctitle" id="ingredientDetailTitle">Fiche ingrédient</h3>
+<button aria-label="Fermer" class="iconBtn" id="ingredientDetailClose" type="button">✕</button>
+</div>
+<div class="ingDetailBody" id="ingredientDetailBody"></div>
+</div>
+</div><div aria-hidden="true" class="ingDetailOverlay" id="recipeDetailOverlay">
+<div aria-label="Fiche recette" aria-modal="true" class="ingDetailModal recipeDetailModal" id="recipeDetailModal" role="dialog">
+<div class="ingDetailHead">
+<h3 class="ctitle" id="recipeDetailTitle">Fiche recette</h3>
+<button aria-label="Fermer" class="iconBtn" id="recipeDetailClose" type="button">✕</button>
+</div>
+<div class="ingDetailBody recipeDetailBody" id="recipeDetailBody"></div>
+</div>
+</div><div aria-hidden="true" class="overlay hidden" id="filterOverlay">
+<div aria-label="Filtres" aria-modal="true" class="modal mode-ingredients" data-filter-context="ingredients" id="filterModal" role="dialog">
+<div class="modalTop">
+<button class="modalIconBtn" id="btnFilterBack" title="Retour">←</button>
+<h3 class="title" id="filterTitle">Filtres ingrédients</h3>
+<button class="modalIconBtn" id="btnFilterClose" title="Fermer">✕</button>
+</div>
+<div class="modalBody">
+<div class="filterPane" data-pane="ingredients">
+<div class="fieldRow">
+<div class="control">
+<span class="ic">🔎</span>
+<input id="fltQuery" placeholder="ex: pancakes, chili…"/>
+</div>
+<div class="control" id="fltCatWrap">
+<span class="ic">▾</span>
+<select id="fltCategory">
+<option value="">Catégorie</option>
+</select>
+</div>
+<div class="control hidden" id="fltTagsWrap">
+<span class="ic">🏷️</span>
+<input id="fltTags" placeholder="Tags (ex: batch, sans-gluten…)"/>
+</div>
+</div>
+<div class="sectionTitle">Affiner par usage <small>fréquence en recettes</small></div>
+<div class="fieldRow fieldRow--usage">
+<div class="control" id="fltUsageWrap">
+<span class="ic">★</span>
+<select id="fltUsageStars">
+<option value="">Usage culinaire</option>
+<option value="0">☆☆☆ · moins de 2 %</option>
+<option value="1">★☆☆ · de 2 % à 8 %</option>
+<option value="2">★★☆ · de 8 % à 20 %</option>
+<option value="3">★★★ · 20 % et plus</option>
+</select>
+</div>
+</div>
+<div class="sectionTitle">Affiner par macros <small id="fltScope">(pour 100 g)</small></div>
+<div class="macroGrid">
+<div class="macroLabel"><span class="mIc">🔥</span> kcal</div>
+<div class="control"><input id="fltKcalMin" inputmode="numeric" placeholder="min"/></div>
+<div class="arrow" style="text-align:center; color:var(--ink500); font-weight:900;">→</div>
+<div class="control"><input id="fltKcalMax" inputmode="numeric" placeholder="max"/></div>
+<div class="macroLabel"><span class="mIc">💪</span> P (g)</div>
+<div class="control"><input id="fltPMin" inputmode="numeric" placeholder="min"/></div>
+<div class="arrow" style="text-align:center; color:var(--ink500); font-weight:900;">→</div>
+<div class="control"><input id="fltPMax" inputmode="numeric" placeholder="max"/></div>
+<div class="macroLabel"><span class="mIc">🍞</span> G (g)</div>
+<div class="control"><input id="fltGMin" inputmode="numeric" placeholder="min"/></div>
+<div class="arrow" style="text-align:center; color:var(--ink500); font-weight:900;">→</div>
+<div class="control"><input id="fltGMax" inputmode="numeric" placeholder="max"/></div>
+<div class="macroLabel"><span class="mIc">💧</span> L (g)</div>
+<div class="control"><input id="fltLMin" inputmode="numeric" placeholder="min"/></div>
+<div class="arrow" style="text-align:center; color:var(--ink500); font-weight:900;">→</div>
+<div class="control"><input id="fltLMax" inputmode="numeric" placeholder="max"/></div>
+</div>
+<div class="hint">Filtre contextuel ingrédients.</div>
+</div>
+<div class="filterPane hidden" data-pane="recipes">
+<div class="fieldRow">
+<div class="control">
+<span class="ic">🔎</span>
+<input id="recipeSearch" placeholder="Tape quelques lettres…" type="text"/>
+</div>
+<div class="control">
+<span class="ic">▾</span>
+<select id="recipeFilter"></select>
+</div>
+<div class="control">
+<span class="ic">⇅</span>
+<select id="recipeSort">
+<option value="name">Nom</option>
+<option value="kcal100">kcal/100</option>
+</select>
+</div>
+</div>
+<div class="hint">Filtre contextuel recettes.</div>
+</div>
+<div class="filterPane hidden" data-pane="menus">
+<div class="hint">Filtres menus — périmètre encore limité dans les fichiers fournis.</div>
+</div>
+</div>
+<div class="modalFooter">
+<button class="btn btnWide btnGhost" id="btnFilterReset">Réinitialiser</button>
+<button class="btn btnWide btnPrimary" id="btnFilterApply">Afficher les résultats 🔎</button>
+</div>
+</div>
+</div></div><div aria-hidden="true" class="createOverlay hidden" id="createOverlay">
+<div aria-label="Créer / Modifier" aria-modal="true" class="createModal" id="createModal" role="dialog">
+<div class="createTop createTop--withSeg">
+<button class="modalIconBtn" id="btnCreateBack" title="Retour">←</button>
+<div class="createTopMain">
+<h3 class="ctitle" id="createTitle">Créer / Modifier</h3>
+<div aria-label="Modes création" class="createSeg" role="tablist">
+<button aria-selected="true" class="active" data-mode="manual" role="tab">✏️ Manuel</button>
+<button aria-selected="false" data-mode="scan" role="tab">📷 Scan / OCR</button>
+<button aria-selected="false" data-mode="import" role="tab">📄 Import rapide</button>
+</div>
+</div>
+<button class="modalIconBtn" id="btnCreateClose" title="Fermer">✕</button>
+</div>
+<div class="createBody">
+<!-- Manual -->
+<div class="panel" id="panelManual" style="margin-top:12px;">
+<div aria-label="Parcours manuel" class="cmStepRail" role="tablist">
+<button aria-selected="true" class="cmStepBtn is-active" data-manual-step="identity" role="tab" type="button"><span>1</span><div><b>Identité</b><small>nom + catégorie</small></div></button>
+<button aria-selected="false" class="cmStepBtn" data-manual-step="units" role="tab" type="button"><span>2</span><div><b>Unités</b><small>profil + conversions</small></div></button>
+<button aria-selected="false" class="cmStepBtn" data-manual-step="macros" role="tab" type="button"><span>3</span><div><b>Macros</b><small>valeurs + source</small></div></button>
+</div>
+<section class="cmStepPanel is-active" data-manual-step-panel="identity">
+<div class="bigTitle" style="margin-top:0;">Ingrédient</div>
+<div class="createHint">
+          Renseigne le nom + au moins une valeur (kcal ou P/G/L). Tout est par 100 g.
+        </div>
+<div class="formRow">
+<div class="control">
+<span class="ic">🧾</span>
+<input id="ingName" placeholder="ex: Farine pois chiche / Yaourt maison V1"/>
+</div>
+<div class="control">
+<span class="ic">▾</span>
+<select id="ingCategory">
+<option value="">Catégorie</option>
+</select>
+</div>
+</div>
+<div class="cmPageActions" data-manual-page-actions="identity">
+<button class="pillBtn gray" data-manual-proxy-cancel="" type="button">Annuler</button>
+<button class="pillBtn green" data-manual-proxy-save="" type="button">✈️ Enregistrer</button>
+</div>
+</section>
+<section class="cmStepPanel" data-manual-step-panel="units">
+<div class="ingUnitSection">
+<div class="bigTitle" style="margin-top:0;">Profil &amp; unités</div>
+<div class="createHint">Les conversions sont définies dans l’ingrédient. La recette choisira ensuite l’unité autorisée.</div>
+<div class="ingProfileGrid">
+<label class="profileCard" id="profileCardSolid">
+<input checked="" id="profileSolid" type="checkbox"/>
+<div>
+<div class="profileCardTitle">Solide</div>
+<div class="profileCardDesc">farine, sucre, riz, œuf…</div>
+</div>
+</label>
+<label class="profileCard" id="profileCardLiquid">
+<input id="profileLiquid" type="checkbox"/>
+<div>
+<div class="profileCardTitle">Liquide</div>
+<div class="profileCardDesc">eau, lait, huile, sauce…</div>
+</div>
+</label>
+</div>
+<div class="ingUnitsGrid" id="ingUnitsGrid">
+<div class="ingUnitCard" data-unit="g">
+<div class="ingUnitHead">
+<div>
+<div class="ingUnitTitle">Grammage (g) <span class="ingInfoDot" id="ingGramInfoDot" style="display:none" title="Les valeurs nutritionnelles sont calculées en grammes. Pour les liquides, la saisie peut se faire en ml puis est convertie automatiquement en g.">i</span></div>
+<div class="ingUnitSub" id="ingGramSub">Référence du calcul nutritionnel</div>
+<div class="ingUnitMicroHelp" id="ingGramHelp" style="display:none">Pour les liquides, la saisie peut se faire en ml puis est convertie automatiquement en g.</div>
+</div>
+<div class="ingUnitLock"><span class="dot"></span><span>Base du moteur</span></div>
+</div>
+</div>
+<div class="ingUnitCard" data-unit="piece">
+<div class="ingUnitHead">
+<div><div class="ingUnitTitle">Quantité / pièce</div><div class="ingUnitSub">Œuf, banane, biscuit, tranche…</div></div>
+<label class="ingUnitToggle"><input aria-label="Activer quantité / pièce" id="allowPiece" type="checkbox"/></label>
+</div>
+<div class="ingUnitConv">
+<div class="ingUnitConvLabel">1 pièce = [x] g</div>
+<div class="control"><span class="ic">⚙️</span><input id="pieceWeightG" inputmode="decimal" placeholder="ex: 60 g"/></div>
+</div>
+</div>
+<div class="ingUnitCard" data-unit="tbsp">
+<div class="ingUnitHead">
+<div>
+<div class="ingUnitTitle">Cuillère à soupe <span class="ingInfoDot" title="Valeur moyenne cuisine : solide 12 g, liquide 15 g. Modifiable par pas de 1.">i</span></div>
+<div class="ingUnitSub">càs</div>
+</div>
+<label class="ingUnitToggle"><input aria-label="Activer cuillère à soupe" id="allowTbsp" type="checkbox"/></label>
+</div>
+<div class="ingUnitConv">
+<div class="ingUnitConvLabel">1 càs = [x] g</div>
+<div class="control"><span class="ic">⚙️</span><input id="tbspWeightG" inputmode="numeric" min="0" placeholder="12" step="1" type="number"/></div>
+</div>
+</div>
+<div class="ingUnitCard" data-unit="tsp">
+<div class="ingUnitHead">
+<div>
+<div class="ingUnitTitle">Cuillère à café <span class="ingInfoDot" title="Valeur moyenne cuisine : solide 4 g, liquide 5 g. Modifiable par pas de 1.">i</span></div>
+<div class="ingUnitSub">càc</div>
+</div>
+<label class="ingUnitToggle"><input aria-label="Activer cuillère à café" id="allowTsp" type="checkbox"/></label>
+</div>
+<div class="ingUnitConv">
+<div class="ingUnitConvLabel">1 càc = [x] g</div>
+<div class="control"><span class="ic">⚙️</span><input id="tspWeightG" inputmode="numeric" min="0" placeholder="4" step="1" type="number"/></div>
+</div>
+</div>
+</div>
+<div class="ingUnitDefaultWrap">
+<div class="subtle" style="margin:0 0 6px 2px; font-weight:900; color:var(--ink700); display:flex; align-items:center; gap:6px;">Unité par défaut <span class="ingInfoDot" title="Choix proposé dans la recette au départ. càs/càc utilisent les valeurs définies dans l’ingrédient.">i</span></div>
+<div class="control" style="display:none"><span class="ic">▾</span><select id="ingDefaultUnit"></select></div>
+<div class="ingDefaultGrid" id="ingDefaultGrid">
+<label class="ingDefaultChoice" data-unit="g"><input name="ingDefaultUnitChoice" type="radio" value="g"/><span class="ingDefaultChoiceLabel">g</span></label>
+<label class="ingDefaultChoice" data-unit="piece"><input name="ingDefaultUnitChoice" type="radio" value="piece"/><span class="ingDefaultChoiceLabel">pièce</span></label>
+<label class="ingDefaultChoice" data-unit="tbsp"><input name="ingDefaultUnitChoice" type="radio" value="tbsp"/><span class="ingDefaultChoiceLabel">càs <span class="ingInfoDot" title="Le choix càs utilisera la valeur définie plus haut pour cet ingrédient.">i</span></span></label>
+<label class="ingDefaultChoice" data-unit="tsp"><input name="ingDefaultUnitChoice" type="radio" value="tsp"/><span class="ingDefaultChoiceLabel">càc</span></label>
+</div>
+<div class="ingUnitHelp">Profil exclusif : solide ou liquide. Les valeurs par défaut de càs/càc s’ajustent automatiquement.</div>
+</div>
+</div>
+<div class="cmPageActions" data-manual-page-actions="units">
+<button class="pillBtn gray" data-manual-proxy-cancel="" type="button">Annuler</button>
+<button class="pillBtn green" data-manual-proxy-save="" type="button">✈️ Enregistrer</button>
+</div>
+</section>
+<section class="cmStepPanel" data-manual-step-panel="macros">
+<div class="bigTitle">Macronutriments / 100 g</div>
+<div class="macroForm">
+<div class="macroLabel"><span class="mIc">🔥</span> Calories (kcal)</div>
+<div class="control"><input id="ingKcal" inputmode="numeric" placeholder="0 kcal"/></div>
+<div class="macroLabel"><span class="mIc">💪</span> Protéines (P)</div>
+<div class="control"><input id="ingProt" inputmode="numeric" placeholder="0 g"/></div>
+<div class="macroLabel"><span class="mIc">🍞</span> Glucides (g)</div>
+<div class="control"><input id="ingCarb" inputmode="numeric" placeholder="0 g"/></div>
+<div class="macroLabel"><span class="mIc">💧</span> Lipides (g)</div>
+<div class="control"><input id="ingFat" inputmode="numeric" placeholder="0 g"/></div>
+</div>
+<div style="margin-top:12px;">
+<div class="subtle" style="margin:0 0 6px 2px; font-weight:900; color:var(--ink700);">Note / source</div>
+<div class="control">
+<span class="ic">📝</span>
+<input id="ingNote" placeholder="ex: CIQUAL / étiquette / recette maison…"/>
+</div>
+</div>
+<div class="cmPageActions" data-manual-page-actions="macros">
+<button class="pillBtn gray" data-manual-proxy-cancel="" type="button">Annuler</button>
+<button class="pillBtn green" data-manual-proxy-save="" type="button">✈️ Enregistrer</button>
+</div>
+<div aria-hidden="true" class="inlineActions inlineActions--manualNative">
+<button class="pillBtn green" id="cmManualSave" type="button">✈️ Enregistrer</button>
+<button class="pillBtn gray" id="cmManualCancel" type="button">Annuler</button>
+</div>
+</section>
+</div>
+<!-- Scanner / Import -->
+<div class="panel hiddenPanel cmScenePanel cmScenePanel--scan" id="panelScan" style="margin-top:12px;">
+<input accept="image/*" capture="environment" class="hidden" id="ocrImage" type="file"/>
+<div class="cmSceneBody cmSceneBody--scan ingredientSceneBody ingredientSceneBody--scan">
+<section class="cmAssistCard cmAssistCard--hero cmAssistCard--scanEntry ingredientAssistCard ingredientAssistCard--scanEntry">
+<div class="cmAssistMetaRow">
+<div class="cmSceneEyebrow">Mode assisté</div>
+</div>
+<div class="cmAssistLead cmAssistLead--scanEntry">
+<button aria-label="Lancer le scan" class="cmAssistIcon cmAssistIcon--action" id="btnOcrScan" title="Lancer le scan" type="button">📷</button>
+<div class="cmAssistTitleBlock">
+<div class="bigTitle cmAssistTitle cmAssistTitle--scene">Scan / OCR</div>
+<div class="createHint">Pré-remplit kcal / P / G / L à partir d’une photo. Vérifie ensuite les valeurs avant envoi vers la fiche manuelle.</div>
+<div class="cmAssistText">Scanne l’étiquette, contrôle le résultat détecté, puis copie les valeurs dans la fiche ingrédient.</div>
+</div>
+</div>
+<div class="cmSceneBtnRow ingredientScanTriggerRow">
+<label class="pillBtn" for="ocrImage" role="button" tabindex="0">Scanner l’étiquette</label>
+</div>
+<div class="cmSceneMicroNote">Le texte OCR reste consultable avant copie vers la fiche manuelle.</div>
+</section>
+<section class="cmAssistCard cmAssistCard--scanResult ingredientAssistCard ingredientAssistCard--scanResult">
+<div class="cmAssistMeta">Résultat du scan</div>
+<div class="subtle">Les valeurs détectées peuvent être vidées ou copiées dans la fiche manuelle.</div>
+<section class="ingredientScanEditorBlock" id="ingredientScanEditor">
+<div class="ingredientScanEditorTop">
+<div>
+<div class="ingredientScanEditorTitle">Valeurs détectées</div>
+<div class="ingredientScanEditorHint">Nom + kcal / P / G / L extraits depuis l’étiquette.</div>
+</div>
+</div>
+<div class="cmEditorBox ingredientScanEditorBox">
+<div class="out ingredientScanPreview" id="ocrOut" style="display:none"></div>
+</div>
+<div class="ingredientScanEditorActions">
+<button class="pillBtn gray" id="btnOcrClear" type="button">Vider</button>
+<button class="pillBtn green" id="btnOcrApplyToManual" type="button">Copier vers la fiche</button>
+</div>
+</section>
+<div class="cmSceneNav cmSceneNav--2col cmSceneNav--inCard">
+<button class="cmStepAction cmStepAction--ghost" data-manual-target="identity" data-mode-nav="manual" type="button">← Fiche manuelle</button>
+<button class="cmStepAction" data-manual-target="macros" data-mode-nav="manual" type="button">Ouvrir la zone macros →</button>
+</div>
+</section>
+</div>
+</div>
+<!-- Import rapide -->
+<div class="panel hiddenPanel cmScenePanel cmScenePanel--import" id="panelImport" style="margin-top:12px;">
+<div class="cmSceneBody cmSceneBody--import ingredientSceneBody ingredientSceneBody--import">
+<section class="cmAssistCard cmAssistCard--hero cmAssistCard--importEntry ingredientAssistCard ingredientAssistCard--importEntry">
+<div class="cmAssistMetaRow">
+<div class="cmSceneEyebrow">Mode assisté</div>
+</div>
+<div class="cmAssistLead cmAssistLead--importEntry">
+<div aria-hidden="true" class="cmAssistIcon">📄</div>
+<div class="cmAssistTitleBlock">
+<div class="bigTitle cmAssistTitle cmAssistTitle--scene">Import rapide</div>
+<div class="createHint">Colle une ligne déjà structurée. Le mode rapide pré-remplit la fiche ingrédient puis te laisse vérifier avant enregistrement.</div>
+<div class="cmAssistText">Format accepté : <b>nom; kcal:x; p:x; g:x; l:x; cat:nom_categorie</b></div>
+</div>
+</div>
+<div class="cmSceneBtnRow ingredientImportTriggerRow">
+<button class="pillBtn gray" id="btnQuickTemplate" type="button">Insérer un template</button>
+</div>
+<div class="cmSceneMicroNote">Nom + macros obligatoires. La catégorie reste optionnelle et doit utiliser les catégories existantes avec <b>_</b> à la place des espaces.</div>
+</section>
+<section class="cmAssistCard cmAssistCard--importResult ingredientAssistCard ingredientAssistCard--importResult">
+<div class="cmAssistMeta">Résultat de l'import</div>
+<div class="subtle">Colle ta ligne, vérifie le parsing puis pré-remplis la fiche manuelle.</div>
+<section class="ingredientQuickEditorBlock">
+<div class="ingredientQuickEditorTop">
+<div>
+<div class="ingredientQuickEditorTitle">Ligne à importer</div>
+<div class="ingredientQuickEditorHint">Une seule ligne par ingrédient. Les macros sont obligatoires ; la catégorie est facultative.</div>
+</div>
+</div>
+<div class="cmEditorBox ingredientQuickEditorBox">
+<textarea class="big extensibleTextarea" id="quickImportBox" placeholder="skyr nature; kcal:63; p:11; g:3.6; l:0.2; cat:produits_laitiers"></textarea>
+</div>
+<div class="ingredientQuickEditorActions">
+<button class="pillBtn gray" id="btnQuickPreview" type="button">Voir avant</button>
+<button class="pillBtn green" id="btnQuickAdd" type="button">Préremplir la fiche</button>
+<button class="pillBtn gray" id="btnImportClear" type="button">Vider</button>
+</div>
+<div class="out ingredientQuickPreview muted tiny" id="quickImportPreview" style="display:none"></div>
+</section>
+<div class="muted tiny ingredientQuickStatus" id="quickImportStatus"></div>
+<div class="cmSceneNav cmSceneNav--2col cmSceneNav--inCard">
+<button class="cmStepAction cmStepAction--ghost" data-manual-target="identity" data-mode-nav="manual" type="button">← Fiche manuelle</button>
+<button class="cmStepAction" data-manual-target="macros" data-mode-nav="manual" type="button">Ouvrir la zone macros →</button>
+</div>
+</section>
+</div>
+</div>
+<!-- Recipe Create overlay (EMPTY placeholder) -->
+<!-- Backup overlay (Export/Import complet) -->
+</div></div>
+<!-- OCR/Import motor v3_5_4 (stub) -->
+<!-- ===== Delegated wiring safety-net (ensures buttons work even if DOM is re-rendered) ===== -->
+<!-- ===== Import rapide -> Remplir Manual (pas de création auto de fiches) ===== -->
+</div><div aria-hidden="true" class="createOverlay hidden" id="recipeCreateOverlay">
+<div aria-label="Créer / Modifier une recette" aria-modal="true" class="createModal" id="recipeCreateModal" role="dialog">
+<div class="createTop createTop--withSeg">
+<button class="modalIconBtn" id="btnCreateRecipeBack" title="Retour">←</button>
+<div class="createTopMain">
+<h3 class="ctitle" id="createTitleRecipe">Créer / Modifier une recette</h3>
+<div aria-label="Modes création" class="createSeg" role="tablist">
+<button aria-selected="true" class="active" data-mode="manual" role="tab">✏️ Manuel</button>
+<button aria-selected="false" data-mode="scan" role="tab">📷 Scan / OCR</button>
+<button aria-selected="false" data-mode="import" role="tab">📄 Import rapide</button>
+</div>
+</div>
+<button class="modalIconBtn" id="btnCreateRecipeClose" title="Fermer">✕</button>
+</div>
+<div class="createBody">
+<!-- Manual (REMPLACÉ PAR ÉDITEUR RECETTE) -->
+<div class="panel" id="recipePanelManual" style="margin-top:12px;">
+<div class="createHint">Créer / modifier une recette : nom + lignes (ingrédients + quantités). Macros /100g.</div>
+<div aria-label="Parcours manuel recette" class="cmStepRail" role="tablist">
+<button aria-selected="true" class="cmStepBtn is-active" data-manual-step="identity" role="tab" type="button"><span>1</span><div><b>Identité</b><small>nom + catégorie</small></div></button>
+<button aria-selected="false" class="cmStepBtn" data-manual-step="prep" role="tab" type="button"><span>2</span><div><b>Préparation</b><small>texte + statut</small></div></button>
+<button aria-selected="false" class="cmStepBtn" data-manual-step="lines" role="tab" type="button"><span>3</span><div><b>Lignes</b><small>ingrédients + total</small></div></button>
+</div>
+<section class="cmStepPanel is-active" data-manual-step-panel="identity">
+<div class="bigTitle" style="margin-top:0;">Recette</div>
+<div class="formRow">
+<div class="control" style="flex:2; min-width:320px">
+<span class="ic">🧾</span>
+<input id="recipeName" placeholder="ex: Pancakes V3 / Lasagne maison..."/>
+</div>
+</div>
+<div class="formRow" style="margin-top:10px;">
+<div class="control">
+<span class="ic">⚖️</span>
+<!-- id historique: poidsCuit (v3_5_4) -->
+<input id="poidsCuit" inputmode="numeric" min="0" placeholder="Poids total cuit (g)" step="1" type="number"/>
+</div>
+<div class="control">
+<span class="ic">🍽️</span>
+<!-- compat: recipePortions (v3_5_4) = parts -->
+<input id="recipePortions" inputmode="numeric" min="0" placeholder="Parts" step="1" type="number"/>
+</div>
+</div>
+<div class="bigTitle bigTitle--withAction" id="recipeCatsTitle"><span>Catégorie &amp; tags</span><button aria-label="Supprimer la catégorie" class="modalIconBtn" id="btnDeleteRecipeCategory" title="Supprimer la catégorie sélectionnée" type="button">🗑️</button></div>
+<div class="formRow">
+<div class="control">
+<span class="ic">▾</span>
+<select id="recipeCategory"></select>
+</div>
+<div class="control">
+<span class="ic">🏷️</span>
+<input id="recipeTags" placeholder="ex: high-protein, sans-gluten, batch"/>
+</div>
+</div>
+<div class="hidden" id="recipeCustomCategoryWrap" style="margin-top:10px;">
+<div class="formRow recipeCustomCategoryRow">
+<div class="control" style="flex:2; min-width:320px">
+<span class="ic">➕</span>
+<input id="recipeCustomCategoryName" placeholder="ex: Batch cooking"/>
+</div>
+<div class="recipeCustomColorWrap">
+<input id="recipeCustomCategoryColor" type="hidden" value="#D7A27E"/>
+<button aria-expanded="false" aria-haspopup="dialog" class="recipeColorBubble" id="recipeCustomCategoryColorBtn" title="Choisir une couleur" type="button"><span class="recipeColorBubble__swatch" id="recipeCustomCategoryColorSwatch"></span></button>
+<div aria-label="Palette de couleurs" class="recipeColorPopover hidden" id="recipeCustomCategoryColorPopover" role="dialog">
+<div class="recipeColorPopover__title">Couleur de catégorie</div>
+<div class="recipeColorPalette" id="recipeCustomCategoryColorPalette">
+<button class="recipeColorChip is-active" data-color="#D7A27E" style="--chip:#D7A27E" type="button"></button>
+<button class="recipeColorChip" data-color="#C98E6A" style="--chip:#C98E6A" type="button"></button>
+<button class="recipeColorChip" data-color="#B97C5F" style="--chip:#B97C5F" type="button"></button>
+<button class="recipeColorChip" data-color="#A99A73" style="--chip:#A99A73" type="button"></button>
+<button class="recipeColorChip" data-color="#D9B04A" style="--chip:#D9B04A" type="button"></button>
+<button class="recipeColorChip" data-color="#A0A33B" style="--chip:#A0A33B" type="button"></button>
+<button class="recipeColorChip" data-color="#4D8A5A" style="--chip:#4D8A5A" type="button"></button>
+<button class="recipeColorChip" data-color="#528347" style="--chip:#528347" type="button"></button>
+<button class="recipeColorChip" data-color="#7AA5E1" style="--chip:#7AA5E1" type="button"></button>
+<button class="recipeColorChip" data-color="#8A8F9B" style="--chip:#8A8F9B" type="button"></button>
+<button class="recipeColorChip" data-color="#A56F8A" style="--chip:#A56F8A" type="button"></button>
+<button class="recipeColorChip" data-color="#B46F52" style="--chip:#B46F52" type="button"></button>
+</div>
+</div>
+</div>
+<button class="pillBtn green" id="btnAddRecipeCategory" type="button">Ajouter</button>
+</div>
+</div>
+<div class="cmPageActions" data-manual-page-actions="identity">
+<button class="pillBtn gray" data-manual-proxy-cancel="" type="button">Annuler</button>
+<button class="pillBtn green" data-manual-proxy-save="" type="button">✈️ Enregistrer</button>
+</div>
+</section>
+<section class="cmStepPanel" data-manual-step-panel="prep">
+<div class="bigTitle" style="margin-top:0;">Préparation</div>
+<div class="subtle">Préparation (optionnel)</div>
+<div class="control" style="border-radius:22px; align-items:flex-start">
+<span class="ic" style="margin-top:2px;">📝</span>
+<textarea id="cmRecipePrep" placeholder="Étapes, ordre, cuisson, astuces, variantes…" rows="3"></textarea>
+</div>
+<div class="muted tiny" id="cmRecipeStatus" style="margin-top:10px;"></div>
+<div class="cmPageActions" data-manual-page-actions="prep">
+<button class="pillBtn gray" data-manual-proxy-cancel="" type="button">Annuler</button>
+<button class="pillBtn green" data-manual-proxy-save="" type="button">✈️ Enregistrer</button>
+</div>
+</section>
+<section class="cmStepPanel" data-manual-step-panel="lines">
+<div class="bigTitle" style="margin-top:0;">Lignes de recette</div>
+<div class="recipeLinesToolbar">
+<div class="recipeLinesToolbarMain">
+<button class="pillBtn green" id="btnAddRow" type="button">+ ingrédient</button>
+<button class="pillBtn gray" id="btnRecipeLinesLibrary" type="button">Bibliothèque</button>
+<button class="pillBtn danger" id="btnClearRecipeRows" type="button">Vider</button>
+</div>
+<div class="recipeLinesToolbarHint">Une carte par ingrédient. Les totaux se recalculent automatiquement.</div>
+</div>
+<div class="recipeLinesComposer">
+<div class="recipeLinesEmpty" id="cmRecipeEmpty">Aucun ingrédient pour l’instant. Ajoute une ligne puis choisis catégorie, ingrédient, quantité et unité.</div>
+<div class="recipeLinesList" id="cmRecipeBody"></div>
+</div>
+<div class="hidden" id="cmRecipeResults">
+<div class="recipeResultsGrid">
+<section class="recipeSummaryCard recipeSummaryCard--totals">
+<div class="recipeSummaryHead">
+<div>
+<b>Totaux recette</b>
+<small>Somme de toutes les cartes ingrédients</small>
+</div>
+</div>
+<div class="recipeSummaryMetrics">
+<div class="recipeSummaryMetric"><span>Total kcal</span><strong id="cmTotKcal">—</strong></div>
+<div class="recipeSummaryMetric"><span>Total P</span><strong id="cmTotP">—</strong></div>
+<div class="recipeSummaryMetric"><span>Total G</span><strong id="cmTotG">—</strong></div>
+<div class="recipeSummaryMetric"><span>Total L</span><strong id="cmTotL">—</strong></div>
+</div>
+<div class="recipeSummaryDetail" id="weightInfo">—</div>
+</section>
+<section class="recipeSummaryCard recipeSummaryCard--base">
+<div class="recipeSummaryHead">
+<div>
+<b>Base / 100 g</b>
+<small>Référence nutritionnelle de la recette</small>
+</div>
+</div>
+<div class="recipeSummaryMetrics recipeSummaryMetrics--base">
+<div class="recipeSummaryMetric"><span>kcal</span><strong id="p100K">—</strong></div>
+<div class="recipeSummaryMetric"><span>P</span><strong id="p100P">—</strong></div>
+<div class="recipeSummaryMetric"><span>G</span><strong id="p100G">—</strong></div>
+<div class="recipeSummaryMetric"><span>L</span><strong id="p100L">—</strong></div>
+</div>
+</section>
+</div>
+</div>
+<div class="cmPageActions">
+<!-- on garde les ids “clean_v3” (save/cancel) pour branchage futur -->
+<button class="pillBtn gray" data-manual-proxy-cancel="" id="cmRecipeManualCancel" type="button">Annuler</button>
+<button class="pillBtn green" data-manual-proxy-save="" id="cmRecipeManualSave" type="button">✈️ Enregistrer</button>
+</div>
+</section>
+</div>
+<!-- Scanner / Import (placeholders) -->
+<div class="panel hiddenPanel cmScenePanel cmScenePanel--scan recipeScenePanel recipeScenePanel--scan" id="recipePanelScan" style="margin-top:12px;">
+<input accept="image/*" class="hidden" id="recipeOcrIngsFile" type="file"/>
+<input accept="image/*" class="hidden" id="recipeOcrPrepFile" type="file"/>
+<div class="cmSceneBody cmSceneBody--scan recipeSceneBody recipeSceneBody--scan">
+<section class="cmAssistCard cmAssistCard--hero cmAssistCard--scanEntry recipeAssistCard recipeAssistCard--scanEntry">
+<div class="cmAssistMetaRow">
+<div class="cmSceneEyebrow">Mode assisté</div>
+</div>
+<div class="cmAssistLead cmAssistLead--scanEntry">
+<button aria-label="Scanner les ingrédients" class="cmAssistIcon cmAssistIcon--action" id="btnRecipeOcrHeroScan" title="Scanner les ingrédients" type="button">📷</button>
+<div class="cmAssistTitleBlock">
+<div class="bigTitle cmAssistTitle cmAssistTitle--scene">Scan / OCR</div>
+<div class="createHint">Scanne d’abord les ingrédients, puis la préparation si besoin. Le texte détecté reste modifiable avant envoi vers la fiche.</div>
+<div class="cmAssistText">Le mode recette fonctionne en deux flux séparés : lignes ingrédients d’un côté, texte préparation de l’autre.</div>
+</div>
+</div>
+<div class="cmSceneBtnRow recipeScanTriggerRow">
+<button class="pillBtn" id="btnRecipeOcrIngs" type="button">Scanner ingrédients</button>
+<button class="pillBtn gray" id="btnRecipeOcrPrep" type="button">Scanner préparation</button>
+</div>
+<div class="cmSceneMicroNote">Tu peux corriger le texte OCR avant de l’ajouter aux lignes ou de remplacer la préparation.</div>
+</section>
+<section class="cmAssistCard cmAssistCard--scanResult recipeAssistCard recipeAssistCard--scanResult">
+<div class="cmAssistMeta">Résultat du scan</div>
+<div class="subtle">Chaque zone reste éditable. Les ingrédients peuvent être prévisualisés avant ajout.</div>
+<div class="recipeScanEditors">
+<section class="recipeScanEditorBlock recipeScanEditorBlock--ingredient" id="recipeScanEditorIngs">
+<div class="recipeScanEditorTop">
+<div>
+<div class="recipeScanEditorTitle">Ingrédients détectés</div>
+<div class="recipeScanEditorHint">Lignes OCR brutes à parser en ingrédients.</div>
+</div>
+</div>
+<div class="cmEditorBox recipeScanEditorBox">
+<textarea class="extensibleTextarea" id="recipeOcrIngsText" placeholder="Le texte OCR des ingrédients apparaîtra ici." rows="7"></textarea>
+</div>
+<div class="recipeScanEditorActions recipeScanEditorActions--ingredient">
+<button class="pillBtn gray" id="btnRecipeOcrIngsPreview" type="button">Voir avant</button>
+<button class="pillBtn green" id="btnRecipeOcrIngsApply" type="button">Ajouter aux lignes</button>
+<button class="pillBtn gray" id="btnRecipeOcrClear" type="button">Vider</button>
+</div>
+<div class="recipeScanPreview muted tiny" id="recipeOcrIngsPreview" style="display:none;"></div>
+</section>
+<section class="recipeScanEditorBlock recipeScanEditorBlock--prep" id="recipeScanEditorPrep">
+<div class="recipeScanEditorTop">
+<div>
+<div class="recipeScanEditorTitle">Préparation détectée</div>
+<div class="recipeScanEditorHint">Texte libre qui remplacera la préparation actuelle.</div>
+</div>
+</div>
+<div class="cmEditorBox recipeScanEditorBox">
+<textarea class="extensibleTextarea" id="recipeOcrPrepText" placeholder="Le texte OCR de la préparation apparaîtra ici." rows="7"></textarea>
+</div>
+<div class="recipeScanEditorActions recipeScanEditorActions--prep">
+<button class="pillBtn gray" id="btnRecipeOcrPrepClear" type="button">Vider</button>
+<button class="pillBtn green" id="btnRecipeOcrPrepApply" type="button">Remplacer la préparation</button>
+</div>
+</section>
+</div>
+<div class="muted tiny recipeScanStatus" id="recipeOcrStatus"></div>
+<div class="cmSceneNav cmSceneNav--2col cmSceneNav--inCard">
+<button class="cmStepAction cmStepAction--ghost" data-manual-target="identity" data-mode-nav="manual" type="button">← Fiche manuelle</button>
+<button class="cmStepAction" data-manual-target="lines" data-mode-nav="manual" type="button">Ouvrir les lignes →</button>
+</div>
+</section>
+</div>
+<div class="cmPageActions" data-recipe-assist-actions="scan">
+<button class="pillBtn gray" data-recipe-close="" type="button">Annuler</button>
+<button class="pillBtn green" id="btnRecipeOcrSave" type="button">✈️ Enregistrer</button>
+</div>
+</div>
+<div class="panel hiddenPanel cmScenePanel cmScenePanel--import recipeScenePanel recipeScenePanel--import" id="recipePanelImport" style="margin-top:12px;">
+<div class="cmSceneBody cmSceneBody--import recipeSceneBody recipeSceneBody--import">
+<section class="cmAssistCard cmAssistCard--hero cmAssistCard--importEntry recipeAssistCard recipeAssistCard--importEntry">
+<div class="cmAssistMetaRow">
+<div class="cmSceneEyebrow">Mode assisté</div>
+</div>
+<div class="cmAssistLead cmAssistLead--importEntry">
+<div aria-hidden="true" class="cmAssistIcon">📄</div>
+<div class="cmAssistTitleBlock">
+<div class="bigTitle cmAssistTitle cmAssistTitle--scene">Import rapide</div>
+<div class="createHint">Colle une ou plusieurs lignes. Le mode rapide reconnaît les formats simples puis te laisse vérifier le résultat avant ajout aux lignes.</div>
+<div class="cmAssistText">Exemples acceptés : “200 g farine”, “2 oeufs”, “miel: 10 g”.</div>
+</div>
+</div>
+<div class="cmSceneBtnRow recipeImportTriggerRow">
+<button class="pillBtn gray" id="btnRecipeQuickTemplate" type="button">Insérer un template</button>
+</div>
+<div class="cmSceneMicroNote">Le template te donne une base. Tu peux ensuite corriger le texte avant prévisualisation ou ajout.</div>
+</section>
+<section class="cmAssistCard cmAssistCard--importResult recipeAssistCard recipeAssistCard--importResult">
+<div class="cmAssistMeta">Résultat de l'import</div>
+<div class="subtle">Colle tes lignes, vérifie le parsing puis ajoute-les aux lignes de la recette.</div>
+<div class="recipeQuickEditorBlock">
+<div class="recipeQuickEditorTop">
+<div>
+<div class="recipeQuickEditorTitle">Lignes à importer</div>
+<div class="recipeQuickEditorHint">Une ligne par ingrédient. Les quantités et unités sont détectées quand elles sont présentes.</div>
+</div>
+</div>
+<div class="cmEditorBox recipeQuickEditorBox">
+<textarea class="extensibleTextarea" id="recipeQuickImportBox" placeholder="Ex:
+200 g farine
+2 oeufs
+250 g skyr
+miel: 10 g" rows="6"></textarea>
+</div>
+<div class="recipeQuickEditorActions">
+<button class="pillBtn gray" id="btnRecipeQuickPreview" type="button">Voir avant</button>
+<button class="pillBtn green" id="btnRecipeQuickApply" type="button">Ajouter aux lignes</button>
+<button class="pillBtn gray" id="btnRecipeQuickClear" type="button">Vider</button>
+</div>
+<div class="recipeScanPreview recipeQuickPreview muted tiny" id="recipeQuickPreview" style="display:none;"></div>
+</div>
+<div class="muted tiny recipeQuickStatus" id="recipeQuickStatus"></div>
+<div class="cmSceneNav cmSceneNav--2col cmSceneNav--inCard">
+<button class="cmStepAction cmStepAction--ghost" data-manual-target="identity" data-mode-nav="manual" type="button">← Fiche manuelle</button>
+<button class="cmStepAction" data-manual-target="lines" data-mode-nav="manual" type="button">Ouvrir les lignes →</button>
+</div>
+</section>
+</div>
+<div class="cmPageActions" data-recipe-assist-actions="import">
+<button class="pillBtn gray" data-recipe-close="" type="button">Annuler</button>
+<button class="pillBtn green" id="btnRecipeQuickSave" type="button">✈️ Enregistrer</button>
+</div>
+</div>
+</div>
+</div>
+</div><div aria-hidden="true" class="createOverlay hidden" id="backupOverlay">
+<div aria-label="Sauvegarde JSON" aria-modal="true" class="createModal" id="backupModal" role="dialog">
+<div class="createTop">
+<button class="modalIconBtn" id="btnBackupBack" title="Retour">←</button>
+<h3 class="ctitle">Sauvegarde JSON (données NutriApp)</h3>
+<button class="modalIconBtn" id="btnBackupClose" title="Fermer">✕</button>
+</div>
+<div class="createBody">
+<div class="createHint">
+        Sauvegarde complète des données NutriApp (<b>ingrédients + recettes + menus</b>) sous forme JSON. Utilise <b>Exporter</b> pour générer, <b>Importer</b> pour appliquer.
+        L’option email prépare un message à envoyer (sans coller le JSON automatiquement).
+      </div>
+<div class="bigTitle" style="margin-top:10px;">Exporter</div>
+<div class="dashed" style="align-items:stretch;">
+<div style="flex:1;">
+<div class="subtle" style="margin-top:0;">Template = exemple de structure au format actuel. Export = JSON réel depuis le stockage local.</div>
+<div class="inlineActions" style="margin-top:10px; flex-wrap:wrap;">
+<button class="pillBtn gray" id="btnIngJsonTemplate" type="button">🧩 Template</button>
+<button class="pillBtn gray" id="btnIngJsonCopyTemplate" type="button">📋 Copy template</button>
+<button class="pillBtn green" id="btnIngJsonExport" type="button">⬇️ Export</button>
+</div>
+<div class="control" style="margin-top:12px;">
+<textarea class="big" id="ingJsonBox" placeholder="Le JSON NutriApp apparaîtra ici (export) ou colle ici un JSON (import)"></textarea>
+</div>
+<div class="formRow" style="margin-top:10px;">
+<div class="control">
+<span class="ic">✉️</span>
+<input id="backupEmail" placeholder="Email (optionnel) : ex. moi@domaine.com" type="email"/>
+</div>
+<div class="control">
+<button class="pillBtn gray" id="btnBackupEmail" style="width:100%;" type="button">Préparer un email</button>
+</div>
+</div>
+<div class="subtle" id="ingJsonModalStatus" style="margin-top:8px;"></div>
+</div>
+</div>
+<div class="bigTitle" style="margin-top:16px;">Importer</div>
+<div class="dashed" style="align-items:stretch;">
+<div style="flex:1;">
+<div class="subtle" style="margin-top:0;">Colle un JSON complet NutriApp puis applique. (Ce demo ne gère pas l’import fichier.)</div>
+<div class="formRow" style="margin-top:10px; gap:10px; align-items:flex-start;">
+<div class="importModeBox" style="flex:1;">
+<div class="subtle" style="margin:0 0 6px 0; font-weight:900; color:var(--ink700);">Mode d’import</div>
+<!-- Radios (source of truth) -->
+<input checked="" class="hidden" id="ingImportModeReplace" name="ingImportMode" type="radio" value="replace"/>
+<input class="hidden" id="ingImportModeMerge" name="ingImportMode" type="radio" value="merge"/>
+<!-- Boutons visibles -->
+<div aria-label="Mode d'import" class="modeBtns" role="group" style="display:flex; gap:10px; flex-wrap:wrap;">
+<button aria-pressed="true" class="pillBtn green" id="btnModeReplace" type="button">Remplacer</button>
+<button aria-pressed="false" class="pillBtn gray" id="btnModeMerge" type="button">Fusionner</button>
+</div>
+<div class="subtle" style="margin-top:8px;">
+<b>Remplacer</b> = écrase la bibliothèque.<br/>
+<b>Fusionner</b> = ajoute / met à jour selon <b>la règle “nom unique”</b> (Politique A).
+    </div>
+</div>
+</div>
+<div class="inlineActions" style="margin-top:10px; flex-wrap:wrap;">
+<button class="pillBtn green" id="btnIngJsonApply" type="button">✅ Appliquer</button>
+<button class="pillBtn gray" id="btnIngJsonClose" type="button">Fermer</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div><div id="printOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99999;padding:10px;">
+<div style="height:100%;max-width:1100px;margin:0 auto;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 18px 55px rgba(0,0,0,.35);display:flex;flex-direction:column;">
+<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid #e6e6e6;background:#fafafa;">
+<div style="flex:1;min-width:0">
+<div id="printOverlayTitle" style="font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Aperçu</div>
+<div class="muted" style="font-size:12px">Astuce: si l'impression ne s'ouvre pas, utilise le menu du navigateur → Imprimer / Enregistrer en PDF.</div>
+</div>
+<button class="btn" id="btnPrintOverlayPrint" type="button">Imprimer / PDF</button>
+<button class="btn" id="btnPrintOverlayClose" type="button">Fermer</button>
+</div>
+<iframe id="printOverlayFrame" style="flex:1;width:100%;border:0;background:#fff" title="Aperçu impression"></iframe>
+</div>
+</div></div><div class="hidden" id="recipeConvertOverlay" aria-hidden="true">
+<div class="recipeConvertModal" role="dialog" aria-modal="true" aria-labelledby="recipeConvertTitle">
+<div class="recipeConvertHead">
+<div>
+<div class="bigTitle" id="recipeConvertTitle" style="margin:0;">Créer comme ingrédient</div>
+<div class="subtle" id="recipeConvertSubtitle" style="margin-top:6px;">Convertir une recette en ingrédient calculé au 100 g.</div>
+</div>
+<button class="modalIconBtn" id="btnRecipeConvertClose" type="button" aria-label="Fermer">✕</button>
+</div>
+<div class="recipeConvertBody">
+<div class="formRow">
+<div class="control" style="flex:2; min-width:280px;">
+<span class="ic">🧪</span>
+<input id="recipeConvertIngredientName" type="text" placeholder="Nom du nouvel ingrédient"/>
+</div>
+<div class="control" style="min-width:220px;">
+<span class="ic">🏷️</span>
+<select id="recipeConvertIngredientCategory"></select>
+</div>
+</div>
+<div class="formRow recipeConvertModeRow">
+<label class="recipeConvertModeCard"><input checked id="recipeConvertWeightModeRows" name="recipeConvertWeightMode" type="radio" value="rows"/><span><b>Poids calculé</b><small>Somme des grammes résolus des lignes</small></span></label>
+<label class="recipeConvertModeCard"><input id="recipeConvertWeightModeFinal" name="recipeConvertWeightMode" type="radio" value="final"/><span><b>Poids final</b><small>Utiliser le poids final saisi ci-dessous</small></span></label>
+</div>
+<div class="formRow">
+<div class="control">
+<span class="ic">⚖️</span>
+<input id="recipeConvertFinalWeight" inputmode="decimal" min="0" placeholder="Poids final (g)" step="1" type="number"/>
+</div>
+<div class="recipeConvertSummaryCard" id="recipeConvertWeightSummary"></div>
+</div>
+<div class="recipeConvertPreview" id="recipeConvertPreview"></div>
+<div class="muted tiny" id="recipeConvertStatus"></div>
+</div>
+<div class="recipeConvertActions">
+<button class="pillBtn gray" id="btnRecipeConvertCancel" type="button">Annuler</button>
+<button class="pillBtn green" id="btnRecipeConvertConfirm" type="button">Créer l’ingrédient</button>
+</div>
+</div>
+</div><script src="assets/js/core/00-app-shell.js"></script>
+<script src="assets/js/core/01-dom-refs-and-storage.js"></script>
+<script src="assets/js/ui/app/01-filters-shell.js"></script>
+<script src="assets/js/core/02-modal-and-form-runtime.js"></script>
+<script src="assets/js/features/ingredients/01-create-modal-and-categories.js"></script>
+<script src="assets/js/features/ingredients/02-cards-filters-manual.js"></script>
+<script src="assets/js/features/ingredients/03-storage-and-backup.js"></script>
+<script src="assets/js/features/ingredients/04-page-interactions-detail-thumb.js"></script>
+<script src="assets/js/features/ingredients/02-quick-import.js"></script>
+<script src="assets/js/core/03-file-button-bridge.js"></script>
+<script src="assets/js/ui/recipes/01-create-modal-shell.js"></script>
+<script src="assets/js/ui/recipes/03-library-bridge.js"></script>
+<script src="assets/js/domain/01-recipe-domains.js"></script>
+<script src="assets/js/features/recipes/01-recipe-import-ocr.js"></script>
+<script src="assets/js/features/recipes/03-store-runtime.js"></script>
+<script src="assets/js/features/recipes/04-filter-list-view.js"></script>
+<script src="assets/js/features/recipes/05-scenario-actions-runtime.js"></script>
+<script src="assets/js/features/recipes/06-print-init.js"></script>
+<script src="assets/js/ui/app/02-filters-modal-tabs.js"></script>
+<script src="assets/js/features/recipes/04-recipe-editor-runtime.js"></script>
+<script src="assets/js/ui/recipes/02-safe-ui-modules.js"></script>
+<script src="assets/js/features/recipes/02-recipe-editor-init.js"></script>
+<script src="assets/js/features/shared/01-ocr-shared-patch.js"></script>
+<script src="assets/js/ui/shared/01-unified-info-dots.js"></script>
+<script src="assets/js/core/99-layer-registry.js"></script>
+<script src="assets/js/ui/menus/02-menus-studio.js"></script>
+</div></body>
+</html>

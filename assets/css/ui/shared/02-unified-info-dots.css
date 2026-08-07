@@ -1,0 +1,55 @@
+
+.uiHintHidden{display:none !important}
+.uiInfoAnchor{position:relative;display:inline-flex;align-items:center;justify-content:center;margin-left:8px;vertical-align:middle}
+.uiInfoDot{appearance:none;-webkit-appearance:none;border:1px solid rgba(0,0,0,.12);background:rgba(255,255,255,.85);color:var(--ink700);width:18px;height:18px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;line-height:1;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.06);transition:transform .16s ease, box-shadow .16s ease, background .16s ease}
+.uiInfoDot:hover,.uiInfoDot:focus-visible{background:#fff;box-shadow:0 4px 14px rgba(0,0,0,.10);transform:translateY(-1px);outline:none}
+.uiInfoAnchor.open .uiInfoDot{background:var(--cream);border-color:rgba(62,138,90,.28)}
+.uiInfoBubble{position:absolute;top:calc(100% + 8px);left:50%;transform:translateX(-50%) translateY(-4px);min-width:220px;max-width:min(320px,calc(100vw - 32px));padding:10px 12px;border-radius:14px;background:#fff;border:1px solid rgba(0,0,0,.10);box-shadow:0 10px 28px rgba(0,0,0,.14);color:var(--ink700);font-size:12px;font-weight:700;line-height:1.45;text-align:left;opacity:0;pointer-events:none;transition:opacity .18s ease, transform .18s ease;z-index:40}
+.uiInfoAnchor.open .uiInfoBubble{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.bigTitle.hasUnifiedInfo,.bigTitle--withAction.hasUnifiedInfo,.subtle.hasUnifiedInfo,.ingUnitTitle.hasUnifiedInfo,.ingDefaultChoiceLabel.hasUnifiedInfo{display:flex;align-items:center;gap:0;flex-wrap:wrap}
+.bigTitle.hasUnifiedInfo .uiInfoText,.bigTitle--withAction.hasUnifiedInfo .uiInfoText,.subtle.hasUnifiedInfo .uiInfoText,.ingUnitTitle.hasUnifiedInfo .uiInfoText,.ingDefaultChoiceLabel.hasUnifiedInfo .uiInfoText{display:inline-flex;align-items:center}
+.bigTitle--withAction.hasUnifiedInfo > .modalIconBtn{margin-left:auto}
+@media (max-width:720px){
+  .uiInfoBubble{left:auto;right:0;transform:translateY(-4px);max-width:min(300px,calc(100vw - 24px))}
+  .uiInfoAnchor.open .uiInfoBubble{transform:translateY(0)}
+}
+
+
+/* ===== createModal info-dot bubble positioning fix ===== */
+#createOverlay .uiInfoAnchor{
+  z-index: 2;
+}
+#createOverlay .uiInfoAnchor.open{
+  z-index: 120;
+}
+#createOverlay .bigTitle.hasUnifiedInfo,
+#createOverlay .bigTitle--withAction.hasUnifiedInfo,
+#createOverlay .subtle.hasUnifiedInfo,
+#createOverlay .ingUnitTitle.hasUnifiedInfo,
+#createOverlay .ingDefaultChoiceLabel.hasUnifiedInfo{
+  position: relative;
+  overflow: visible;
+}
+#createOverlay .panel,
+#createOverlay .cmScenePanel,
+#createOverlay .cmAssistCard{
+  position: relative;
+  overflow: visible;
+}
+#createOverlay .uiInfoBubble{
+  left: 0;
+  right: auto;
+  top: calc(100% + 8px);
+  transform: translateY(-4px);
+  max-width: min(320px, calc(100vw - 56px));
+}
+#createOverlay .uiInfoAnchor.open .uiInfoBubble{
+  transform: translateY(0);
+}
+@media (max-width: 720px){
+  #createOverlay .uiInfoBubble{
+    left: 0;
+    right: auto;
+    max-width: min(280px, calc(100vw - 40px));
+  }
+}

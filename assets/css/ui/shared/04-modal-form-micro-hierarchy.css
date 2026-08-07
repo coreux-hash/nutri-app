@@ -1,0 +1,288 @@
+
+/* ===== Phase 4 : modal form micro-hierarchy ===== */
+:root{
+  --uiSectionGap: 18px;
+  --uiBlockGap: 12px;
+  --uiSoftSurface: linear-gradient(180deg, rgba(255,255,255,.80), rgba(248,246,240,.94));
+  --uiSoftBorder: 1px solid rgba(31,42,36,.08);
+  --uiSoftShadow: 0 8px 22px rgba(17,24,39,.04);
+}
+
+.modalBody, .createBody{
+  display:flex;
+  flex-direction:column;
+  gap: var(--uiSectionGap);
+}
+
+.modalBody > .panel,
+.createBody > .panel{
+  border-radius: 20px;
+}
+
+.modalBody > *, .createBody > *{
+  margin-top: 0 !important;
+}
+
+.sectionTitle, .bigTitle{
+  position:relative;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  //margin: 0 !important;
+  //padding-top: 2px;
+  line-height:1.12;
+}
+
+.sectionTitle + *, .bigTitle + *,
+.bigTitle--withAction + *{
+  margin-top: 8px !important;
+}
+
+.sectionTitle small{
+  display:block;
+  margin-left:auto;
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.02em;
+  opacity:.8;
+}
+
+.sectionTitle::after, .bigTitle::after{
+  content:"";
+  flex:1 1 auto;
+  min-width:36px;
+  height:1px;
+  border-radius:999px;
+  background: linear-gradient(90deg, rgba(30,78,51,.18), rgba(30,78,51,.05) 70%, transparent);
+}
+
+.bigTitle--withAction::after{
+  order:2;
+}
+.bigTitle--withAction .modalIconBtn{
+  order:3;
+}
+
+.createHint,
+#recipePanelScan .createHint,
+#recipePanelImport .createHint,
+#createOverlay .createHint{
+  margin: 0 !important;
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px dashed rgba(30,78,51,.18);
+  background: linear-gradient(180deg, rgba(255,255,255,.72), rgba(244,248,243,.90));
+  color: var(--ink700);
+  line-height:1.45;
+  font-size: 13px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.42);
+}
+
+.formRow, .macroForm, .macroGrid, .inlineActions, .ocrGrid{
+  margin-top: 0 !important;
+}
+
+.formRow + .formRow,
+.macroForm + .macroForm,
+.control + .control,
+.previewBox + .inlineActions,
+.control + .inlineActions,
+.inlineActions + .muted,
+.inlineActions + .subtle,
+.createHint + .control,
+.createHint + .subtle,
+.subtle + .control,
+.subtle + .inlineActions,
+.muted + .inlineActions{
+  margin-top: 10px !important;
+}
+
+.control, .previewBox, .ocrCard, .segToggle, .tableWrap{
+  box-shadow: var(--uiSoftShadow);
+}
+
+.control{
+  min-height: 44px;
+}
+
+.control input,
+.control select,
+.control textarea{
+  line-height: 1.35;
+}
+
+.control textarea.extensibleTextarea,
+.control textarea.big,
+.ocrCard textarea.extensibleTextarea{
+  line-height:1.45;
+}
+
+.subtle, .muted.tiny{
+  display:block;
+  line-height:1.42;
+}
+
+.createBody .subtle,
+.modalBody .subtle,
+.createBody .muted,
+.modalBody .muted{
+  color: var(--ink700);
+}
+
+.inlineActions{
+  align-items:flex-start;
+  gap:10px 10px;
+}
+
+.inlineActions > .subtle,
+.inlineActions > .muted{
+  flex:1 1 100%;
+}
+
+#recipePanelScan, #recipePanelImport, #recipePanelManual,
+#createOverlay .panel, #recipeCreateOverlay .panel{
+  position:relative;
+}
+
+#recipePanelScan > .bigTitle,
+#recipePanelImport > .bigTitle,
+#recipePanelManual > .bigTitle,
+#createOverlay .panel > .bigTitle,
+#recipeCreateOverlay .panel > .bigTitle{
+  padding-top: 12px; margin-bottom: 12px !important;
+}
+
+#recipePanelScan > :not(.bigTitle),
+#recipePanelImport > :not(.bigTitle),
+#recipePanelManual > :not(.bigTitle),
+#createOverlay .panel > :not(.bigTitle),
+#recipeCreateOverlay .panel > :not(.bigTitle){
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.ocrCard{
+  padding: 14px;
+  border-radius: 18px;
+  background: var(--uiSoftSurface);
+  border: var(--uiSoftBorder);
+  box-shadow: var(--uiSoftShadow);
+}
+
+.ocrHead{
+  align-items:flex-start;
+  gap:10px;
+}
+
+.ocrLabel{
+  line-height:1.25;
+}
+
+.tableWrap{
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(255,255,255,.84), rgba(248,246,240,.98));
+  border: 1px solid rgba(31,42,36,.06);
+}
+
+.createFooter, .modalFooter{
+  gap:10px;
+}
+
+@media (max-width: 680px){
+  .modalBody, .createBody{ gap: 16px; }
+  .sectionTitle, .bigTitle{ font-size: 20px; }
+  .sectionTitle::after, .bigTitle::after{ min-width: 18px; }
+  .createHint{ padding: 11px 12px; }
+  .ocrHead{ flex-direction:column; align-items:stretch; }
+  .ocrHead .pillBtn{ width:100%; justify-content:center; }
+  .inlineActions{ gap:8px; }
+}
+
+@media (max-width: 520px){
+  .modalBody, .createBody{ gap: 14px; }
+  .sectionTitle, .bigTitle{ font-size: 18px; }
+  .sectionTitle small{ display:none; }
+  .sectionTitle::after, .bigTitle::after{ display:none; }
+  .createHint{ font-size:12.5px; }
+  .subtle, .muted, .muted.tiny{ font-size:12px; }
+  .inlineActions > .pillBtn,
+  .inlineActions > button,
+  .inlineActions > .btn{
+    flex:1 1 calc(50% - 6px);
+    justify-content:center;
+  }
+  #recipePanelScan .inlineActions > .pillBtn:last-child,
+  #recipePanelImport .inlineActions > .pillBtn:last-child{
+    flex-basis:100%;
+  }
+  .ocrCard{ padding: 12px; border-radius:16px; }
+}
+
+.inlineActions > .pillBtn,
+.inlineActions > .btn{
+  margin-top: 0 !important;
+}
+
+.formRow > *,
+.macroForm > *{
+  min-width: 0;
+}
+/* ===== Patch 1B — micro-hierarchy specific to ingredient manual panel ===== */
+#createOverlay #panelManual{
+  padding: 12px;
+}
+
+#createOverlay #panelManual > .bigTitle,
+#createOverlay #panelManual .ingUnitSection > .bigTitle{
+  margin-bottom: 8px !important;
+}
+
+#createOverlay #panelManual > .createHint,
+#createOverlay #panelManual .ingUnitSection > .createHint{
+  padding: 9px 11px;
+  border-radius: 14px;
+  font-size: 12px;
+  line-height: 1.32;
+  color: var(--ink700);
+  background: linear-gradient(180deg, rgba(255,255,255,.60), rgba(246,243,236,.88));
+  border: 1px dashed rgba(30,78,51,.12);
+  box-shadow: none;
+}
+
+#createOverlay #panelManual > .createHint{
+  margin-bottom: 2px !important;
+}
+
+#createOverlay #panelManual .ingUnitSection{
+  margin-top: 12px;
+}
+
+#createOverlay #panelManual .ingUnitSection > .createHint{
+  color: var(--ink500);
+}
+
+#createOverlay #panelManual .bigTitle + .formRow,
+#createOverlay #panelManual .bigTitle + .ingProfileGrid,
+#createOverlay #panelManual .createHint + .formRow,
+#createOverlay #panelManual .createHint + .ingProfileGrid{
+  margin-top: 8px !important;
+}
+
+@media (max-width: 680px){
+  #createOverlay #panelManual{
+    padding: 10px;
+  }
+
+  #createOverlay #panelManual > .bigTitle,
+  #createOverlay #panelManual .ingUnitSection > .bigTitle{
+    font-size: 17px;
+    line-height: 1.08;
+  }
+
+  #createOverlay #panelManual > .createHint,
+  #createOverlay #panelManual .ingUnitSection > .createHint{
+    padding: 8px 10px;
+    font-size: 11.75px;
+    line-height: 1.28;
+  }
+}

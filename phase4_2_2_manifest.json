@@ -1,0 +1,8 @@
+{
+  "base": "nutriapp_phase4_2_1_internal_subsystems_fix",
+  "patch": "phase4_2_2",
+  "changes": [
+    "features/recipes/05-scenario-actions-runtime.js now resolves clamp/applyTheme/resolveRecipeRow/recipeMacrosFromGrams via namespaces or globals",
+    "features/recipes/04-recipe-editor-runtime.js now exposes recipe editor helper internals on window and NutriRecipes.editor"
+  ]
+}

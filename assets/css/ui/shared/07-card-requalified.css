@@ -1,0 +1,231 @@
+/* ============================================================================
+   NutriApp — Phase 1 : carte Top Trumps REQUALIFIÉE (A-requalifié)
+   Chargée en DERNIER. On garde l'identité carte (bordure catégorie épaisse),
+   on remonte la finition au niveau des modals/fiches. CSS only, zéro moteur.
+   Réversible : supprimer ce fichier + son <link>.
+   Deux lifts (aucune décision antérieure inversée) :
+     Q1 — profondeur : ombre "crafted" à deux couches, comme les panneaux de modal
+          (remplace l'ombre plate et lourde 0 14px 30px .14).
+     Q2 — footer catégorie : ruban saturé + texte or pâle  ->  pill tintée + texte
+          catégorie foncé, exactement le langage de la pill des fiches.
+   ========================================================================== */
+
+/* ---- Q1 — Profondeur (les deux familles) ---- */
+#pageIngredients .card.libCardShell.ingredient-card,
+#pageRecipes .recipeCard.libCardShell{
+  box-shadow:
+    0 1px 2px rgba(46,34,20,.06),
+    0 3px 8px rgba(46,34,20,.08),
+    0 14px 28px rgba(46,34,20,.10) !important;
+}
+
+/* ---- Q2 — Footer catégorie requalifié : pill tintée façon fiche ---- */
+
+/* Tokens locaux (ajustables) */
+:root{
+  --catPillBase:      #f6f2ea;   /* crème sous la teinte */
+  --catPillBgMix:     24%;        /* (indicatif) intensité du fond */
+  --catPillBorderMix: 46%;        /* (indicatif) intensité du filet */
+}
+
+/* Ingrédient : .badge.bottom-ribbon */
+#pageIngredients .badge.bottom-ribbon{
+  background: color-mix(in srgb, var(--cat, #B3A276) 24%, var(--catPillBase)) !important;
+  color: color-mix(in srgb, var(--cat, #B3A276) 40%, #000) !important;
+  border: 1px solid color-mix(in srgb, var(--cat, #B3A276) 46%, rgba(216,210,198,.95)) !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  font-family: var(--kpiFont) !important;
+  font-weight: 800 !important;
+  letter-spacing: .04em !important;
+}
+
+/* Recette : .catPill[data-cat] */
+#pageRecipes .recipeCard .catPill[data-cat]{
+  background: color-mix(in srgb, var(--cat-main, #B3A276) 24%, var(--catPillBase)) !important;
+  color: color-mix(in srgb, var(--cat-main, #B3A276) 40%, #000) !important;
+  border: 1px solid color-mix(in srgb, var(--cat-main, #B3A276) 46%, rgba(216,210,198,.95)) !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  font-family: var(--kpiFont) !important;
+  font-weight: 800 !important;
+  letter-spacing: .04em !important;
+}
+
+/* ============================================================================
+   PHASE 2 (CSS only, zéro moteur, zéro action touchée)
+   P2a — icône emoji par macro (🔥 kcal / 💪 P / 🧊 G / 💧 L), tuile rehaussée.
+   P2b — TOUS les menus kebab (ingrédient + recette + #kebabPopover) et le notePop
+          sur un style unique concordant : crème, police système poids app, icône cadrée.
+   ========================================================================== */
+
+/* ---- P2a — icône emoji par macro (🔥 kcal / 💪 P / 🧊 G / 💧 L) ----
+   Icône en ABSOLU dans le padding haut : zéro impact sur la hauteur, donc
+   tuiles à hauteur FIXE = uniformes (fini le Kcal plus court) et contenues
+   dans le cadre ingrédient (fini le débordement). */
+#pageIngredients .macro.kpiRow.libCardStats .kpi,
+#pageRecipes .recipeCard .macro.libCardStats .kpi{
+  position:relative !important;
+  display:grid !important;
+  align-content:center !important;
+  justify-items:center !important;
+  text-align:center !important;
+  padding-top:15px !important;
+  overflow:hidden !important;
+}
+#pageIngredients .macro.kpiRow.libCardStats .kpi{
+  height:var(--kpi-height) !important;
+  min-height:var(--kpi-height) !important;
+}
+#pageRecipes .recipeCard .macro.libCardStats .kpi{
+  height:74px !important;
+  min-height:74px !important;
+}
+#pageIngredients .macro.kpiRow.libCardStats .kpi::before,
+#pageRecipes .recipeCard .macro.libCardStats .kpi::before{
+  content:"" !important;
+  position:absolute !important;
+  top:4px !important; left:0 !important; right:0 !important;
+  text-align:center !important;
+  font-size:12px !important;
+  line-height:1 !important;
+  pointer-events:none !important;
+}
+#pageIngredients .macro.kpiRow.libCardStats .kpi:nth-child(1)::before,
+#pageRecipes .recipeCard .macro.libCardStats .kpi:nth-child(1)::before{ content:"🔥" !important; }
+#pageIngredients .macro.kpiRow.libCardStats .kpi:nth-child(2)::before,
+#pageRecipes .recipeCard .macro.libCardStats .kpi:nth-child(2)::before{ content:"💪" !important; }
+#pageIngredients .macro.kpiRow.libCardStats .kpi:nth-child(3)::before,
+#pageRecipes .recipeCard .macro.libCardStats .kpi:nth-child(3)::before{ content:"🧊" !important; }
+#pageIngredients .macro.kpiRow.libCardStats .kpi:nth-child(4)::before,
+#pageRecipes .recipeCard .macro.libCardStats .kpi:nth-child(4)::before{ content:"💧" !important; }
+
+/* ---- P2a bis — hero ingrédient : légèrement réduit + initiale bien centrée ---- */
+#pageIngredients .card.libCardShell.ingredient-card{ --hero-height:clamp(120px, 42cqw, 150px) !important; }
+#pageIngredients .thumbPlaceholder{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:100% !important;
+  height:100% !important;
+}
+
+/* ---- P2b — menus & popovers : UN seul style, concordant avec l'app ----
+   Couvre kebab ingrédient (inline), kebab recette (inline) + #kebabPopover
+   (détaché) + notePop. Fond crème, police système poids app, icône cadrée. */
+#pageIngredients .notePop,
+#pageIngredients .kebabMenu,
+#pageRecipes .kebabMenu,
+#kebabPopover{
+  background: var(--p100, #FAF8F2) !important;
+  color: var(--ink900, #1F2A24) !important;
+  border: 1px solid var(--b1, #D8D2C6) !important;
+  border-radius: 14px !important;
+  box-shadow: var(--shadowMed, 0 10px 22px rgba(0,0,0,.12)) !important;
+  padding: 6px !important;
+}
+#pageIngredients .kebabMenu button,
+#pageRecipes .kebabMenu button,
+#kebabPopover button{
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  color: var(--ink900, #1F2A24) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  width: 100% !important;
+  text-align: left !important;
+  padding: 9px 11px !important;
+  border-radius: 10px !important;
+  background: transparent !important;
+  border: 0 !important;
+  cursor: pointer !important;
+}
+#pageIngredients .kebabMenu button:hover,
+#pageRecipes .kebabMenu button:hover,
+#kebabPopover button:hover{ background: rgba(238,233,222,.6) !important; }
+#pageIngredients .kebabMenu button > span:first-child,
+#pageRecipes .kebabMenu button .menuIcon,
+#pageRecipes .kebabMenu button > span:first-child,
+#kebabPopover button .menuIcon,
+#kebabPopover button > span:first-child{
+  flex: 0 0 20px !important;
+  width: 20px !important;
+  text-align: center !important;
+  font-size: 15px !important;
+  line-height: 1 !important;
+}
+#pageIngredients .kebabMenu button.danger,
+#pageRecipes .kebabMenu button.danger,
+#kebabPopover button.danger{ color: var(--danger, #C5524A) !important; }
+#pageIngredients .kebabMenu button.danger:hover,
+#pageRecipes .kebabMenu button.danger:hover,
+#kebabPopover button.danger:hover{ background: rgba(197,82,74,.10) !important; }
+
+/* ============================================================================
+   PHASE 2 — ajustements (retours visuels)
+   ========================================================================== */
+
+/* Marge entre les tuiles nutritionnelles et la tuile catégorie (ingrédient) */
+#pageIngredients .libCardFooterMeta.bottom-ribbon-wrap,
+#pageIngredients .libCardFooterMeta{ margin-top:10px !important; }
+
+/* Unité + label : STRICTEMENT identiques entre recette et ingrédient.
+   La recette n'ayant pas de conteneur (pas de cqw), on fige les DEUX familles
+   à la même taille — 9px unité, 8px base — même graisse/casse/couleur/alignement.
+   (On neutralise ici le clamp responsive de l'ingrédient pour garantir l'égalité.) */
+#pageIngredients .macro.kpiRow.libCardStats .stat-unit,
+#pageRecipes .recipeCard .macro.libCardStats .statUnit{
+  display:block !important;
+  font-family:var(--kpiFont) !important;
+  font-size:9px !important;
+  line-height:1 !important;
+  font-weight:700 !important;
+  text-transform:uppercase !important;
+  letter-spacing:0 !important;
+  opacity:.96 !important;
+  color:var(--ink700, #4C5A52) !important;
+}
+#pageIngredients .macro.kpiRow.libCardStats .kpiLbl,
+#pageIngredients .macro.kpiRow.libCardStats .stat-label,
+#pageRecipes .recipeCard .macro.libCardStats .statBase{
+  display:block !important;
+  margin:2px 0 0 !important;
+  font-family:var(--kpiFont) !important;
+  font-size:8px !important;
+  line-height:1 !important;
+  font-weight:600 !important;
+  text-transform:uppercase !important;
+  letter-spacing:0 !important;
+  opacity:.94 !important;
+  color:var(--ink500, #7A887F) !important;
+}
+
+/* Valeur des tuiles : taille intermédiaire uniforme
+   (entre le petit de l'ingrédient et le grand de la recette) */
+#pageIngredients .macro.kpiRow.libCardStats .kpiVal,
+#pageRecipes .recipeCard .macro.libCardStats .kpiVal{
+  font-size:16px !important;
+  line-height:1 !important;
+}
+
+/* Recette : réserver 2 lignes pour la base (g / portion) afin que la VALEUR
+   soit alignée horizontalement sur toutes les tuiles, comme dans l'ingrédient */
+#pageRecipes .recipeCard .macro.libCardStats .statBase{
+  min-height:20px !important;
+  text-align:center !important;
+}
+
+/* Valeur des tuiles : taille INTERMÉDIAIRE (16px) pour les deux familles
+   (entre le ~14px ingrédient et le 17px recette) + centrage horizontal
+   de la valeur recette, calé sur l'ingrédient. */
+#pageIngredients .macro.kpiRow.libCardStats .kpiVal,
+#pageRecipes .recipeCard .macro.libCardStats .kpiVal{
+  font-size:16px !important;
+  line-height:1 !important;
+  text-align:center !important;
+  justify-self:center !important;
+  width:100% !important;
+  margin:0 !important;
+}
