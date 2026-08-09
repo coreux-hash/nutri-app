@@ -66,8 +66,8 @@
       const carbRaw  = pick(raw.carbs, raw.c, raw.g, raw.G, raw.glucides, raw.gluc, raw.carb100, raw.carbs100, raw.carb_100, raw.cmCarbs, raw.ingCarb, macros?.carbs, macros?.g, macros?.G, raw.cmCarb, raw.cmG, raw.ingG);
       const fatRaw   = pick(raw.fat, raw.f, raw.l, raw.L, raw.lipides, raw.lip, raw.fat100, raw.fat_100, raw.cmFat, raw.ingFat, macros?.fat, macros?.l, macros?.L, raw.cmLip, raw.cmL, raw.ingL);
 
-      const note = String(pick(raw.note, raw.notes, raw.source, raw.cmNote, raw.ingNote, raw.comment, raw.remarque, '')).trim();
-      const thumb = String(pick(raw.thumb, raw.thumbnail, raw.vignette, raw.image, raw.img, raw.photo, raw.photoDataUrl, raw.dataUrl, raw.thumbDataUrl, '')).trim();
+        const note = String(pick(raw.note, raw.notes, raw.source, raw.cmNote, raw.ingNote, raw.comment, raw.remarque) || '').trim();
+        const thumb = String(pick(raw.thumb, raw.thumbnail, raw.vignette, raw.image, raw.img, raw.photo, raw.photoDataUrl, raw.dataUrl, raw.thumbDataUrl) || '').trim();
 
       const profileRaw = String(pick(raw.profile, raw.ingProfile, raw.cmProfile, 'solid')).trim().toLowerCase();
       const profile = (profileRaw === 'liquid') ? 'liquid' : 'solid';
@@ -152,11 +152,28 @@ function migrateIfNeeded(){
         return (val === null || val === undefined) ? fallback : val;
       }catch(_){ return fallback; }
     }
-    function lsWrite(key, value){
-      NutriStorage.writeJSON(key, value);
-    }
+      function lsWrite(key, value){
+        NutriStorage.writeJSON(key, value);
+      }
+      function nameKey(value){
+        return String(value || '')
+          .trim()
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/\s+/g, ' ');
+      }
+      function countDuplicateNameKeys(list){
+        const counts = new Map();
+        (Array.isArray(list) ? list : []).forEach(item=>{
+          const key = nameKey(item && item.name);
+          if(!key) return;
+          counts.set(key, (counts.get(key) || 0) + 1);
+        });
+        return Array.from(counts.entries()).filter(([,count])=>count > 1).map(([key])=>key);
+      }
 
-    // Legacy ingredient cache (derived only). Canonical source is NutriStore / persisted storage.
+      // Legacy ingredient cache (derived only). Canonical source is NutriStore / persisted storage.
     function syncLegacyIngredientCache(list){
       const next = Array.isArray(list) ? list.map(normalizeIngredient).filter(Boolean) : [];
       ING_STORE = next.slice();
@@ -215,22 +232,195 @@ function migrateIfNeeded(){
       setIngredientStoreSnapshot(next);
     }
 
-    // expose minimal API for backup modal (global)
-    window.NutriAppData = {
-      exportAll(){
-        const ingredients = getIngredientStoreSnapshot();
-        const recipes = getRecipeStoreSnapshot();
-        return {
-          meta:{
-            app:'NutriApp',
-            schema:'backup.v2',
-            exportedAt: new Date().toISOString()
-          },
-          ingredients: Array.isArray(ingredients) ? ingredients : [],
-          recipes: Array.isArray(recipes) ? recipes : [],
-          menus: lsRead(LS_KEYS.menus, [])
+      function uid(prefix){
+        return prefix + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+      }
+      function normalizeRecipeSafe(row){
+        try{
+          return (typeof window.normalizeRecipe === 'function') ? window.normalizeRecipe(row) : row;
+        }catch(_){
+          return row;
+        }
+      }
+      function normalizeMenuBackup(raw){
+        if(!raw || typeof raw !== 'object') return null;
+        const lines = [];
+        const normalizeLine = (line, fallbackLane)=>{
+          if(!line) return null;
+          if(typeof line === 'string'){
+            return { id:uid('line'), lane:fallbackLane || 'breakfast', kind:'note', sourceId:'', name:String(line), meta:'Import texte' };
+          }
+          const kindRaw = String(line.kind || line.type || line.sourceType || 'note').trim().toLowerCase();
+          const kind = ['recipe','ingredient','note'].includes(kindRaw) ? kindRaw : (kindRaw === 'recette' ? 'recipe' : (kindRaw === 'ingrédient' ? 'ingredient' : 'note'));
+          return {
+            id:String(line.id || uid('line')),
+            lane:String(line.lane || fallbackLane || 'breakfast'),
+            kind,
+            sourceId:String(line.sourceId || line.recipeId || line.ingredientId || ''),
+            name:String(line.name || line.title || line.label || line.nameSnapshot || '').trim() || 'Sans titre',
+            meta:String(line.meta || line.note || '').trim()
+          };
         };
-      },
+        if(Array.isArray(raw.lines)){
+          raw.lines.forEach(line => {
+            const normalized = normalizeLine(line, line && line.lane);
+            if(normalized) lines.push(normalized);
+          });
+        }else{
+          ['breakfast','lunch','dinner','snack'].forEach(lane=>{
+            const bucket = (raw.lanes && raw.lanes[lane]) || raw[lane] || [];
+            if(Array.isArray(bucket)){
+              bucket.forEach(line=>{
+                const normalized = normalizeLine(line, lane);
+                if(normalized) lines.push(normalized);
+              });
+            }else if(typeof bucket === 'string' && bucket.trim()){
+              bucket.split('|').map(s=>s.trim()).filter(Boolean).forEach(label=>{
+                lines.push({ id:uid('line'), lane, kind:'note', sourceId:'', name:label, meta:'Import simple' });
+              });
+            }
+          });
+        }
+        return {
+          ...raw,
+          id:String(raw.id || uid('menu')),
+          title:String(raw.title || raw.name || raw.menuTitle || raw.mealName || 'Menu').trim() || 'Menu',
+          category:String(raw.category || raw.menuCategory || raw.mealCategory || '').trim(),
+          tags:Array.isArray(raw.tags) ? raw.tags.join(', ') : String(raw.tags || raw.menuTags || raw.mealTags || '').trim(),
+          objective:String(raw.objective || raw.note || raw.menuNote || raw.mealNote || '').trim(),
+          prep:String(raw.prep || raw.mealPrep || '').trim(),
+          lines,
+          createdAt:String(raw.createdAt || new Date().toISOString()),
+          updatedAt:String(raw.updatedAt || new Date().toISOString()),
+          origin:String(raw.origin || 'saved')
+        };
+      }
+      function asArray(value){
+        return Array.isArray(value) ? value : [];
+      }
+      function duplicateIds(list){
+        const seen = new Set();
+        const dup = new Set();
+        asArray(list).forEach(item=>{
+          const id = String(item && item.id || '').trim();
+          if(!id) return;
+          if(seen.has(id)) dup.add(id);
+          seen.add(id);
+        });
+        return Array.from(dup);
+      }
+      function validateBackupPayload(payload){
+        const report = {
+          ok:false,
+          schema:String(payload && payload.meta && payload.meta.schema || ''),
+          counts:{ ingredients:0, recipes:0, menus:0 },
+          errors:[],
+          warnings:[],
+          info:[]
+        };
+        if(!payload || typeof payload !== 'object'){
+          report.errors.push('JSON invalide : la racine doit être un objet.');
+          return report;
+        }
+        const allowedSchemas = ['', 'backup.v2', 'backup.v3'];
+        if(payload.meta && payload.meta.schema && !allowedSchemas.includes(String(payload.meta.schema))){
+          report.warnings.push('Schéma non standard pour une sauvegarde globale : ' + String(payload.meta.schema));
+        }
+        if(!Array.isArray(payload.ingredients)) report.warnings.push('Champ ingredients absent ou non-liste : il sera traité comme une liste vide.');
+        if(!Array.isArray(payload.recipes)) report.warnings.push('Champ recipes absent ou non-liste : il sera traité comme une liste vide.');
+        if(!Array.isArray(payload.menus)) report.warnings.push('Champ menus absent ou non-liste : il sera traité comme une liste vide.');
+        const ingredients = asArray(payload.ingredients).map(normalizeIngredient).filter(Boolean);
+        const recipes = asArray(payload.recipes).map(normalizeRecipeSafe).filter(Boolean);
+        const menus = asArray(payload.menus).map(normalizeMenuBackup).filter(Boolean);
+        report.counts = { ingredients:ingredients.length, recipes:recipes.length, menus:menus.length };
+        const dupNames = countDuplicateNameKeys(ingredients);
+        if(dupNames.length) report.errors.push('Ingrédients en double par nom : ' + dupNames.slice(0,5).join(', '));
+        const dupIngIds = duplicateIds(ingredients);
+        const dupRecipeIds = duplicateIds(recipes);
+        const dupMenuIds = duplicateIds(menus);
+        if(dupIngIds.length) report.errors.push('IDs ingrédients en double : ' + dupIngIds.slice(0,5).join(', '));
+        if(dupRecipeIds.length) report.errors.push('IDs recettes en double : ' + dupRecipeIds.slice(0,5).join(', '));
+        if(dupMenuIds.length) report.errors.push('IDs menus en double : ' + dupMenuIds.slice(0,5).join(', '));
+        const importedIngredientIds = new Set(ingredients.map(x=>String(x && x.id || '')).filter(Boolean));
+        const importedRecipeIds = new Set(recipes.map(x=>String(x && x.id || '')).filter(Boolean));
+        let recipeMissingIngredients = 0;
+        recipes.forEach(recipe=>{
+          asArray(recipe && recipe.rows).forEach(row=>{
+            const id = String(row && row.ingredientId || '').trim();
+            if(id && !importedIngredientIds.has(id)) recipeMissingIngredients += 1;
+          });
+        });
+        if(recipeMissingIngredients) report.warnings.push(recipeMissingIngredients + ' ligne(s) recette référencent un ingrédient non inclus dans la sauvegarde.');
+        let menuMissingRecipes = 0;
+        let menuMissingIngredients = 0;
+        menus.forEach(menu=>{
+          asArray(menu && menu.lines).forEach(line=>{
+            const id = String(line && line.sourceId || '').trim();
+            if(!id) return;
+            if(line.kind === 'recipe' && !importedRecipeIds.has(id)) menuMissingRecipes += 1;
+            if(line.kind === 'ingredient' && !importedIngredientIds.has(id)) menuMissingIngredients += 1;
+          });
+        });
+        if(menuMissingRecipes) report.warnings.push(menuMissingRecipes + ' ligne(s) menu référencent une recette non incluse dans la sauvegarde.');
+        if(menuMissingIngredients) report.warnings.push(menuMissingIngredients + ' ligne(s) menu référencent un ingrédient non inclus dans la sauvegarde.');
+        if(!report.errors.length){
+          report.ok = true;
+          report.info.push('Structure compatible avec l’import global NutriApp.');
+        }
+        report.normalized = { ingredients, recipes, menus };
+        return report;
+      }
+      function refreshAfterBackupImport(){
+        if(ingGrid){
+          ingGrid.innerHTML = '';
+          const list = getIngredientStoreSnapshot().slice();
+          for(let i=list.length-1;i>=0;i--){
+            const it = list[i];
+            if(it && it.id) upsertCard(it);
+          }
+        }
+        try{
+          if(window.refreshRecipesPage && typeof window.refreshRecipesPage === 'function') window.refreshRecipesPage();
+        }catch(_){}
+        try{
+          if(window.NutriMenus && typeof window.NutriMenus.renderSavedMenuCards === 'function') window.NutriMenus.renderSavedMenuCards();
+          if(window.NutriMenus && typeof window.NutriMenus.filterLibrary === 'function') window.NutriMenus.filterLibrary();
+        }catch(_){}
+      }
+
+      // expose minimal API for backup modal (global)
+      window.NutriAppData = {
+        exportAll(){
+          const ingredients = getIngredientStoreSnapshot();
+          const recipes = getRecipeStoreSnapshot();
+          const menus = lsRead(LS_KEYS.menus, []);
+          return {
+            meta:{
+              app:'NutriApp',
+              schema:'backup.v3',
+              exportedAt: new Date().toISOString(),
+              counts:{
+                ingredients:Array.isArray(ingredients) ? ingredients.length : 0,
+                recipes:Array.isArray(recipes) ? recipes.length : 0,
+                menus:Array.isArray(menus) ? menus.length : 0
+              },
+              storageKeys:{
+                ingredients:LS_KEYS.ingredients,
+                recipes:LS_KEYS.recipes,
+                menus:LS_KEYS.menus
+              }
+            },
+            ingredients: Array.isArray(ingredients) ? ingredients : [],
+            recipes: Array.isArray(recipes) ? recipes : [],
+            menus: Array.isArray(menus) ? menus : []
+          };
+        },
+
+        validateAll(payload){
+          const report = validateBackupPayload(payload);
+          const { normalized, ...publicReport } = report;
+          return publicReport;
+        },
 
       // Ingredients helpers (used by UI actions)
       getIngredients(){
@@ -249,35 +439,28 @@ function migrateIfNeeded(){
         return changed;
       },
 
-      importAll(payload, opts){
-        if(!payload || typeof payload !== 'object') return {ok:false, error:'JSON invalide.'};
-        if(!Array.isArray(payload.ingredients)) return {ok:false, error:'Champ ingredients manquant.'};
-
-        const mode = (opts && typeof opts === 'object' && opts.mode) ? String(opts.mode) : 'replace';
-        const incoming = payload.ingredients.map(normalizeIngredient).filter(Boolean);
-
-        // Politique A : unicité stricte du nom (imports inclus)
-        const dupKeys = countDuplicateNameKeys(incoming);
-        if(dupKeys.length){
-          const sample = dupKeys.slice(0,5).join(', ');
-          return {ok:false, error:'Import refusé : noms en double dans le fichier. Exemples: ' + sample};
-        }
-
-        const normalizeRecipeSafe = (row)=>{
-          try{
-            return (typeof window.normalizeRecipe === 'function') ? window.normalizeRecipe(row) : row;
-          }catch(_){
-            return row;
+        importAll(payload, opts){
+          const validation = validateBackupPayload(payload);
+          if(!validation.ok){
+            return {ok:false, error:validation.errors.join(' · ') || 'Sauvegarde invalide.', report:validation};
           }
-        };
-        const incomingRecipes = Array.isArray(payload.recipes) ? payload.recipes.map(normalizeRecipeSafe).filter(Boolean) : null;
-        const incomingMenus = Array.isArray(payload.menus) ? payload.menus.slice() : null;
-        let nextIngredients = [];
 
-        if(mode === 'merge'){
-          const base = getIngredientStoreSnapshot();
-          const map = new Map();
-          const nameToId = new Map();
+          const mode = (opts && typeof opts === 'object' && opts.mode) ? String(opts.mode) : 'replace';
+          const incoming = validation.normalized.ingredients;
+          const incomingRecipes = validation.normalized.recipes;
+          const incomingMenus = validation.normalized.menus;
+          let nextIngredients = [];
+          const stats = {
+            mode,
+            ingredients:{ incoming:incoming.length, added:0, updated:0, final:0 },
+            recipes:{ incoming:incomingRecipes.length, added:0, updated:0, final:0 },
+            menus:{ incoming:incomingMenus.length, added:0, updated:0, final:0 }
+          };
+
+          if(mode === 'merge'){
+            const base = getIngredientStoreSnapshot();
+            const map = new Map();
+            const nameToId = new Map();
 
           if(Array.isArray(base)){
             for(const it of base){
@@ -303,28 +486,32 @@ function migrateIfNeeded(){
           for(const it of incoming){
             const k = nameKey(it.name);
 
-            if(k && nameToId.has(k)){
-              const existingId = nameToId.get(k);
-              const prev = map.get(existingId) || {};
-              map.set(existingId, { ...prev, ...it, id: existingId });
-              continue;
+              if(k && nameToId.has(k)){
+                const existingId = nameToId.get(k);
+                const prev = map.get(existingId) || {};
+                map.set(existingId, { ...prev, ...it, id: existingId });
+                stats.ingredients.updated += 1;
+                continue;
+              }
+
+              if(it.id){
+                const id = String(it.id);
+                if(map.has(id)) stats.ingredients.updated += 1;
+                else stats.ingredients.added += 1;
+                map.set(id, it);
+                if(k && !nameToId.has(k)) nameToId.set(k, id);
+              }else{
+                const gen = 'ing_' + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+                it.id = gen;
+                map.set(gen, it);
+                if(k) nameToId.set(k, gen);
+                stats.ingredients.added += 1;
+              }
             }
 
-            if(it.id){
-              const id = String(it.id);
-              map.set(id, it);
-              if(k && !nameToId.has(k)) nameToId.set(k, id);
-            }else{
-              const gen = 'ing_' + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
-              it.id = gen;
-              map.set(gen, it);
-              if(k) nameToId.set(k, gen);
-            }
-          }
+            nextIngredients = Array.from(map.values()).map(normalizeIngredient).filter(Boolean);
+            stats.ingredients.final = nextIngredients.length;
 
-          nextIngredients = Array.from(map.values()).map(normalizeIngredient).filter(Boolean);
-
-          if(incomingRecipes){
             const baseRecipes = getRecipeStoreSnapshot();
             const recipeMap = new Map();
             (Array.isArray(baseRecipes) ? baseRecipes : []).forEach(r=>{
@@ -332,61 +519,64 @@ function migrateIfNeeded(){
             });
             incomingRecipes.forEach(r=>{
               if(!r) return;
-              const rid = String(r.id || ('r_' + Date.now().toString(36) + Math.random().toString(36).slice(2,6)));
+              const rid = String(r.id || uid('r'));
+              if(recipeMap.has(rid)) stats.recipes.updated += 1;
+              else stats.recipes.added += 1;
               recipeMap.set(rid, { ...r, id: rid });
             });
             const mergedRecipes = Array.from(recipeMap.values()).map(normalizeRecipeSafe);
+            stats.recipes.final = mergedRecipes.length;
             setRecipeStoreSnapshot(mergedRecipes);
-          }
 
-          if(incomingMenus){
             const baseMenus = lsRead(LS_KEYS.menus, []);
             const menuMap = new Map();
             (Array.isArray(baseMenus) ? baseMenus : []).forEach(m=>{
-              if(m && m.id) menuMap.set(String(m.id), m);
+              if(m && m.id) menuMap.set(String(m.id), normalizeMenuBackup(m));
             });
             incomingMenus.forEach(m=>{
               if(!m) return;
-              const mid = String(m.id || ('menu_' + Date.now().toString(36) + Math.random().toString(36).slice(2,6)));
+              const mid = String(m.id || uid('menu'));
+              if(menuMap.has(mid)) stats.menus.updated += 1;
+              else stats.menus.added += 1;
               menuMap.set(mid, { ...m, id: mid });
             });
-            lsWrite(LS_KEYS.menus, Array.from(menuMap.values()));
+            const mergedMenus = Array.from(menuMap.values()).map(normalizeMenuBackup).filter(Boolean);
+            stats.menus.final = mergedMenus.length;
+            lsWrite(LS_KEYS.menus, mergedMenus);
           }
-        }
-        else{
-          nextIngredients = incoming.slice();
-          const nextRecipes = incomingRecipes ? incomingRecipes.map(normalizeRecipeSafe) : [];
-          const nextMenus = incomingMenus ? incomingMenus.slice() : [];
-          setRecipeStoreSnapshot(nextRecipes);
-          lsWrite(LS_KEYS.menus, nextMenus);
-        }
-
-        setIngredientStoreSnapshot(nextIngredients);
-
-        // re-render UI (ingredients)
-        if(ingGrid){
-          ingGrid.innerHTML = '';
-          const list = getIngredientStoreSnapshot().slice();
-          for(let i=list.length-1;i>=0;i--){
-            const it = list[i];
-            if(it && it.id) upsertCard(it);
+          else{
+            nextIngredients = incoming.slice();
+            const nextRecipes = incomingRecipes.map(normalizeRecipeSafe);
+            const nextMenus = incomingMenus.map(normalizeMenuBackup).filter(Boolean);
+            stats.ingredients.added = nextIngredients.length;
+            stats.recipes.added = nextRecipes.length;
+            stats.menus.added = nextMenus.length;
+            stats.ingredients.final = nextIngredients.length;
+            stats.recipes.final = nextRecipes.length;
+            stats.menus.final = nextMenus.length;
+            setRecipeStoreSnapshot(nextRecipes);
+            lsWrite(LS_KEYS.menus, nextMenus);
           }
+
+          setIngredientStoreSnapshot(nextIngredients);
+          refreshAfterBackupImport();
+
+          return {
+            ok:true,
+            counts:{
+              ingredients: incoming.length,
+              recipes: incomingRecipes.length,
+              menus: incomingMenus.length
+            },
+            report:{
+              ok:true,
+              warnings:validation.warnings,
+              info:validation.info,
+              stats
+            }
+          };
         }
-
-        try{
-          if(window.refreshRecipesPage && typeof window.refreshRecipesPage === 'function') window.refreshRecipesPage();
-        }catch(_){}
-
-        return {
-          ok:true,
-          counts:{
-            ingredients: incoming.length,
-            recipes: incomingRecipes ? incomingRecipes.length : 0,
-            menus: incomingMenus ? incomingMenus.length : 0
-          }
-        };
-      }
-    };
+      };
   ns.store = Object.assign({}, ns.store || {}, {
     NutriStorage, normalizeIngredient, lsRead, lsWrite, syncLegacyIngredientCache, getIngredientStoreSnapshot, setIngredientStoreSnapshot, getRecipeStoreSnapshot, setRecipeStoreSnapshot, upsertIngredientInStore
   });

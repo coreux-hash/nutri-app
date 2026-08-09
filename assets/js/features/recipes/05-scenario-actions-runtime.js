@@ -84,6 +84,41 @@
     return undefined;
   }
 
+  function ensureScenarioOverlayShell(){
+    const view = byId("viewRecipe");
+    if(!view) return null;
+    view.classList.add("recipeScenarioOverlay");
+    view.setAttribute("role", "dialog");
+    view.setAttribute("aria-modal", "true");
+    view.setAttribute("aria-label", "Adapter les quantites de la recette");
+
+    let modal = view.querySelector(".recipeScenarioModal");
+    if(!modal){
+      modal = document.createElement("div");
+      modal.className = "recipeScenarioModal";
+      while(view.firstChild) modal.appendChild(view.firstChild);
+      view.appendChild(modal);
+    }
+
+    if(view.dataset.scenarioOverlayBound !== "1"){
+      view.dataset.scenarioOverlayBound = "1";
+      view.addEventListener("click", function(ev){
+        if(ev.target !== view) return;
+        const api = ns.ui && (ns.ui.recipeScenario || ns.ui.RecipeReadonlyView);
+        if(api && typeof api.close === "function") api.close();
+        else showView("list");
+      });
+      document.addEventListener("keydown", function(ev){
+        if(ev.key !== "Escape" || !view.classList.contains("show")) return;
+        const api = ns.ui && (ns.ui.recipeScenario || ns.ui.RecipeReadonlyView);
+        if(api && typeof api.close === "function") api.close();
+        else showView("list");
+      });
+    }
+
+    return modal;
+  }
+
   const unitLabel = (u)=>({ g:"g", piece:"pièce", ml:"ml", tbsp:"càs", tsp:"càc" })[String(u||"").trim()] || String(u||"g");
   function gramsForUnit(ing, unit){
     const u = String(unit || "g").trim();
@@ -363,9 +398,9 @@ function ensureThumbFileInput(){
     __thumbTargetRecipeId = null;
     if(!file || !rid) return;
 
-    const MAX = 50 * 1024; // 50KB
+    const MAX = 94 * 1024; // same limit as ingredient cards
     if(file.size > MAX){
-      alert("Image trop lourde. Maximum 50 KB.");
+      alert("Image trop lourde. Maximum 94 KB.");
       return;
     }
 
@@ -713,6 +748,8 @@ function enhanceScenarioHeaderUi(){
   header.classList.add("recipeHeader--quiet");
   backRow.classList.add("recipeHeaderMain");
   backBtn.classList.add("scenarioBackBtn");
+  backBtn.textContent = "Fermer";
+  backBtn.setAttribute("aria-label", "Fermer l'adaptation des quantites");
 
   const scenarioInfoText = String(flag.getAttribute('title') || flag.textContent || '').replace(/\s+/g, ' ').trim();
   let scenarioInfoAnchor = lead.querySelector('.scenarioPartsLabelWrap > .uiInfoAnchor') || lead.querySelector('.scenarioPortionControl .uiInfoAnchor');
@@ -803,6 +840,7 @@ function openRecipeScenario(id){
   const recipes = getRuntimeRecipes();
   const r = recipes.find(x=>x.id===id);
   if(!r){ alert("Recette introuvable."); return; }
+  ensureScenarioOverlayShell();
   setCurrentRecipe(normalizeRecipe(r));
   byId("recipeTitle").textContent = r.name || "—";
   byId("recipePrep").value = r.prep || "";
@@ -940,6 +978,9 @@ function renderRecipeDetail(recipe){
           <div class="ingMacroCell"><div class="ingMacroVal">${fmt1(per.totG || 0)}</div><div class="ingMacroLbl">G / portion</div></div>
           <div class="ingMacroCell"><div class="ingMacroVal">${fmt1(per.totL || 0)}</div><div class="ingMacroLbl">L / portion</div></div>
         </div>
+      </div>
+      <div class="exchangeDetailActions">
+        <button class="btn ghost" data-exchange-share="recipe" data-exchange-id="${escapeHtml(recipe?.id || '')}" type="button">Partager la carte</button>
       </div>
     </section>
 

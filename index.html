@@ -50,6 +50,7 @@
 <div class="hero">
 <div class="title" id="heroPageTitle">Mes Ingrédients</div>
 <div class="underline"></div>
+<div class="topMetaRail" id="topMetaRail" aria-live="polite"></div>
 </div>
 </div>
 <div class="content appLayout">
@@ -63,15 +64,22 @@
 </div>
 </div>
 <nav class="nav">
+<div class="navGroup" aria-label="Bibliothèques">
+<div class="navGroupLabel">Bibliothèques</div>
 <a class="active" data-page="ingredients" href="#ingredients"><span class="dot">🥕</span> Ingrédients</a>
 <a data-page="recipes" href="#recipes"><span class="dot">📒</span> Recettes</a>
 <a data-page="menus" href="#menus"><span class="dot">🍽️</span> Menus</a>
-<a href="#"><span class="dot">📊</span> Suivi nutritionnel</a>
-<a href="#"><span class="dot">⭐</span> Favoris</a>
-<a data-page="system" href="#system"><span class="dot">⇅</span> Système</a>
-<a href="#"><span class="dot">📈</span> Statistiques</a>
-<a href="#"><span class="dot">⚙️</span> Paramètres</a>
-<a href="#"><span class="dot">?</span> Aide / FAQ</a>
+</div>
+<div class="navGroup" aria-label="Usage">
+<div class="navGroupLabel">Usage</div>
+<a aria-disabled="true" class="navLink--pending" data-nav-placeholder="suivi" href="#suivi" title="Le suivi sera cadré dans une passe dédiée."><span class="dot">📊</span> Suivi</a>
+<a data-page="system" href="#system"><span class="dot">⇄</span> Échanges</a>
+</div>
+<div class="navGroup navGroup--secondary" aria-label="Secondaire">
+<div class="navGroupLabel">Secondaire</div>
+<a aria-disabled="true" class="navLink--pending" data-nav-placeholder="settings" href="#settings" title="Les réglages seront cadrés dans une passe dédiée."><span class="dot">⚙️</span> Réglages</a>
+<a aria-disabled="true" class="navLink--pending" data-nav-placeholder="help" href="#help" title="L’aide sera cadrée dans une passe dédiée."><span class="dot">?</span> Aide</a>
+</div>
 </nav>
 <div class="drawerFoot">
 <span class="pill"><span class="battery"><span class="fill"></span></span> 13 jours</span>
@@ -208,7 +216,7 @@
 </div>
 </div>
 <div class="menusLibraryGrid" id="menusLibraryGrid">
-<article class="menuLibraryCard menuLibraryCard--draft" data-menu-search="nouveau brouillon menu" id="menuDraftCard">
+<article class="menuLibraryCard menuLibraryCard--draft" data-menu-kind="draft" data-menu-status="draft" data-menu-search="nouveau brouillon menu" id="menuDraftCard">
 <div class="menuLibraryCover menuLibraryCover--draft">
 <div class="menuLibraryTopline">
 <span class="menuLibraryTag">Brouillon</span>
@@ -238,7 +246,7 @@
 </div>
 </div>
 </article>
-<article class="menuLibraryCard" data-breakfast="Porridge whey|Fruit frais" data-dinner="Wrap chaud poulet|Soupe minute" data-lunch="Chicken rice bowl|Crudités sauce légère" data-menu-category="Sport" data-menu-note="tenir la séance sans lourdeur" data-menu-search="journée protéinée sport rapide batch" data-menu-tags="protéiné, express, batch" data-menu-title="Journée protéinée souple" data-snack="Skyr + noix" id="menuShowcaseSport">
+<article class="menuLibraryCard" data-breakfast="Porridge whey|Fruit frais" data-dinner="Wrap chaud poulet|Soupe minute" data-lunch="Chicken rice bowl|Crudités sauce légère" data-menu-category="Sport" data-menu-kind="inspiration" data-menu-note="tenir la séance sans lourdeur" data-menu-search="journée protéinée sport rapide batch" data-menu-status="inspiration" data-menu-tags="protéiné, express, batch" data-menu-title="Journée protéinée souple" data-snack="Skyr + noix" id="menuShowcaseSport">
 <div class="menuLibraryCover menuLibraryCover--sport">
 <div class="menuLibraryTopline">
 <span class="menuLibraryTag menuLibraryTag--solid">Inspiration</span>
@@ -270,7 +278,7 @@
 </div>
 </div>
 </article>
-<article class="menuLibraryCard" data-breakfast="Pain perdu léger|Compote chaude" data-dinner="Gratin simple|Salade croquante" data-lunch="Plat central familial|Légume partagé" data-menu-category="Famille" data-menu-note="faire simple sans perdre le plaisir" data-menu-search="famille confort partage plats centraux" data-menu-tags="famille, confort, simple" data-menu-title="Confort famille sans bruit" data-snack="Yaourt / fruit" id="menuShowcaseFamily">
+<article class="menuLibraryCard" data-breakfast="Pain perdu léger|Compote chaude" data-dinner="Gratin simple|Salade croquante" data-lunch="Plat central familial|Légume partagé" data-menu-category="Famille" data-menu-kind="inspiration" data-menu-note="faire simple sans perdre le plaisir" data-menu-search="famille confort partage plats centraux" data-menu-status="inspiration" data-menu-tags="famille, confort, simple" data-menu-title="Confort famille sans bruit" data-snack="Yaourt / fruit" id="menuShowcaseFamily">
 <div class="menuLibraryCover menuLibraryCover--family">
 <div class="menuLibraryTopline">
 <span class="menuLibraryTag menuLibraryTag--solid">Inspiration</span>
@@ -477,21 +485,45 @@
 </div>
 </article>
 </template>
-</section><section aria-label="Système" class="page pagePanel pageSpace pageSpace--system" id="pageSystem">
+</section><section aria-label="Échanges" class="page pagePanel pageSpace pageSpace--system" id="pageSystem">
 <div class="pageHead">
 <div class="pageHeadTitleBlock">
-<h2>Système</h2>
+<h2>Échanges</h2>
 <div class="pageHeadMeta">
-<span class="pageHeadPill">Sauvegarde &amp; import</span>
+<span class="pageHeadPill">Sauvegarde &amp; partage</span>
 </div>
 </div>
 </div>
 <div class="pageBody pageBody--system">
-<section class="panel systemPanel">
-<div class="sectionTitle">Sauvegarde JSON</div>
-<p class="hint">Ouvre l’outil système déjà câblé pour exporter ou réimporter les ingrédients, recettes et menus.</p>
-<div class="inlineActions" style="margin-top:12px;">
-<button class="btn btnPrimary" id="btnOpenBackup" type="button">Ouvrir l’outil d’export / import</button>
+<section class="systemBackupHero" aria-labelledby="systemBackupTitle">
+<div class="systemBackupTop">
+<div class="systemBackupCopy">
+<div class="systemEyebrow">Échanges NutriApp</div>
+<h3 id="systemBackupTitle">Sauvegarder, recevoir et partager les cartes</h3>
+<p>Centralise les imports, les paquets reçus et la sauvegarde complète. Le partage d’une carte se lance depuis sa fiche afin d’embarquer automatiquement ses dépendances utiles.</p>
+</div>
+<div class="systemBackupBadge">exchange.v1 · backup.v3</div>
+</div>
+<div class="systemBackupGrid" aria-label="Parcours échanges">
+<div class="systemBackupStep">
+<span>01</span>
+<b>Partager depuis une fiche</b>
+<small>Ouvre une carte ingrédient, recette ou menu, puis utilise “Partager la carte”.</small>
+</div>
+<div class="systemBackupStep">
+<span>02</span>
+<b>Recevoir un paquet</b>
+<small>Charge un fichier exchange.v1, contrôle les dépendances, puis importe en copie locale.</small>
+</div>
+<div class="systemBackupStep">
+<span>03</span>
+<b>Sauvegarde technique</b>
+<small>Exporte ou restaure tout le stockage local via le JSON complet backup.v3.</small>
+</div>
+</div>
+<div class="systemBackupActions">
+<button class="btn btnPrimary" id="btnOpenExchangeImport" type="button">Recevoir des cartes</button>
+<button class="btn ghost" id="btnOpenBackup" type="button">Ouvrir la sauvegarde technique</button>
 </div>
 </section>
 </div>
@@ -500,7 +532,7 @@
 </div>
 <!-- ===== CreateModal Recette (VIDE) — dissociée ===== -->
 <!-- ===== /CreateModal Recette ===== -->
-<div class="appFloatingActions"><button class="fab" id="btnOpenCreate" title="Créer">+</button><button class="fab" id="btnOpenCreateRecipe" style="display:none" title="Créer recette">+</button></div><div class="appOverlays"><div aria-hidden="true" class="ingDetailOverlay" id="ingredientDetailOverlay">
+<div class="appFloatingActions"><button class="fab" id="btnOpenCreate" title="Créer">+</button><button class="fab" id="btnOpenCreateRecipe" style="display:none" title="Créer recette">+</button><button class="fab" id="btnOpenCreateMenu" style="display:none" title="Créer menu">+</button></div><div class="appOverlays"><div aria-hidden="true" class="ingDetailOverlay" id="ingredientDetailOverlay">
 <div aria-label="Fiche ingrédient" aria-modal="true" class="ingDetailModal" id="ingredientDetailModal" role="dialog">
 <div class="ingDetailHead">
 <h3 class="ctitle" id="ingredientDetailTitle">Fiche ingrédient</h3>
@@ -515,6 +547,61 @@
 <button aria-label="Fermer" class="iconBtn" id="recipeDetailClose" type="button">✕</button>
 </div>
 <div class="ingDetailBody recipeDetailBody" id="recipeDetailBody"></div>
+</div>
+</div><div aria-hidden="true" class="ingDetailOverlay" id="menuDetailOverlay">
+<div aria-label="Fiche menu" aria-modal="true" class="ingDetailModal menuDetailModal" id="menuDetailModal" role="dialog">
+<div class="ingDetailHead">
+<h3 class="ctitle" id="menuDetailTitle">Fiche menu</h3>
+<button aria-label="Fermer" class="iconBtn" id="menuDetailClose" type="button">✕</button>
+</div>
+<div class="ingDetailBody menuDetailBody" id="menuDetailBody"></div>
+</div>
+</div><div aria-hidden="true" class="createOverlay hidden" id="menuCreateOverlay">
+<div aria-label="Créer un menu" aria-modal="true" class="createModal" id="menuCreateModal" role="dialog">
+<div class="createTop">
+<button class="modalIconBtn" id="btnMenuCreateBack" title="Retour" type="button">←</button>
+<h3 class="ctitle" id="menuCreateTitle">Créer un menu</h3>
+<button class="modalIconBtn" id="btnMenuCreateClose" title="Fermer" type="button">✕</button>
+</div>
+<div class="createBody menuCreateBody">
+<section class="menuCreateIntro">
+<div>
+<div class="menusEyebrow">Studio menus</div>
+<h4>Créer le brouillon</h4>
+<p>Un menu commence par une intention claire. La composition détaillée se fait ensuite dans le studio.</p>
+</div>
+<div class="menuCreateForm">
+<label class="menuField">
+<span>Nom du menu</span>
+<input id="menuCreateName" placeholder="ex: Journée tennis / Batch malin / Confort famille" type="text"/>
+</label>
+<label class="menuField">
+<span>Catégorie</span>
+<select id="menuCreateCategory">
+<option value="">Choisir</option>
+<option>Quotidien</option>
+<option>Sport</option>
+<option>Batch</option>
+<option>Famille</option>
+<option>Léger</option>
+</select>
+</label>
+<label class="menuField">
+<span>Objectif</span>
+<input id="menuCreateObjective" placeholder="ex: tenir la séance, journée légère, repas famille" type="text"/>
+</label>
+<label class="menuField">
+<span>Tags</span>
+<input id="menuCreateTags" placeholder="ex: protéiné, express, midi froid" type="text"/>
+</label>
+</div>
+<div class="menuCreateActions">
+<button class="btn ghost" id="btnMenuCreateSaveDraft" type="button">Enregistrer brouillon</button>
+<button class="btn btnGold" id="btnMenuCreateJumpStudio" type="button">Créer et composer</button>
+</div>
+<div class="menuCreateStatus" id="menuCreateStatus" aria-live="polite"></div>
+</section>
+</div>
 </div>
 </div><div aria-hidden="true" class="overlay hidden" id="filterOverlay">
 <div aria-label="Filtres" aria-modal="true" class="modal mode-ingredients" data-filter-context="ingredients" id="filterModal" role="dialog">
@@ -596,7 +683,44 @@
 <div class="hint">Filtre contextuel recettes.</div>
 </div>
 <div class="filterPane hidden" data-pane="menus">
-<div class="hint">Filtres menus — périmètre encore limité dans les fichiers fournis.</div>
+<div class="fieldRow">
+<div class="control">
+<span class="ic">🔎</span>
+<input id="menuFilterSearch" placeholder="Nom, objectif, tag…" type="text"/>
+</div>
+<div class="control">
+<span class="ic">▾</span>
+<select id="menuFilterCategory">
+<option value="">Toutes catégories</option>
+<option>Quotidien</option>
+<option>Sport</option>
+<option>Batch</option>
+<option>Famille</option>
+<option>Léger</option>
+</select>
+</div>
+<div class="control">
+<span class="ic">●</span>
+<select id="menuFilterStatus">
+<option value="">Tous statuts</option>
+<option value="draft">Brouillons</option>
+<option value="complete">Complets</option>
+<option value="incomplete">Incomplets</option>
+<option value="missing">Source absente</option>
+<option value="inspiration">Inspirations</option>
+</select>
+</div>
+<div class="control">
+<span class="ic">＋</span>
+<select id="menuFilterContent">
+<option value="">Tout contenu</option>
+<option value="recipe">Avec recette</option>
+<option value="ingredient">Avec ingrédient</option>
+<option value="note">Avec note libre</option>
+</select>
+</div>
+</div>
+<div class="hint">Filtres contextuels menus : volontairement limités au départ.</div>
 </div>
 </div>
 <div class="modalFooter">
@@ -1148,67 +1272,138 @@ miel: 10 g" rows="6"></textarea>
 </div>
 </div>
 </div><div aria-hidden="true" class="createOverlay hidden" id="backupOverlay">
-<div aria-label="Sauvegarde JSON" aria-modal="true" class="createModal" id="backupModal" role="dialog">
-<div class="createTop">
-<button class="modalIconBtn" id="btnBackupBack" title="Retour">←</button>
-<h3 class="ctitle">Sauvegarde JSON (données NutriApp)</h3>
-<button class="modalIconBtn" id="btnBackupClose" title="Fermer">✕</button>
+<div aria-label="Sauvegarde JSON" aria-modal="true" class="createModal backupModal" id="backupModal" role="dialog">
+<div class="createTop backupTop">
+<button class="modalIconBtn" id="btnBackupBack" title="Retour" type="button">←</button>
+<h3 class="ctitle backupTitle">Sauvegarde JSON</h3>
+<button class="modalIconBtn" id="btnBackupClose" title="Fermer" type="button">✕</button>
 </div>
-<div class="createBody">
-<div class="createHint">
-        Sauvegarde complète des données NutriApp (<b>ingrédients + recettes + menus</b>) sous forme JSON. Utilise <b>Exporter</b> pour générer, <b>Importer</b> pour appliquer.
-        L’option email prépare un message à envoyer (sans coller le JSON automatiquement).
-      </div>
-<div class="bigTitle" style="margin-top:10px;">Exporter</div>
-<div class="dashed" style="align-items:stretch;">
-<div style="flex:1;">
-<div class="subtle" style="margin-top:0;">Template = exemple de structure au format actuel. Export = JSON réel depuis le stockage local.</div>
-<div class="inlineActions" style="margin-top:10px; flex-wrap:wrap;">
-<button class="pillBtn gray" id="btnIngJsonTemplate" type="button">🧩 Template</button>
-<button class="pillBtn gray" id="btnIngJsonCopyTemplate" type="button">📋 Copy template</button>
-<button class="pillBtn green" id="btnIngJsonExport" type="button">⬇️ Export</button>
+<div class="createBody backupBody">
+<div class="createHint backupLead">
+<b>Sauvegarde complète NutriApp.</b>
+<span>Exporte ou réimporte les ingrédients, recettes et menus dans un JSON local. Cette base technique servira ensuite au partage plus convivial des cartes.</span>
 </div>
-<div class="control" style="margin-top:12px;">
-<textarea class="big" id="ingJsonBox" placeholder="Le JSON NutriApp apparaîtra ici (export) ou colle ici un JSON (import)"></textarea>
+<div class="bigTitle backupSectionTitle">Exporter</div>
+<div class="dashed backupSection backupSection--export">
+<div class="backupSectionContent">
+<div class="subtle backupSectionHint">Template = exemple de structure au format actuel. Export = JSON réel depuis le stockage local. Télécharger crée un fichier de sauvegarde réutilisable.</div>
+<div class="inlineActions backupActionRail">
+<button class="pillBtn gray" id="btnIngJsonTemplate" type="button">Template</button>
+<button class="pillBtn gray" id="btnIngJsonCopyTemplate" type="button">Copier template</button>
+<button class="pillBtn green" id="btnIngJsonExport" type="button">Exporter</button>
+<button class="pillBtn gray" id="btnIngJsonDownload" type="button">Télécharger</button>
 </div>
-<div class="formRow" style="margin-top:10px;">
-<div class="control">
-<span class="ic">✉️</span>
+<textarea class="big backupJsonBox" id="ingJsonBox" placeholder="Le JSON NutriApp apparaîtra ici (export) ou colle ici un JSON (import)"></textarea>
+<div class="backupReport hidden" id="backupReport" aria-live="polite"></div>
+<div class="formRow backupEmailRow">
+<label class="backupEmailField" for="backupEmail">
+<span>Email</span>
 <input id="backupEmail" placeholder="Email (optionnel) : ex. moi@domaine.com" type="email"/>
+</label>
+<button class="pillBtn gray backupEmailBtn" id="btnBackupEmail" type="button">Préparer un email</button>
 </div>
-<div class="control">
-<button class="pillBtn gray" id="btnBackupEmail" style="width:100%;" type="button">Préparer un email</button>
-</div>
-</div>
-<div class="subtle" id="ingJsonModalStatus" style="margin-top:8px;"></div>
+<div class="subtle backupStatus" id="ingJsonModalStatus"></div>
 </div>
 </div>
-<div class="bigTitle" style="margin-top:16px;">Importer</div>
-<div class="dashed" style="align-items:stretch;">
-<div style="flex:1;">
-<div class="subtle" style="margin-top:0;">Colle un JSON complet NutriApp puis applique. (Ce demo ne gère pas l’import fichier.)</div>
-<div class="formRow" style="margin-top:10px; gap:10px; align-items:flex-start;">
-<div class="importModeBox" style="flex:1;">
-<div class="subtle" style="margin:0 0 6px 0; font-weight:900; color:var(--ink700);">Mode d’import</div>
+<div class="bigTitle backupSectionTitle">Importer</div>
+<div class="dashed backupSection backupSection--import">
+<div class="backupSectionContent">
+<div class="subtle backupSectionHint">Colle un JSON complet NutriApp ou charge un fichier de sauvegarde. Valide avant d’appliquer si tu veux contrôler le contenu.</div>
+<div class="formRow backupImportRow">
+<div class="importModeBox">
+<div class="subtle backupModeTitle">Mode d’import</div>
 <!-- Radios (source of truth) -->
 <input checked="" class="hidden" id="ingImportModeReplace" name="ingImportMode" type="radio" value="replace"/>
 <input class="hidden" id="ingImportModeMerge" name="ingImportMode" type="radio" value="merge"/>
 <!-- Boutons visibles -->
-<div aria-label="Mode d'import" class="modeBtns" role="group" style="display:flex; gap:10px; flex-wrap:wrap;">
+<div aria-label="Mode d'import" class="modeBtns backupModeBtns" role="group">
 <button aria-pressed="true" class="pillBtn green" id="btnModeReplace" type="button">Remplacer</button>
 <button aria-pressed="false" class="pillBtn gray" id="btnModeMerge" type="button">Fusionner</button>
 </div>
-<div class="subtle" style="margin-top:8px;">
+<div class="subtle backupModeHelp">
 <b>Remplacer</b> = écrase la bibliothèque.<br/>
 <b>Fusionner</b> = ajoute / met à jour selon <b>la règle “nom unique”</b> (Politique A).
     </div>
 </div>
 </div>
-<div class="inlineActions" style="margin-top:10px; flex-wrap:wrap;">
-<button class="pillBtn green" id="btnIngJsonApply" type="button">✅ Appliquer</button>
+<div class="inlineActions backupActionRail backupActionRail--footer">
+<input accept=".json,application/json" class="hidden" id="backupFileInput" type="file"/>
+<button class="pillBtn gray" id="btnBackupLoadFile" type="button">Charger fichier</button>
+<button class="pillBtn gray" id="btnIngJsonValidate" type="button">Valider</button>
+<button class="pillBtn green" id="btnIngJsonApply" type="button">Appliquer</button>
 <button class="pillBtn gray" id="btnIngJsonClose" type="button">Fermer</button>
 </div>
 </div>
+</div>
+</div>
+</div>
+</div><div aria-hidden="true" class="createOverlay hidden" id="exchangeShareOverlay">
+<div aria-label="Partager une carte NutriApp" aria-modal="true" class="createModal exchangeModal exchangeShareModal" id="exchangeShareModal" role="dialog">
+<div class="createTop exchangeTop">
+<button class="modalIconBtn" id="btnExchangeShareBack" title="Retour" type="button">←</button>
+<h3 class="ctitle exchangeTitle">Créer un paquet</h3>
+<button class="modalIconBtn" id="btnExchangeShareClose" title="Fermer" type="button">✕</button>
+</div>
+<div class="createBody exchangeBody">
+<div class="createHint exchangeLead">
+<b>Paquet de cartes NutriApp.</b>
+<span>La carte principale et ses dépendances utiles sont préparées dans un fichier <b>exchange.v1</b>, prêt à envoyer.</span>
+</div>
+<section class="exchangeSection exchangeShareComposer">
+<div class="exchangePackStage" id="exchangeSharePreview" aria-live="polite"></div>
+<div class="exchangeShareFields">
+<label class="exchangeField">
+<span>Nom du paquet</span>
+<input id="exchangeShareTitle" placeholder="Ex. Menu journée sport" type="text"/>
+</label>
+<label class="exchangeField">
+<span>Expéditeur</span>
+<input id="exchangeShareSender" placeholder="Ton nom ou pseudo" type="text"/>
+</label>
+<label class="exchangeField exchangeField--wide">
+<span>Message</span>
+<textarea id="exchangeShareMessage" placeholder="Message court pour la personne qui reçoit le paquet"></textarea>
+</label>
+</div>
+<div class="subtle exchangeStatus" id="exchangeShareStatus"></div>
+</section>
+<div class="exchangeFooterActions exchangeFooterActions--share">
+<button class="pillBtn gray" id="btnExchangeShareCopy" type="button">Copier JSON</button>
+<button class="pillBtn green" id="btnExchangeShareDownload" type="button">Télécharger le paquet</button>
+</div>
+</div>
+</div>
+</div><div aria-hidden="true" class="createOverlay hidden" id="exchangeImportOverlay">
+<div aria-label="Recevoir des cartes NutriApp" aria-modal="true" class="createModal exchangeModal" id="exchangeImportModal" role="dialog">
+<div class="createTop exchangeTop">
+<button class="modalIconBtn" id="btnExchangeBack" title="Retour" type="button">←</button>
+<h3 class="ctitle exchangeTitle">Recevoir des cartes</h3>
+<button class="modalIconBtn" id="btnExchangeClose" title="Fermer" type="button">✕</button>
+</div>
+<div class="createBody exchangeBody">
+<div class="createHint exchangeLead">
+<b>Import ludique non destructif.</b>
+<span>Charge un paquet <b>exchange.v1</b>. NutriApp affiche les cartes reçues, leurs dépendances et les conflits avant de les ajouter comme copies locales.</span>
+</div>
+<section class="exchangeSection">
+<div class="exchangeSectionHead">
+<div>
+<div class="exchangeEyebrow">Paquet reçu</div>
+<p>Colle un JSON de partage ou charge un fichier exporté depuis une fiche ingrédient, recette ou menu.</p>
+</div>
+</div>
+<div class="exchangeActionRail">
+<input accept=".json,application/json" class="hidden" id="exchangeFileInput" type="file"/>
+<button class="pillBtn gray" id="btnExchangeLoadFile" type="button">Charger fichier</button>
+<button class="pillBtn gray" id="btnExchangeValidate" type="button">Valider</button>
+</div>
+<textarea class="big exchangeJsonBox" id="exchangeJsonBox" placeholder="Colle ici un paquet NutriApp exchange.v1"></textarea>
+<div class="subtle exchangeStatus" id="exchangeStatus"></div>
+</section>
+<section class="exchangePreview hidden" id="exchangePreview" aria-live="polite"></section>
+<div class="exchangeFooterActions">
+<button class="pillBtn gray" id="btnExchangeClear" type="button">Vider</button>
+<button class="pillBtn green" id="btnExchangeImport" type="button" disabled="">Ajouter à ma bibliothèque</button>
 </div>
 </div>
 </div>
@@ -1289,5 +1484,6 @@ miel: 10 g" rows="6"></textarea>
 <script src="assets/js/ui/shared/01-unified-info-dots.js"></script>
 <script src="assets/js/core/99-layer-registry.js"></script>
 <script src="assets/js/ui/menus/02-menus-studio.js"></script>
+<script src="assets/js/features/shared/02-card-exchange.js"></script>
 </div></body>
 </html>

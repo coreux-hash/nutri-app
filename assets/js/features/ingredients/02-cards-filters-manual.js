@@ -418,13 +418,23 @@ function _toNum(v){
   const n = parseFloat(s.replace(',', '.'));
   return Number.isFinite(n) ? n : null;
 }
-function _inRange(val, mn, mx){
-  const v = Number(val ?? 0);
-  if(mn !== null && v < mn) return false;
-  if(mx !== null && v > mx) return false;
-  return true;
-}
-function _getFilter(){
+  function _inRange(val, mn, mx){
+    const v = Number(val ?? 0);
+    if(mn !== null && v < mn) return false;
+    if(mx !== null && v > mx) return false;
+    return true;
+  }
+  function _isIngredientFilterContext(){
+    try{
+      const api = window.NutriAppFilterModal;
+      if(api && typeof api.getCurrentContext === 'function') return api.getCurrentContext() === 'ingredients';
+      const modal = document.getElementById('filterModal');
+      return !modal || String(modal.dataset.filterContext || 'ingredients') === 'ingredients';
+    }catch(_){
+      return true;
+    }
+  }
+  function _getFilter(){
   const qPage = (ingQuery?.value || '').trim();
   const qModal = (fltQuery?.value || '').trim();
   const q = qPage || qModal;
@@ -492,18 +502,20 @@ if(ingQuery){
 }
 
 // wiring: modal apply (capture before close handler)
-if(btnApply){
-  btnApply.addEventListener('click', ()=>{
-    if(ingQuery && fltQuery && !ingQuery.value.trim()) ingQuery.value = fltQuery.value;
-    applyIngredientFilters();
-  }, {capture:true});
-}
+  if(btnApply){
+    btnApply.addEventListener('click', ()=>{
+      if(!_isIngredientFilterContext()) return;
+      if(ingQuery && fltQuery && !ingQuery.value.trim()) ingQuery.value = fltQuery.value;
+      applyIngredientFilters();
+    }, {capture:true});
+  }
 
 // wiring: reset
-if(btnReset){
-  btnReset.addEventListener('click', ()=>{
-    if(ingQuery) ingQuery.value = '';
-    if(fltQuery) fltQuery.value = '';
+  if(btnReset){
+    btnReset.addEventListener('click', ()=>{
+      if(!_isIngredientFilterContext()) return;
+      if(ingQuery) ingQuery.value = '';
+      if(fltQuery) fltQuery.value = '';
     if(fltCat) fltCat.value = '';
     if(fltUsage) fltUsage.value = '';
     Object.values(flt).forEach(el=>{ if(el) el.value = ''; });

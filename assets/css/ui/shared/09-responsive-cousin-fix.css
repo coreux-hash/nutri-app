@@ -29,6 +29,430 @@
   }
 }
 
+/* ============================================================================
+   HEADER CLEANUP — topSticky becomes the visible page head
+   ========================================================================== */
+#pageIngredients > .pageHead,
+#pageRecipes > .pageHead,
+#pageMenus > .pageHead,
+#pageMenus > .menuPageHead{
+  display:none !important;
+}
+
+#topMetaRail{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-height:30px;
+  margin:-6px 0 0;
+  padding:0 0 2px;
+}
+
+#topMetaRail.is-empty{
+  visibility:hidden;
+}
+
+#topMetaRail .pageHeadPill{
+  min-height:26px !important;
+  padding:5px 10px !important;
+  border-radius:999px !important;
+  border:1px solid rgba(255,255,255,.20) !important;
+  background:rgba(255,255,255,.12) !important;
+  color:rgba(255,255,255,.82) !important;
+  box-shadow:none !important;
+}
+
+#topMetaRail .pageHeadPill b{
+  color:#fff !important;
+}
+
+/* Drawer navigation: separates real libraries, usage entry points and secondary pages. */
+.nav{
+  gap:14px !important;
+}
+
+.navGroup{
+  display:grid;
+  gap:6px;
+}
+
+.navGroupLabel{
+  padding:0 12px 2px;
+  color:rgba(31,42,36,.50);
+  font-size:10px;
+  font-weight:950;
+  letter-spacing:.08em;
+  line-height:1;
+  text-transform:uppercase;
+}
+
+.navGroup--secondary{
+  padding-top:2px;
+  border-top:1px solid rgba(31,42,36,.08);
+}
+
+.nav a.navLink--pending{
+  color:rgba(31,42,36,.70);
+  cursor:default;
+}
+
+.nav a.navLink--pending .dot{
+  background:rgba(245,241,232,.74);
+}
+
+.nav a.navLink--pending:hover{
+  background:rgba(255,255,255,.42);
+}
+
+.topbar .iconbtn.topFilterBtn{
+  position:relative;
+  overflow:hidden;
+}
+
+.topbar .iconbtn.topFilterBtn:not(.is-disabled){
+  border-color:rgba(243,194,71,.46);
+  background:rgba(243,194,71,.16);
+  box-shadow:0 0 0 1px rgba(243,194,71,.10) inset;
+}
+
+.topbar .iconbtn.topFilterBtn.is-disabled{
+  opacity:.38;
+  cursor:default;
+}
+
+.topFilterGlyph{
+  width:20px;
+  height:16px;
+  display:grid;
+  gap:4px;
+  align-content:center;
+  justify-items:center;
+}
+
+.topFilterGlyph span{
+  display:block;
+  height:2px;
+  border-radius:999px;
+  background:currentColor;
+}
+
+.topFilterGlyph span:nth-child(1){ width:18px; }
+.topFilterGlyph span:nth-child(2){ width:13px; }
+.topFilterGlyph span:nth-child(3){ width:7px; }
+
+#pageIngredients .pageBody--library,
+#pageRecipes .pageBody--recipes,
+#pageMenus .pageBody--menus{
+  padding-top:0 !important;
+}
+
+#pageIngredients .pageBody--library .libraryGrid,
+#pageRecipes .pageBody--recipes > #viewList,
+#pageRecipes #recipeList{
+  margin-top:0 !important;
+  padding-top:0 !important;
+}
+
+.top{
+  display:flex !important;
+  flex-direction:column !important;
+  max-height:calc(100dvh - 44px) !important;
+  overflow:hidden !important;
+}
+
+.topSticky{
+  flex:0 0 auto !important;
+}
+
+.content.appLayout{
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  overflow-x:hidden !important;
+  overflow-y:auto !important;
+  -webkit-overflow-scrolling:touch !important;
+  overscroll-behavior:contain !important;
+}
+
+@media (max-width:860px){
+  .app.app--nutri{
+    height:calc(100dvh - 24px) !important;
+    margin:12px auto !important;
+    padding:0 14px !important;
+    overflow:hidden !important;
+    display:flex !important;
+    flex-direction:column !important;
+  }
+
+  .top{
+    flex:1 1 auto !important;
+    min-height:0 !important;
+    display:flex !important;
+    flex-direction:column !important;
+    overflow:hidden !important;
+  }
+
+  .topSticky{
+    position:relative !important;
+    top:auto !important;
+    flex:0 0 auto !important;
+    z-index:60 !important;
+  }
+
+  .content.appLayout{
+    flex:1 1 auto !important;
+    min-height:0 !important;
+    overflow-x:hidden !important;
+    overflow-y:auto !important;
+    -webkit-overflow-scrolling:touch !important;
+    overscroll-behavior:contain !important;
+  }
+}
+
+@media (max-width:579px){
+  #topMetaRail{
+    min-height:28px;
+    margin:-4px 0 0;
+  }
+
+  #topMetaRail .pageHeadPill{
+    font-size:11px !important;
+    min-height:24px !important;
+    padding:5px 9px !important;
+  }
+
+  #pageIngredients .pageBody--library,
+  #pageRecipes .pageBody--recipes,
+  #pageMenus .pageBody--menus{
+    padding-top:0 !important;
+  }
+}
+
+/* ============================================================================
+   RECIPES — scenario view as an independent modal overlay
+   ========================================================================== */
+body.recipeScenarioOpen{
+  overflow:hidden !important;
+}
+
+#pageRecipes #viewRecipe.recipeScenarioOverlay{
+  position:fixed !important;
+  inset:0 !important;
+  z-index:3000 !important;
+  display:none !important;
+  place-items:center !important;
+  width:100vw !important;
+  height:100vh !important;
+  height:100dvh !important;
+  padding:12px !important;
+  overflow:auto !important;
+  overscroll-behavior:contain !important;
+  background:
+    radial-gradient(circle at 50% 16%, rgba(245,241,232,.20), rgba(31,78,51,.10) 34%, rgba(19,43,31,.64) 100%),
+    rgba(19,43,31,.54) !important;
+  backdrop-filter:blur(7px);
+  -webkit-backdrop-filter:blur(7px);
+}
+
+#pageRecipes #viewRecipe.recipeScenarioOverlay.show{
+  display:grid !important;
+}
+
+#pageRecipes #viewRecipe.recipeScenarioOverlay .recipeScenarioModal{
+  width:min(980px, calc(100vw - 24px)) !important;
+  max-height:calc(100dvh - 24px) !important;
+  overflow:auto !important;
+  border-radius:28px !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.74), rgba(255,255,255,.44) 26%, rgba(245,241,232,.96) 100%),
+    var(--p100) !important;
+  border:1px solid rgba(31,78,51,.24) !important;
+  box-shadow:0 28px 70px rgba(12,31,22,.34), 0 2px 0 rgba(255,255,255,.58) inset !important;
+  padding:18px !important;
+  -webkit-overflow-scrolling:touch !important;
+}
+
+#pageRecipes #viewRecipe.recipeScenarioOverlay .recipeViewTop{
+  padding:0 0 14px !important;
+  border-bottom:1px solid rgba(31,78,51,.14) !important;
+}
+
+#pageRecipes #viewRecipe.recipeScenarioOverlay .recipeHeader{
+  margin-bottom:14px !important;
+}
+
+#pageRecipes #viewRecipe.recipeScenarioOverlay .scenarioBackBtn{
+  min-height:40px !important;
+  padding:10px 16px !important;
+  border-radius:999px !important;
+  background:rgba(255,255,255,.78) !important;
+  border-color:rgba(31,78,51,.16) !important;
+}
+
+#pageRecipes #viewRecipe.recipeScenarioOverlay .recipeLead{
+  margin-top:0 !important;
+  padding:16px 18px !important;
+  border-radius:24px !important;
+  background:rgba(255,255,255,.54) !important;
+  border:1px solid rgba(31,78,51,.10) !important;
+  box-shadow:0 10px 26px rgba(31,42,36,.06) !important;
+}
+
+#pageRecipes #viewRecipe.recipeScenarioOverlay .recipeLeadTitle{
+  font-size:clamp(22px, 4vw, 34px) !important;
+  line-height:1.04 !important;
+}
+
+#pageRecipes #viewRecipe.recipeScenarioOverlay .recipeViewBody{
+  display:grid !important;
+  grid-template-columns:minmax(0,.88fr) minmax(0,1.12fr) !important;
+  gap:16px !important;
+  padding:16px 0 0 !important;
+  align-items:start !important;
+}
+
+#pageRecipes #viewRecipe.recipeScenarioOverlay .prepCard--scenario,
+#pageRecipes #viewRecipe.recipeScenarioOverlay #results.scenarioResults,
+#pageRecipes #viewRecipe.recipeScenarioOverlay .rowcards.scenarioRows{
+  margin:0 !important;
+  border-radius:24px !important;
+  background:rgba(255,255,255,.66) !important;
+  border:1px solid rgba(31,78,51,.10) !important;
+  box-shadow:0 10px 24px rgba(31,42,36,.06) !important;
+}
+
+#pageRecipes #viewRecipe.recipeScenarioOverlay .prepCard--scenario,
+#pageRecipes #viewRecipe.recipeScenarioOverlay #results.scenarioResults{
+  grid-column:1 !important;
+}
+
+#pageRecipes #viewRecipe.recipeScenarioOverlay .rowcards.scenarioRows{
+  grid-column:2 !important;
+  grid-row:1 / span 3 !important;
+  padding:12px !important;
+}
+
+#pageRecipes #viewRecipe.recipeScenarioOverlay #recipeStatus.scenarioStatusHint{
+  grid-column:1 / -1 !important;
+  margin-top:0 !important;
+}
+
+@media (max-width:760px){
+  #pageRecipes #viewRecipe.recipeScenarioOverlay{
+    padding:8px !important;
+    align-items:stretch !important;
+  }
+
+  #pageRecipes #viewRecipe.recipeScenarioOverlay .recipeScenarioModal{
+    width:100% !important;
+    max-height:calc(100dvh - 16px) !important;
+    border-radius:24px !important;
+    padding:14px !important;
+  }
+
+  #pageRecipes #viewRecipe.recipeScenarioOverlay .recipeViewBody{
+    grid-template-columns:1fr !important;
+    gap:12px !important;
+  }
+
+  #pageRecipes #viewRecipe.recipeScenarioOverlay .prepCard--scenario,
+  #pageRecipes #viewRecipe.recipeScenarioOverlay #results.scenarioResults,
+  #pageRecipes #viewRecipe.recipeScenarioOverlay .rowcards.scenarioRows,
+  #pageRecipes #viewRecipe.recipeScenarioOverlay #recipeStatus.scenarioStatusHint{
+    grid-column:1 !important;
+    grid-row:auto !important;
+  }
+}
+
+/* Visible recipe-card entry points: portions scenario + media upload */
+#pageRecipes .recipeCard .portionsPill--scenario{
+  position:relative !important;
+  isolation:isolate !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:4px !important;
+  overflow:visible !important;
+  padding:2px 5px !important;
+  border-radius:999px !important;
+  border:1px solid rgba(224,180,69,.48) !important;
+  background:rgba(255,248,222,.86) !important;
+  color:#382d1f !important;
+  box-shadow:0 0 0 0 rgba(224,180,69,.42) !important;
+}
+
+#pageRecipes .recipeCard .portionsPill--scenario::before{
+  content:"" !important;
+  position:absolute !important;
+  inset:-4px !important;
+  border-radius:999px !important;
+  border:1px solid rgba(224,180,69,.42) !important;
+  opacity:.72 !important;
+  animation:recipePortionsPulse 1.8s ease-in-out infinite !important;
+  pointer-events:none !important;
+}
+
+#pageRecipes .recipeCard .portionsPill--scenario .portionsClickHint{
+  display:inline-flex !important;
+  align-items:center !important;
+  min-height:13px !important;
+  padding:1px 4px !important;
+  border-radius:999px !important;
+  background:#f3c247 !important;
+  color:#1f2a24 !important;
+  font-size:7px !important;
+  line-height:1 !important;
+  font-weight:950 !important;
+  text-transform:uppercase !important;
+  letter-spacing:0 !important;
+  animation:recipePortionsHintBlink 2.4s ease-in-out infinite !important;
+}
+
+#pageRecipes .recipeCard .recipeCardMedia[role="button"],
+#pageRecipes .recipeCard .thumb.libCardMedia[role="button"]{
+  cursor:pointer !important;
+  outline:none !important;
+}
+
+#pageRecipes .recipeCard .recipeCardMedia[role="button"]::before,
+#pageRecipes .recipeCard .thumb.libCardMedia[role="button"]::before{
+  content:"Image" !important;
+  position:absolute !important;
+  left:8px !important;
+  bottom:8px !important;
+  z-index:3 !important;
+  padding:4px 7px !important;
+  border-radius:999px !important;
+  background:rgba(31,42,36,.72) !important;
+  color:#f8f0dc !important;
+  font:800 9px/1 system-ui, -apple-system, "Segoe UI", sans-serif !important;
+  opacity:0 !important;
+  transform:translateY(4px) !important;
+  transition:opacity .16s ease, transform .16s ease !important;
+  pointer-events:none !important;
+}
+
+#pageRecipes .recipeCard .recipeCardMedia[role="button"]:hover::before,
+#pageRecipes .recipeCard .recipeCardMedia[role="button"]:focus-visible::before,
+#pageRecipes .recipeCard .thumb.libCardMedia[role="button"]:hover::before,
+#pageRecipes .recipeCard .thumb.libCardMedia[role="button"]:focus-visible::before{
+  opacity:1 !important;
+  transform:translateY(0) !important;
+}
+
+#pageRecipes .recipeCard .recipeCardMedia[role="button"]:focus-visible,
+#pageRecipes .recipeCard .thumb.libCardMedia[role="button"]:focus-visible{
+  box-shadow:0 0 0 3px rgba(243,194,71,.38) !important;
+}
+
+@keyframes recipePortionsPulse{
+  0%, 100%{ transform:scale(.98); opacity:.34; }
+  50%{ transform:scale(1.08); opacity:.86; }
+}
+
+@keyframes recipePortionsHintBlink{
+  0%, 100%{ filter:brightness(1); transform:translateY(0); }
+  50%{ filter:brightness(1.16); transform:translateY(-1px); }
+}
+
 /* Petits mobiles (<380px) : la carte est déjà très courte -> gain plus mesuré
    pour ne pas risquer le débordement du hero (min-height:82px). */
 @media (max-width:379px){
@@ -299,7 +723,7 @@
 @media (max-width:579px){
   /* #viewList ajoutait 14px à gauche ET à droite, contrairement à l'ingGrid. */
   #pageRecipes .pageBody--recipes > #viewList{
-    padding:8px 0 0 !important;
+    padding:0 !important;
   }
 
   #pageRecipes #recipeList{
@@ -635,7 +1059,8 @@
    ========================================================================== */
 @media (max-width:680px){
   #createOverlay,
-  #recipeCreateOverlay{
+  #recipeCreateOverlay,
+  #menuCreateOverlay{
     height:100vh !important;
     height:100dvh !important;
     min-height:0 !important;
@@ -645,7 +1070,8 @@
   }
 
   #createOverlay #createModal,
-  #recipeCreateOverlay #recipeCreateModal{
+  #recipeCreateOverlay #recipeCreateModal,
+  #menuCreateOverlay #menuCreateModal{
     display:flex !important;
     flex-direction:column !important;
     height:100% !important;
@@ -656,12 +1082,14 @@
   }
 
   #createOverlay .createTop,
-  #recipeCreateOverlay .createTop{
+  #recipeCreateOverlay .createTop,
+  #menuCreateOverlay .createTop{
     flex:0 0 auto !important;
   }
 
   #createOverlay .createBody,
-  #recipeCreateOverlay .createBody{
+  #recipeCreateOverlay .createBody,
+  #menuCreateOverlay .createBody{
     flex:1 1 auto !important;
     height:auto !important;
     min-height:0 !important;
@@ -672,4 +1100,1415 @@
     -webkit-overflow-scrolling:touch !important;
     touch-action:pan-y !important;
   }
+}
+
+/* Menu create modal: same shell language, empty enough for the future studio work. */
+#menuCreateOverlay .createModal{
+  width:min(560px,100%) !important;
+}
+
+#menuCreateOverlay .menuCreateBody{
+  padding:14px 16px 18px !important;
+}
+
+#menuCreateOverlay .menuCreateIntro{
+  display:grid;
+  gap:16px;
+  padding:18px;
+  border:1px solid rgba(31,42,36,.08);
+  border-radius:22px;
+  background:linear-gradient(180deg, rgba(255,255,255,.86), rgba(250,248,242,.96));
+  box-shadow:0 12px 26px rgba(31,42,36,.07);
+}
+
+#menuCreateOverlay .menuCreateIntro h4{
+  margin:0;
+  color:var(--g900);
+  font-size:24px;
+  line-height:1.05;
+}
+
+#menuCreateOverlay .menuCreateIntro p{
+  margin:8px 0 0;
+  color:var(--ink600);
+  font-size:13px;
+  line-height:1.45;
+}
+
+#menuCreateOverlay .menuCreateForm{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+#menuCreateOverlay .menuField{
+  display:grid;
+  gap:8px;
+}
+
+#menuCreateOverlay .menuField span{
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.03em;
+  color:var(--ink700);
+}
+
+#menuCreateOverlay .menuField input,
+#menuCreateOverlay .menuField select{
+  width:100%;
+  min-width:0;
+  min-height:50px;
+  padding:0 16px;
+  border-radius:18px;
+  border:1px solid rgba(31,42,36,.08);
+  background:#fff;
+  font:inherit;
+  color:var(--ink900);
+  outline:none;
+  box-shadow:0 1px 0 rgba(255,255,255,.55) inset;
+}
+
+#menuCreateOverlay .menuField input:focus,
+#menuCreateOverlay .menuField select:focus{
+  border-color:rgba(30,78,51,.28);
+}
+
+#menuCreateOverlay .menuCreateActions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+
+#menuCreateOverlay .menuCreateActions .btn{
+  justify-self:start;
+}
+
+#menuCreateOverlay .menuCreateStatus{
+  min-height:18px;
+  color:var(--ink600);
+  font-size:12px;
+  font-weight:800;
+  line-height:1.35;
+}
+
+/* System backup entry: premium bridge between technical backup and future sharing. */
+#pageSystem .pageBody--system{
+  padding-top:0 !important;
+}
+
+#pageSystem > .pageHead{
+  display:none !important;
+  min-height:0 !important;
+  height:0 !important;
+  padding:0 !important;
+  border:0 !important;
+}
+
+#pageSystem .systemBackupHero{
+  position:relative;
+  display:grid;
+  gap:18px;
+  overflow:hidden;
+  padding:22px;
+  border-radius:28px;
+  border:1px solid rgba(31,42,36,.08);
+  background:
+    radial-gradient(circle at 88% 16%, rgba(243,194,71,.18), transparent 28%),
+    linear-gradient(180deg, rgba(255,255,255,.92), rgba(250,248,242,.96));
+  box-shadow:0 18px 40px rgba(31,42,36,.10);
+}
+
+#pageSystem .systemBackupHero::before{
+  content:"";
+  position:absolute;
+  inset:auto -42px -72px auto;
+  width:220px;
+  height:220px;
+  border-radius:999px;
+  background:rgba(30,78,51,.08);
+  pointer-events:none;
+}
+
+#pageSystem .systemBackupTop{
+  position:relative;
+  z-index:1;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:18px;
+}
+
+#pageSystem .systemBackupCopy{
+  min-width:0;
+  max-width:720px;
+}
+
+#pageSystem .systemEyebrow{
+  display:inline-flex;
+  align-items:center;
+  min-height:28px;
+  padding:0 12px;
+  border-radius:999px;
+  border:1px solid rgba(30,78,51,.12);
+  background:rgba(30,78,51,.07);
+  color:var(--g900);
+  font-size:11px;
+  font-weight:950;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+}
+
+#pageSystem .systemBackupHero h3{
+  margin:12px 0 0;
+  color:var(--g900);
+  font-size:clamp(26px, 3vw, 38px);
+  line-height:1;
+  letter-spacing:0;
+}
+
+#pageSystem .systemBackupHero p{
+  margin:10px 0 0;
+  max-width:680px;
+  color:var(--ink600);
+  font-size:14px;
+  line-height:1.5;
+}
+
+#pageSystem .systemBackupBadge{
+  flex:0 0 auto;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:36px;
+  padding:0 14px;
+  border-radius:999px;
+  border:1px solid rgba(31,42,36,.08);
+  background:rgba(255,255,255,.72);
+  color:var(--ink700);
+  font-size:12px;
+  font-weight:950;
+  box-shadow:0 8px 18px rgba(31,42,36,.05);
+}
+
+#pageSystem .systemBackupGrid{
+  position:relative;
+  z-index:1;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+}
+
+#pageSystem .systemBackupStep{
+  display:grid;
+  gap:5px;
+  min-height:112px;
+  padding:14px;
+  border-radius:20px;
+  border:1px solid rgba(31,42,36,.08);
+  background:rgba(255,255,255,.62);
+  box-shadow:0 10px 22px rgba(31,42,36,.05);
+}
+
+#pageSystem .systemBackupStep span{
+  width:max-content;
+  padding:4px 8px;
+  border-radius:999px;
+  background:rgba(243,194,71,.18);
+  color:var(--g900);
+  font-size:11px;
+  font-weight:950;
+}
+
+#pageSystem .systemBackupStep b{
+  color:var(--ink900);
+  font-size:15px;
+  line-height:1.1;
+}
+
+#pageSystem .systemBackupStep small{
+  color:var(--ink600);
+  font-size:12px;
+  line-height:1.35;
+}
+
+#pageSystem .systemBackupActions{
+  position:relative;
+  z-index:1;
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+#pageSystem .systemBackupActions .btn{
+  min-height:48px;
+  padding-inline:18px;
+  border-radius:999px;
+}
+
+.exchangeDetailActions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:14px;
+}
+
+.exchangeDetailActions .btn{
+  min-height:42px;
+  border-radius:999px;
+}
+
+/* Backup modal: scoped visual unification, no functional selectors changed. */
+#backupOverlay{
+  align-items:flex-start !important;
+  justify-content:center !important;
+  overflow:auto !important;
+  padding:18px 14px !important;
+  background:rgba(19,37,28,.42) !important;
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+}
+
+#backupOverlay .backupModal{
+  width:min(1080px, 100%) !important;
+  max-height:calc(100dvh - 36px) !important;
+  display:flex !important;
+  flex-direction:column !important;
+  overflow:hidden !important;
+  border-radius:30px !important;
+  border:1px solid rgba(31,42,36,.10) !important;
+  background:
+    radial-gradient(circle at 82% 0%, rgba(243,194,71,.16), transparent 28%),
+    linear-gradient(180deg, rgba(255,255,255,.96), rgba(250,248,242,.98)) !important;
+  box-shadow:0 26px 70px rgba(19,37,28,.30) !important;
+}
+
+#backupOverlay .backupTop{
+  flex:0 0 auto !important;
+  min-height:76px;
+  padding:14px 18px !important;
+  border-bottom:1px solid rgba(31,42,36,.08) !important;
+  background:rgba(255,255,255,.66) !important;
+}
+
+#backupOverlay .backupTitle{
+  color:var(--g900) !important;
+  font-size:clamp(24px, 3vw, 36px) !important;
+  line-height:1.05 !important;
+  letter-spacing:0 !important;
+}
+
+#backupOverlay .modalIconBtn{
+  border:1px solid rgba(31,42,36,.08) !important;
+  background:rgba(255,255,255,.82) !important;
+  box-shadow:0 8px 18px rgba(31,42,36,.06) !important;
+}
+
+#backupOverlay .backupBody{
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  display:grid !important;
+  gap:14px;
+  padding:16px 18px 18px !important;
+  overflow-x:hidden !important;
+  overflow-y:auto !important;
+  overscroll-behavior-y:contain !important;
+  -webkit-overflow-scrolling:touch !important;
+}
+
+#backupOverlay .backupLead{
+  display:grid;
+  gap:4px;
+  margin:0 !important;
+  padding:14px 16px !important;
+  border-radius:20px !important;
+  border:1px solid rgba(30,78,51,.10) !important;
+  background:rgba(30,78,51,.06) !important;
+  color:var(--ink700) !important;
+  box-shadow:none !important;
+}
+
+#backupOverlay .backupLead b{
+  color:var(--g900);
+  font-size:14px;
+  font-weight:950;
+}
+
+#backupOverlay .backupLead span{
+  color:var(--ink600);
+  font-size:13px;
+  line-height:1.4;
+}
+
+#backupOverlay .backupSectionTitle{
+  margin:4px 0 -4px !important;
+  color:var(--g900) !important;
+  font-size:24px !important;
+  line-height:1.05 !important;
+}
+
+#backupOverlay .backupSection{
+  display:block !important;
+  min-width:0;
+  margin:0 !important;
+  padding:16px !important;
+  border:1px solid rgba(31,42,36,.08) !important;
+  border-radius:24px !important;
+  background:rgba(255,255,255,.64) !important;
+  box-shadow:0 12px 28px rgba(31,42,36,.07) !important;
+}
+
+#backupOverlay .backupSectionContent{
+  min-width:0;
+  display:grid;
+  gap:12px;
+}
+
+#backupOverlay .backupSectionHint{
+  margin:0 !important;
+  color:var(--ink600) !important;
+  font-size:13px;
+  line-height:1.42;
+}
+
+#backupOverlay .backupActionRail{
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  align-items:center;
+  gap:10px !important;
+  margin:0 !important;
+}
+
+#backupOverlay .backupActionRail--footer{
+  justify-content:stretch;
+}
+
+#backupOverlay .pillBtn{
+  min-height:46px;
+  width:100%;
+  padding:0 18px;
+  border-radius:999px;
+  border:1px solid rgba(31,42,36,.10);
+  font-size:14px;
+  font-weight:950;
+  letter-spacing:0;
+  box-shadow:0 8px 18px rgba(31,42,36,.06);
+}
+
+#backupOverlay .pillBtn.gray{
+  background:rgba(255,255,255,.78) !important;
+  color:var(--ink900) !important;
+}
+
+#backupOverlay .pillBtn.green{
+  background:linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,0) 24%), var(--g800) !important;
+  border-color:rgba(30,78,51,.26) !important;
+  color:#fff !important;
+}
+
+#backupOverlay #ingJsonBox{
+  display:block;
+  min-height:220px;
+  height:clamp(220px, 34vh, 420px);
+  max-height:none;
+  width:100%;
+  resize:vertical;
+  border-radius:22px !important;
+  border:1px solid rgba(31,42,36,.10) !important;
+  background:rgba(255,255,255,.86) !important;
+  color:var(--ink900) !important;
+  font-size:13px;
+  line-height:1.45;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7), 0 8px 18px rgba(31,42,36,.04) !important;
+}
+
+#backupOverlay #ingJsonBox:focus{
+  border-color:rgba(30,78,51,.30) !important;
+  outline:3px solid rgba(30,78,51,.08);
+}
+
+#backupOverlay .backupEmailRow{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) minmax(0,.62fr);
+  gap:12px !important;
+  margin:0 !important;
+  align-items:stretch !important;
+}
+
+#backupOverlay .backupEmailField{
+  min-width:0;
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr);
+  align-items:center;
+  gap:10px;
+  min-height:46px;
+  padding:0 14px;
+  border-radius:999px;
+  border:1px solid rgba(31,42,36,.10);
+  background:rgba(255,255,255,.78);
+  box-shadow:0 8px 18px rgba(31,42,36,.05);
+}
+
+#backupOverlay .backupEmailField span{
+  color:var(--ink500);
+  font-size:12px;
+  font-weight:950;
+}
+
+#backupOverlay .backupEmailField input{
+  min-width:0;
+  width:100%;
+  height:44px;
+  padding:0;
+  border:0;
+  background:transparent;
+  color:var(--ink900);
+  font:inherit;
+  outline:none;
+}
+
+#backupOverlay .backupEmailBtn{
+  width:100%;
+  height:46px;
+}
+
+#backupOverlay .backupStatus{
+  min-height:18px;
+  margin:0 !important;
+  color:var(--ink600) !important;
+  font-size:12px;
+  font-weight:850;
+}
+
+#backupOverlay .backupImportRow{
+  display:block !important;
+  margin:0 !important;
+}
+
+#backupOverlay .importModeBox{
+  display:grid;
+  gap:10px;
+  width:100%;
+  padding:14px;
+  border-radius:20px;
+  border:1px solid rgba(31,42,36,.08);
+  background:rgba(250,248,242,.72);
+}
+
+#backupOverlay .backupModeTitle{
+  margin:0 !important;
+  color:var(--ink700) !important;
+  font-size:12px;
+  font-weight:950;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+}
+
+#backupOverlay .backupModeBtns{
+  display:flex !important;
+  gap:10px !important;
+  flex-wrap:wrap !important;
+}
+
+#backupOverlay .backupModeHelp{
+  margin:0 !important;
+  color:var(--ink600) !important;
+  font-size:13px;
+  line-height:1.45;
+}
+
+/* Exchange import modal: receive selected cards, never overwrite silently. */
+#exchangeImportOverlay{
+  align-items:flex-start !important;
+  justify-content:center !important;
+  overflow:auto !important;
+  padding:18px 14px !important;
+  background:rgba(19,37,28,.42) !important;
+  z-index:1200 !important;
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+}
+
+#exchangeImportOverlay .exchangeModal{
+  width:min(980px,100%) !important;
+  max-height:calc(100dvh - 36px) !important;
+  display:flex !important;
+  flex-direction:column !important;
+  overflow:hidden !important;
+  border-radius:30px !important;
+  border:1px solid rgba(31,42,36,.10) !important;
+  background:
+    radial-gradient(circle at 84% 0%, rgba(243,194,71,.16), transparent 28%),
+    linear-gradient(180deg, rgba(255,255,255,.96), rgba(250,248,242,.98)) !important;
+  box-shadow:0 26px 70px rgba(19,37,28,.30) !important;
+}
+
+#exchangeImportOverlay .exchangeTop{
+  flex:0 0 auto !important;
+  min-height:76px;
+  padding:14px 18px !important;
+  border-bottom:1px solid rgba(31,42,36,.08) !important;
+  background:rgba(255,255,255,.66) !important;
+}
+
+#exchangeImportOverlay .exchangeTitle{
+  color:var(--g900) !important;
+  font-size:clamp(24px,3vw,36px) !important;
+  line-height:1.05 !important;
+  letter-spacing:0 !important;
+}
+
+#exchangeImportOverlay .exchangeBody{
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  display:grid !important;
+  gap:14px;
+  padding:16px 18px 18px !important;
+  overflow-x:hidden !important;
+  overflow-y:auto !important;
+  overscroll-behavior-y:contain !important;
+}
+
+#exchangeImportOverlay .exchangeLead{
+  display:grid;
+  gap:4px;
+  margin:0 !important;
+  padding:14px 16px !important;
+  border-radius:20px !important;
+  border:1px solid rgba(30,78,51,.10) !important;
+  background:rgba(30,78,51,.06) !important;
+  color:var(--ink700) !important;
+  box-shadow:none !important;
+}
+
+#exchangeImportOverlay .exchangeLead b{
+  color:var(--g900);
+  font-size:14px;
+  font-weight:950;
+}
+
+#exchangeImportOverlay .exchangeLead span{
+  color:var(--ink600);
+  font-size:13px;
+  line-height:1.4;
+}
+
+#exchangeImportOverlay .exchangeSection,
+#exchangeImportOverlay .exchangePreview{
+  display:grid;
+  gap:12px;
+  padding:16px;
+  border-radius:24px;
+  border:1px solid rgba(31,42,36,.08);
+  background:rgba(255,255,255,.64);
+  box-shadow:0 12px 28px rgba(31,42,36,.07);
+}
+
+#exchangeImportOverlay .exchangePreview.hidden{
+  display:none;
+}
+
+#exchangeImportOverlay .exchangeSectionHead{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+}
+
+#exchangeImportOverlay .exchangeEyebrow{
+  display:inline-flex;
+  align-items:center;
+  min-height:26px;
+  padding:0 10px;
+  border-radius:999px;
+  border:1px solid rgba(30,78,51,.12);
+  background:rgba(30,78,51,.07);
+  color:var(--g900);
+  font-size:11px;
+  font-weight:950;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+}
+
+#exchangeImportOverlay .exchangeSection p,
+#exchangeImportOverlay .exchangePreviewHead p{
+  margin:8px 0 0;
+  color:var(--ink600);
+  font-size:13px;
+  line-height:1.42;
+}
+
+#exchangeImportOverlay .exchangeActionRail,
+#exchangeImportOverlay .exchangeFooterActions{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+
+#exchangeImportOverlay .pillBtn{
+  width:100%;
+  min-height:46px;
+  justify-content:center;
+  border-radius:999px;
+  font-weight:950;
+}
+
+#exchangeImportOverlay .pillBtn.gray{
+  background:rgba(255,255,255,.78) !important;
+  color:var(--ink900) !important;
+}
+
+#exchangeImportOverlay .pillBtn.green{
+  background:linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,0) 24%), var(--g800) !important;
+  border-color:rgba(30,78,51,.26) !important;
+  color:#fff !important;
+}
+
+#exchangeImportOverlay .pillBtn:disabled{
+  opacity:.48;
+  cursor:not-allowed;
+  transform:none;
+}
+
+#exchangeImportOverlay .exchangeJsonBox{
+  display:block;
+  width:100%;
+  min-height:180px;
+  height:clamp(180px,28vh,340px);
+  resize:vertical;
+  border-radius:22px !important;
+  border:1px solid rgba(31,42,36,.10) !important;
+  background:rgba(255,255,255,.86) !important;
+  color:var(--ink900) !important;
+  font-size:13px;
+  line-height:1.45;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7), 0 8px 18px rgba(31,42,36,.04) !important;
+}
+
+#exchangeImportOverlay .exchangeStatus{
+  min-height:18px;
+  margin:0 !important;
+  color:var(--ink600) !important;
+  font-size:12px;
+  font-weight:850;
+}
+
+#exchangeImportOverlay .exchangePreviewHead h4{
+  margin:8px 0 0;
+  color:var(--g900);
+  font-size:24px;
+  line-height:1.05;
+}
+
+#exchangeImportOverlay .exchangePreviewGrid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+}
+
+#exchangeImportOverlay .exchangePreviewGrid > div{
+  display:grid;
+  place-items:center;
+  min-height:64px;
+  border-radius:18px;
+  border:1px solid rgba(31,42,36,.08);
+  background:rgba(255,255,255,.74);
+}
+
+#exchangeImportOverlay .exchangePreviewGrid b{
+  color:var(--g900);
+  font-size:24px;
+  line-height:1;
+}
+
+#exchangeImportOverlay .exchangePreviewGrid span{
+  color:var(--ink500);
+  font-size:11px;
+  font-weight:950;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+}
+
+#exchangeImportOverlay .exchangeCardRail,
+#exchangeShareOverlay .exchangeCardRail{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+#exchangeImportOverlay .exchangeCardChip,
+#exchangeShareOverlay .exchangeCardChip{
+  display:inline-flex;
+  align-items:center;
+  min-height:32px;
+  padding:0 12px;
+  border-radius:999px;
+  border:1px solid rgba(31,42,36,.08);
+  background:rgba(250,248,242,.86);
+  color:var(--ink800);
+  font-size:12px;
+  font-weight:900;
+}
+
+#exchangeImportOverlay .exchangeNotice,
+#exchangeShareOverlay .exchangeNotice{
+  padding:12px 14px;
+  border-radius:18px;
+  border:1px solid rgba(31,42,36,.08);
+  background:rgba(255,255,255,.66);
+  color:var(--ink700);
+  font-size:13px;
+  line-height:1.4;
+}
+
+#exchangeImportOverlay .exchangeNotice b,
+#exchangeShareOverlay .exchangeNotice b{
+  display:block;
+  margin-bottom:6px;
+  color:var(--g900);
+  font-size:13px;
+  font-weight:950;
+}
+
+#exchangeImportOverlay .exchangeNotice ul,
+#exchangeShareOverlay .exchangeNotice ul{
+  margin:0;
+  padding-left:18px;
+}
+
+#exchangeImportOverlay .exchangeNotice--warn,
+#exchangeShareOverlay .exchangeNotice--warn{
+  border-color:rgba(167,120,32,.24);
+  background:rgba(243,194,71,.13);
+}
+
+#exchangeImportOverlay .exchangeNotice--error,
+#exchangeShareOverlay .exchangeNotice--error{
+  border-color:rgba(178,72,38,.24);
+  background:rgba(178,72,38,.08);
+  color:#7a351f;
+}
+
+#exchangeImportOverlay .exchangeNotice--ok,
+#exchangeShareOverlay .exchangeNotice--ok{
+  border-color:rgba(30,78,51,.16);
+  background:rgba(30,78,51,.07);
+  color:var(--g900);
+}
+
+#exchangeShareOverlay{
+  align-items:flex-start !important;
+  justify-content:center !important;
+  overflow:auto !important;
+  padding:18px 14px !important;
+  background:rgba(19,37,28,.42) !important;
+  z-index:1200 !important;
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+}
+
+#exchangeShareOverlay .exchangeModal{
+  width:min(980px,100%) !important;
+  max-height:calc(100dvh - 36px) !important;
+  display:flex !important;
+  flex-direction:column !important;
+  overflow:hidden !important;
+  border-radius:30px !important;
+  border:1px solid rgba(31,42,36,.10) !important;
+  background:
+    radial-gradient(circle at 84% 0%, rgba(243,194,71,.16), transparent 28%),
+    linear-gradient(180deg, rgba(255,255,255,.96), rgba(250,248,242,.98)) !important;
+  box-shadow:0 26px 70px rgba(19,37,28,.30) !important;
+}
+
+#exchangeShareOverlay .exchangeTop{
+  flex:0 0 auto !important;
+  min-height:76px;
+  padding:14px 18px !important;
+  border-bottom:1px solid rgba(31,42,36,.08) !important;
+  background:rgba(255,255,255,.66) !important;
+}
+
+#exchangeShareOverlay .exchangeTitle{
+  color:var(--g900) !important;
+  font-size:clamp(24px,3vw,36px) !important;
+  line-height:1.05 !important;
+  letter-spacing:0 !important;
+}
+
+#exchangeShareOverlay .exchangeBody{
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  display:grid !important;
+  gap:14px;
+  padding:16px 18px 18px !important;
+  overflow-x:hidden !important;
+  overflow-y:auto !important;
+  overscroll-behavior-y:contain !important;
+}
+
+#exchangeShareOverlay .exchangeLead{
+  display:grid;
+  gap:4px;
+  margin:0 !important;
+  padding:14px 16px !important;
+  border-radius:20px !important;
+  border:1px solid rgba(30,78,51,.10) !important;
+  background:rgba(30,78,51,.06) !important;
+  color:var(--ink700) !important;
+  box-shadow:none !important;
+}
+
+#exchangeShareOverlay .exchangeLead b{
+  color:var(--g900);
+  font-size:14px;
+  font-weight:950;
+}
+
+#exchangeShareOverlay .exchangeLead span{
+  color:var(--ink600);
+  font-size:13px;
+  line-height:1.4;
+}
+
+#exchangeShareOverlay .exchangeSection{
+  display:grid;
+  gap:14px;
+  padding:16px;
+  border-radius:24px;
+  border:1px solid rgba(31,42,36,.08);
+  background:rgba(255,255,255,.64);
+  box-shadow:0 12px 28px rgba(31,42,36,.07);
+}
+
+#exchangeImportOverlay .exchangePackVisual,
+#exchangeShareOverlay .exchangePackVisual{
+  display:grid;
+  grid-template-columns:minmax(180px,240px) minmax(0,1fr);
+  gap:18px;
+  align-items:center;
+  padding:16px;
+  border-radius:24px;
+  border:1px solid rgba(31,42,36,.08);
+  background:
+    radial-gradient(circle at 16% 18%, rgba(243,194,71,.18), transparent 36%),
+    rgba(250,248,242,.72);
+}
+
+#exchangeImportOverlay .exchangePackDeck,
+#exchangeShareOverlay .exchangePackDeck{
+  position:relative;
+  min-height:176px;
+}
+
+#exchangeImportOverlay .exchangeStackCard,
+#exchangeShareOverlay .exchangeStackCard{
+  position:absolute;
+  inset:18px 18px auto 18px;
+  min-height:112px;
+  display:grid;
+  grid-template-columns:46px minmax(0,1fr);
+  gap:12px;
+  align-items:center;
+  padding:14px;
+  border-radius:22px;
+  border:1px solid rgba(31,42,36,.10);
+  background:linear-gradient(180deg, rgba(255,255,255,.94), rgba(250,248,242,.98));
+  box-shadow:0 16px 28px rgba(31,42,36,.12);
+  transform-origin:center;
+}
+
+#exchangeImportOverlay .exchangeStackCard--1,
+#exchangeShareOverlay .exchangeStackCard--1{
+  z-index:3;
+}
+
+#exchangeImportOverlay .exchangeStackCard--2,
+#exchangeShareOverlay .exchangeStackCard--2{
+  z-index:2;
+  transform:translate(12px,12px) rotate(4deg);
+  opacity:.86;
+}
+
+#exchangeImportOverlay .exchangeStackCard--3,
+#exchangeShareOverlay .exchangeStackCard--3{
+  z-index:1;
+  transform:translate(24px,24px) rotate(8deg);
+  opacity:.72;
+}
+
+#exchangeImportOverlay .exchangeStackCard[data-type="ingredient"],
+#exchangeShareOverlay .exchangeStackCard[data-type="ingredient"]{
+  border-color:rgba(62,138,90,.22);
+}
+
+#exchangeImportOverlay .exchangeStackCard[data-type="recipe"],
+#exchangeShareOverlay .exchangeStackCard[data-type="recipe"]{
+  border-color:rgba(231,174,47,.30);
+}
+
+#exchangeImportOverlay .exchangeStackCard[data-type="menu"],
+#exchangeShareOverlay .exchangeStackCard[data-type="menu"]{
+  border-color:rgba(30,78,51,.26);
+}
+
+#exchangeImportOverlay .exchangeStackGlyph,
+#exchangeShareOverlay .exchangeStackGlyph{
+  display:grid;
+  place-items:center;
+  width:46px;
+  height:46px;
+  border-radius:16px;
+  background:rgba(30,78,51,.08);
+  color:var(--g900);
+  font-size:18px;
+  font-weight:950;
+}
+
+#exchangeImportOverlay .exchangeStackCard b,
+#exchangeShareOverlay .exchangeStackCard b{
+  display:block;
+  color:var(--ink900);
+  font-size:15px;
+  line-height:1.1;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+#exchangeImportOverlay .exchangeStackCard span,
+#exchangeShareOverlay .exchangeStackCard span{
+  display:block;
+  margin-top:4px;
+  color:var(--ink500);
+  font-size:11px;
+  font-weight:950;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+}
+
+#exchangeImportOverlay .exchangePackCopy h4,
+#exchangeShareOverlay .exchangePackCopy h4{
+  margin:10px 0 0;
+  color:var(--g900);
+  font-size:clamp(24px,3vw,34px);
+  line-height:1;
+}
+
+#exchangeImportOverlay .exchangePackCopy p,
+#exchangeShareOverlay .exchangePackCopy p{
+  margin:8px 0 0;
+  color:var(--ink600);
+  font-size:13px;
+  line-height:1.42;
+}
+
+#exchangeImportOverlay .exchangeSender,
+#exchangeShareOverlay .exchangeSender{
+  color:var(--g900) !important;
+  font-weight:900;
+}
+
+#exchangeImportOverlay .exchangeMiniStats,
+#exchangeShareOverlay .exchangeMiniStats{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:14px;
+}
+
+#exchangeImportOverlay .exchangeMiniStats span,
+#exchangeShareOverlay .exchangeMiniStats span{
+  display:inline-flex;
+  align-items:center;
+  min-height:30px;
+  padding:0 10px;
+  border-radius:999px;
+  border:1px solid rgba(31,42,36,.08);
+  background:rgba(255,255,255,.72);
+  color:var(--ink600);
+  font-size:12px;
+  font-weight:850;
+}
+
+#exchangeImportOverlay .exchangeMiniStats b,
+#exchangeShareOverlay .exchangeMiniStats b{
+  margin-right:4px;
+  color:var(--g900);
+}
+
+#exchangeShareOverlay .exchangeShareFields{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+
+#exchangeShareOverlay .exchangeField{
+  display:grid;
+  gap:8px;
+}
+
+#exchangeShareOverlay .exchangeField--wide{
+  grid-column:1 / -1;
+}
+
+#exchangeShareOverlay .exchangeField span{
+  color:var(--ink700);
+  font-size:12px;
+  font-weight:950;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+}
+
+#exchangeShareOverlay .exchangeField input,
+#exchangeShareOverlay .exchangeField textarea{
+  width:100%;
+  min-width:0;
+  border:1px solid rgba(31,42,36,.10);
+  border-radius:18px;
+  background:rgba(255,255,255,.84);
+  color:var(--ink900);
+  font:inherit;
+  outline:none;
+  box-shadow:0 8px 18px rgba(31,42,36,.04);
+}
+
+#exchangeShareOverlay .exchangeField input{
+  min-height:48px;
+  padding:0 14px;
+}
+
+#exchangeShareOverlay .exchangeField textarea{
+  min-height:92px;
+  padding:12px 14px;
+  resize:vertical;
+}
+
+#exchangeShareOverlay .exchangeFooterActions{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+
+#exchangeShareOverlay .pillBtn{
+  width:100%;
+  min-height:46px;
+  justify-content:center;
+  border-radius:999px;
+  font-weight:950;
+}
+
+#exchangeShareOverlay .pillBtn.gray{
+  background:rgba(255,255,255,.78) !important;
+  color:var(--ink900) !important;
+}
+
+#exchangeShareOverlay .pillBtn.green{
+  background:linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,0) 24%), var(--g800) !important;
+  border-color:rgba(30,78,51,.26) !important;
+  color:#fff !important;
+}
+
+#backupOverlay .backupReport{
+  margin-top:12px;
+  border-radius:18px;
+  border:1px solid rgba(31,42,36,.10);
+  background:linear-gradient(180deg, rgba(255,255,255,.78), rgba(250,248,242,.96));
+  box-shadow:0 10px 22px rgba(31,42,36,.06);
+  padding:12px;
+  color:var(--ink700);
+  font-size:13px;
+  line-height:1.4;
+}
+
+#backupOverlay .backupReport.hidden{
+  display:none;
+}
+
+#backupOverlay .backupReportTitle{
+  margin:0 0 8px;
+  color:var(--g900);
+  font-size:14px;
+  font-weight:950;
+}
+
+#backupOverlay .backupReportGrid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+}
+
+#backupOverlay .backupReportCell{
+  min-height:58px;
+  border-radius:16px;
+  border:1px solid rgba(31,42,36,.08);
+  background:rgba(255,255,255,.76);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:3px;
+}
+
+#backupOverlay .backupReportCell b{
+  color:var(--g900);
+  font-size:22px;
+  line-height:1;
+}
+
+#backupOverlay .backupReportCell span{
+  color:var(--ink500);
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+}
+
+#backupOverlay .backupReportList{
+  display:grid;
+  gap:6px;
+  margin-top:10px;
+}
+
+#backupOverlay .backupReportItem{
+  border-radius:14px;
+  padding:8px 10px;
+  border:1px solid rgba(31,42,36,.08);
+  background:rgba(255,255,255,.58);
+}
+
+#backupOverlay .backupReportItem[data-level="error"]{
+  border-color:rgba(178,72,38,.24);
+  background:rgba(178,72,38,.08);
+  color:#7a351f;
+}
+
+#backupOverlay .backupReportItem[data-level="warning"]{
+  border-color:rgba(167,120,32,.24);
+  background:rgba(243,194,71,.13);
+  color:#725112;
+}
+
+#backupOverlay .backupReportItem[data-level="ok"]{
+  border-color:rgba(30,78,51,.16);
+  background:rgba(30,78,51,.07);
+  color:var(--g900);
+}
+
+@media (max-width:520px){
+  #pageSystem .systemBackupHero{
+    padding:18px;
+    border-radius:24px;
+  }
+
+  #pageSystem .systemBackupTop{
+    display:grid;
+    gap:12px;
+  }
+
+  #pageSystem .systemBackupBadge{
+    justify-self:start;
+  }
+
+  #pageSystem .systemBackupGrid{
+    grid-template-columns:1fr;
+  }
+
+  #pageSystem .systemBackupActions .btn{
+    width:100%;
+  }
+
+  #menuCreateOverlay .createModal{
+    width:100% !important;
+    height:100dvh !important;
+    border-radius:0 !important;
+  }
+
+  #menuCreateOverlay .menuCreateBody{
+    padding:12px 14px calc(22px + env(safe-area-inset-bottom)) !important;
+  }
+
+  #menuCreateOverlay .menuCreateIntro{
+    border-radius:20px;
+    padding:16px;
+  }
+
+  #menuCreateOverlay .menuCreateForm{
+    grid-template-columns:1fr;
+  }
+
+  #menuCreateOverlay .menuCreateActions .btn{
+    flex:1;
+  }
+
+  #backupOverlay .backupReportGrid{
+    grid-template-columns:1fr;
+  }
+}
+
+@media (max-width:680px){
+  #backupOverlay{
+    padding:0 !important;
+  }
+
+  #backupOverlay .backupModal{
+    width:100% !important;
+    height:100dvh !important;
+    max-height:none !important;
+    border-radius:0 !important;
+  }
+
+  #backupOverlay .backupTop{
+    min-height:68px;
+    padding:12px 12px !important;
+  }
+
+  #backupOverlay .backupTitle{
+    font-size:clamp(20px, 7vw, 27px) !important;
+  }
+
+  #backupOverlay .backupBody{
+    padding:12px 12px calc(18px + env(safe-area-inset-bottom)) !important;
+    gap:12px;
+  }
+
+  #backupOverlay .backupSection{
+    padding:14px !important;
+    border-radius:22px !important;
+  }
+
+  #backupOverlay .backupActionRail,
+  #backupOverlay .backupModeBtns{
+    display:grid !important;
+    grid-template-columns:1fr 1fr;
+  }
+
+  #backupOverlay .backupActionRail--footer{
+    grid-template-columns:1fr 1fr;
+  }
+
+  #backupOverlay .pillBtn{
+    width:100%;
+    justify-content:center;
+    padding-inline:12px;
+  }
+
+  #backupOverlay .backupEmailRow{
+    grid-template-columns:minmax(0,1fr) minmax(0,.78fr);
+  }
+
+  #backupOverlay #ingJsonBox{
+    min-height:190px;
+    height:clamp(190px, 32vh, 360px);
+    max-height:none;
+  }
+
+  #exchangeImportOverlay{
+    padding:0 !important;
+  }
+
+  #exchangeImportOverlay .exchangeModal{
+    width:100% !important;
+    height:100dvh !important;
+    max-height:none !important;
+    border-radius:0 !important;
+  }
+
+  #exchangeImportOverlay .exchangeTop{
+    min-height:68px;
+    padding:12px !important;
+  }
+
+  #exchangeImportOverlay .exchangeTitle{
+    font-size:clamp(20px,7vw,27px) !important;
+  }
+
+  #exchangeImportOverlay .exchangeBody{
+    padding:12px 12px calc(18px + env(safe-area-inset-bottom)) !important;
+    gap:12px;
+  }
+
+  #exchangeImportOverlay .exchangeSection,
+  #exchangeImportOverlay .exchangePreview{
+    padding:14px;
+    border-radius:22px;
+  }
+
+  #exchangeImportOverlay .exchangePreviewGrid{
+    grid-template-columns:1fr;
+  }
+
+  #exchangeImportOverlay .exchangeJsonBox{
+    min-height:170px;
+    height:clamp(170px,28vh,320px);
+  }
+
+  #exchangeShareOverlay{
+    padding:0 !important;
+  }
+
+  #exchangeShareOverlay .exchangeModal{
+    width:100% !important;
+    height:100dvh !important;
+    max-height:none !important;
+    border-radius:0 !important;
+  }
+
+  #exchangeShareOverlay .exchangeTop{
+    min-height:68px;
+    padding:12px !important;
+  }
+
+  #exchangeShareOverlay .exchangeTitle{
+    font-size:clamp(20px,7vw,27px) !important;
+  }
+
+  #exchangeShareOverlay .exchangeBody{
+    padding:12px 12px calc(18px + env(safe-area-inset-bottom)) !important;
+    gap:12px;
+  }
+
+  #exchangeShareOverlay .exchangeSection{
+    padding:14px;
+    border-radius:22px;
+  }
+
+  #exchangeImportOverlay .exchangePackVisual,
+  #exchangeShareOverlay .exchangePackVisual{
+    grid-template-columns:1fr;
+    gap:12px;
+  }
+
+  #exchangeImportOverlay .exchangePackDeck,
+  #exchangeShareOverlay .exchangePackDeck{
+    min-height:156px;
+  }
+
+  #exchangeImportOverlay .exchangeStackCard,
+  #exchangeShareOverlay .exchangeStackCard{
+    inset:12px 22px auto 6px;
+    min-height:104px;
+  }
+
+  #exchangeShareOverlay .exchangeShareFields{
+    grid-template-columns:1fr;
+  }
+
+  #exchangeShareOverlay .exchangeFooterActions{
+    grid-template-columns:1fr 1fr;
+  }
+}
+
+/* Final cascade lock: ingredient/recipe/menu pageHeads are replaced by topSticky. */
+#pageIngredients > .pageHead,
+#pageRecipes > .pageHead,
+#pageMenus > .pageHead,
+#pageMenus > .menuPageHead,
+#pageSystem > .pageHead{
+  display:none !important;
+  min-height:0 !important;
+  height:0 !important;
+  padding:0 !important;
+  border:0 !important;
 }

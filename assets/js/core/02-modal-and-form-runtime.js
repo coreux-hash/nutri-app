@@ -10,10 +10,88 @@ if(typeof window.byId!=="function"){ window.byId = function(id){ return document
   const closeBtn= byId('btnBackupClose');
   const backBtn = byId('btnBackupBack');
 
-  const statusEl = byId('ingJsonModalStatus');
-  const jsonBox  = byId('ingJsonBox');
+    const statusEl = byId('ingJsonModalStatus');
+    const jsonBox  = byId('ingJsonBox');
+    const reportEl = byId('backupReport');
+    const fileInput = byId('backupFileInput');
 
-  const setStatus = (msg)=>{ if(statusEl) statusEl.textContent = msg || ''; };
+    const setStatus = (msg)=>{ if(statusEl) statusEl.textContent = msg || ''; };
+    function escapeHtml(v){
+      return String(v ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+    }
+    function clearReport(){
+      if(!reportEl) return;
+      reportEl.classList.add('hidden');
+      reportEl.innerHTML = '';
+    }
+    function renderReport(report, title){
+      if(!reportEl) return;
+      const counts = report && report.counts ? report.counts : {};
+      const errors = Array.isArray(report && report.errors) ? report.errors : [];
+      const warnings = Array.isArray(report && report.warnings) ? report.warnings : [];
+      const info = Array.isArray(report && report.info) ? report.info : [];
+      const stats = report && report.stats ? report.stats : (report && report.report && report.report.stats ? report.report.stats : null);
+      const items = [
+        ...errors.map(text => ({ level:'error', text })),
+        ...warnings.map(text => ({ level:'warning', text })),
+        ...info.map(text => ({ level:'ok', text }))
+      ];
+      if(stats){
+        ['ingredients','recipes','menus'].forEach(key=>{
+          const row = stats[key] || {};
+          items.push({ level:'ok', text:`${key}: ${row.incoming || 0} entrant(s), ${row.added || 0} ajouté(s), ${row.updated || 0} mis à jour, ${row.final || 0} au total.` });
+        });
+      }
+      reportEl.classList.remove('hidden');
+      reportEl.innerHTML = `
+        <div class="backupReportTitle">${escapeHtml(title || 'Rapport sauvegarde')}</div>
+        <div class="backupReportGrid">
+          <div class="backupReportCell"><b>${escapeHtml(String(counts.ingredients ?? 0))}</b><span>Ingrédients</span></div>
+          <div class="backupReportCell"><b>${escapeHtml(String(counts.recipes ?? 0))}</b><span>Recettes</span></div>
+          <div class="backupReportCell"><b>${escapeHtml(String(counts.menus ?? 0))}</b><span>Menus</span></div>
+        </div>
+        ${items.length ? `<div class="backupReportList">${items.map(item => `<div class="backupReportItem" data-level="${escapeHtml(item.level)}">${escapeHtml(item.text)}</div>`).join('')}</div>` : ''}
+      `;
+    }
+    function parseJsonBox(){
+      const raw = (jsonBox?.value || '').trim();
+      if(!raw) return { ok:false, error:'Zone JSON vide.' };
+      try{ return { ok:true, value:JSON.parse(raw) }; }
+      catch(_){ return { ok:false, error:'JSON invalide (parse).' }; }
+    }
+    function validateCurrentJson(){
+      if(typeof NutriAppData !== 'object' || typeof NutriAppData.validateAll !== 'function'){
+        setStatus('Validation indisponible: NutriAppData.validateAll manquant.');
+        return null;
+      }
+      const parsed = parseJsonBox();
+      if(!parsed.ok){
+        setStatus(parsed.error);
+        renderReport({ counts:{ingredients:0,recipes:0,menus:0}, errors:[parsed.error] }, 'Validation impossible');
+        return null;
+      }
+      const report = NutriAppData.validateAll(parsed.value);
+      renderReport(report, report && report.ok ? 'Sauvegarde valide' : 'Sauvegarde invalide');
+      setStatus(report && report.ok ? 'Validation OK.' : 'Validation échouée.');
+      return { parsed: parsed.value, report };
+    }
+    function downloadJsonFromBox(){
+      const raw = (jsonBox?.value || '').trim();
+      if(!raw){ setStatus('Rien à télécharger. Lance d’abord Export.'); return; }
+      const parsed = parseJsonBox();
+      if(!parsed.ok){ setStatus(parsed.error); return; }
+      const stamp = new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
+      const blob = new Blob([JSON.stringify(parsed.value, null, 2)], { type:'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `nutriapp-backup-${stamp}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url), 800);
+      setStatus('Fichier JSON préparé.');
+    }
 
   // Template (aligné sur le format courant NutriApp)
   const getTemplate = ()=> JSON.stringify({
@@ -81,14 +159,15 @@ if(typeof window.byId!=="function"){ window.byId = function(id){ return document
   function open(){
     if(!overlay) return;
 
-    // Show overlay and make it visible to AT
-    overlay.classList.remove('hidden');
-    overlay.setAttribute('aria-hidden','false');
+      // Show overlay and make it visible to AT
+      overlay.classList.remove('hidden');
+      overlay.setAttribute('aria-hidden','false');
 
     // If supported, ensure focus can't go behind the dialog
     try{ overlay.inert = false; }catch(_){}
 
-    setStatus('');
+      setStatus('');
+      clearReport();
 
     // Move focus into the dialog (prevents aria-hidden focus warnings later)
     const first = (byId('btnBackupClose') || byId('btnBackupBack') || overlay.querySelector('button, [href], input, textarea, select, [tabindex]:not([tabindex="-1"])'));
@@ -134,15 +213,18 @@ if(typeof window.byId!=="function"){ window.byId = function(id){ return document
       setStatus('Export indisponible: NutriAppData.exportAll manquant.');
       return;
     }
-    try{
-      const payload = NutriAppData.exportAll();
-      if(jsonBox) jsonBox.value = JSON.stringify(payload, null, 2);
-      setStatus('Export généré.');
-    }catch(err){
-      setStatus('Erreur export.');
-      console.error(err);
-    }
-  });
+      try{
+        const payload = NutriAppData.exportAll();
+        if(jsonBox) jsonBox.value = JSON.stringify(payload, null, 2);
+        if(typeof NutriAppData.validateAll === 'function') renderReport(NutriAppData.validateAll(payload), 'Export généré');
+        setStatus('Export généré. Tu peux maintenant le télécharger ou le copier.');
+      }catch(err){
+        setStatus('Erreur export.');
+        console.error(err);
+      }
+    });
+
+    byId('btnIngJsonDownload')?.addEventListener('click', downloadJsonFromBox);
 
   
     // Mode buttons wiring (Remplacer / Fusionner)
@@ -176,26 +258,54 @@ if(typeof window.byId!=="function"){ window.byId = function(id){ return document
       setMode((rM && rM.checked) ? 'merge' : 'replace');
     })();
 
-byId('btnIngJsonApply')?.addEventListener('click', ()=>{
-    if(typeof NutriAppData !== 'object' || typeof NutriAppData.importAll !== 'function'){
-      setStatus('Import indisponible: NutriAppData.importAll manquant.');
-      return;
-    }
-    const raw = (jsonBox?.value || '').trim();
-    if(!raw){ setStatus('Zone JSON vide.'); return; }
-    let parsed=null;
-    try{ parsed = JSON.parse(raw); }catch(_){
-      setStatus('JSON invalide (parse).');
-      return;
-    }
-    const mode = byId('ingImportModeMerge')?.checked ? 'merge' : 'replace';
-    const res = NutriAppData.importAll(parsed, {mode});
-    if(res && res.ok){
-      const c = res.counts || {}; setStatus(`Import appliqué. Ingrédients: ${c.ingredients||0} · Recettes: ${c.recipes||0} · Menus: ${c.menus||0}`);
-    }else{
-      setStatus((res && res.error) ? res.error : 'Import échoué.');
-    }
-  });
+    byId('btnBackupLoadFile')?.addEventListener('click', ()=>{
+      fileInput?.click();
+    });
+
+    fileInput?.addEventListener('change', async ()=>{
+      const file = fileInput.files && fileInput.files[0];
+      if(!file) return;
+      try{
+        const text = await file.text();
+        if(jsonBox) jsonBox.value = text;
+        setStatus('Fichier chargé : ' + file.name);
+        validateCurrentJson();
+      }catch(err){
+        setStatus('Lecture fichier impossible.');
+        console.error(err);
+      }finally{
+        try{ fileInput.value = ''; }catch(_){}
+      }
+    });
+
+    byId('btnIngJsonValidate')?.addEventListener('click', validateCurrentJson);
+
+    byId('btnIngJsonApply')?.addEventListener('click', ()=>{
+      if(typeof NutriAppData !== 'object' || typeof NutriAppData.importAll !== 'function'){
+        setStatus('Import indisponible: NutriAppData.importAll manquant.');
+        return;
+      }
+      const validation = validateCurrentJson();
+      if(!validation || !validation.report || !validation.report.ok){
+        setStatus('Import refusé : corrige d’abord le JSON.');
+        return;
+      }
+      const mode = byId('ingImportModeMerge')?.checked ? 'merge' : 'replace';
+      if(mode === 'replace'){
+        const ok = confirm('Remplacer toute la bibliothèque locale par cette sauvegarde ?\n\nCette action écrase ingrédients, recettes et menus actuels.');
+        if(!ok){ setStatus('Import annulé.'); return; }
+      }
+      const res = NutriAppData.importAll(validation.parsed, {mode});
+      if(res && res.ok){
+        const c = res.counts || {};
+        const report = Object.assign({}, res.report || {}, { counts:c });
+        renderReport(report, 'Import appliqué');
+        setStatus(`Import appliqué. Ingrédients: ${c.ingredients||0} · Recettes: ${c.recipes||0} · Menus: ${c.menus||0}`);
+      }else{
+        if(res && res.report) renderReport(res.report, 'Import refusé');
+        setStatus((res && res.error) ? res.error : 'Import échoué.');
+      }
+    });
 
   byId('btnIngJsonClose')?.addEventListener('click', close);
 

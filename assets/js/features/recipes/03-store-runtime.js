@@ -293,8 +293,16 @@ function initials(name){
 }
 
 function showView(which){
-  byId("viewList").classList.toggle("show", which==="list");
-  byId("viewRecipe").classList.toggle("show", which==="recipe");
+  const list = byId("viewList");
+  const recipe = byId("viewRecipe");
+  if(list) list.classList.toggle("show", which==="list" || which==="recipe");
+  if(recipe){
+    const isRecipe = which==="recipe";
+    recipe.classList.toggle("show", isRecipe);
+    recipe.setAttribute("aria-hidden", isRecipe ? "false" : "true");
+    try{ recipe.inert = !isRecipe; }catch(_e){}
+    document.body.classList.toggle("recipeScenarioOpen", isRecipe);
+  }
 }
 
 /* state */

@@ -144,6 +144,13 @@
   background:#fff;
   border:1px solid rgba(31,42,36,.08);
   box-shadow:0 16px 30px rgba(31,42,36,.08);
+  cursor:pointer;
+  transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+#pageMenus .menuLibraryCard:hover{
+  transform:translateY(-2px);
+  border-color:rgba(30,78,51,.18);
+  box-shadow:0 20px 38px rgba(31,42,36,.11);
 }
 #pageMenus .menuLibraryCover{
   position:relative;
@@ -283,6 +290,7 @@
   text-transform:uppercase;
 }
 #pageMenus .menuLibraryActions{display:flex;gap:10px;flex-wrap:wrap}
+#pageMenus .menuLibraryActions .btn{cursor:pointer}
 
 #pageMenus .menusSearchEmpty{
   margin-top:18px;
@@ -564,5 +572,113 @@
 #pageMenus .menuLineActions{align-self:center}
 #pageMenus .menuLibraryCard[data-menu-kind="saved"] .menuLibraryTag{background:rgba(255,255,255,.94);color:var(--g900);border-color:transparent}
 #pageMenus .menuLibraryCard[data-menu-kind="saved"] .menuLibraryCover{background:linear-gradient(160deg, rgba(23,63,44,.98), rgba(48,92,67,.88))}
+#pageMenus .menuLibraryCard[data-menu-status="missing"] .menuLibraryCover{background:linear-gradient(160deg, rgba(108,57,38,.98), rgba(146,82,54,.88))}
+#pageMenus .menuLibraryCard[data-menu-status="incomplete"] .menuLibraryCover{background:linear-gradient(160deg, rgba(91,78,50,.98), rgba(152,116,55,.88))}
 @media (max-width: 980px){#pageMenus .menuSourceToolbar{grid-template-columns:1fr}}
 @media (max-width: 620px){#pageMenus .menuSourceNoteRow{grid-template-columns:1fr}#pageMenus .menuSourceItem{grid-template-columns:1fr}#pageMenus .menuSourceItemAction{justify-self:flex-start}}
+
+.menuDetailModal{width:min(1080px,100%)}
+.menuDetailBody{align-items:start}
+.menuDetailBody .menuDetailPills,
+.menuDetailActions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+.menuDetailBody .menuDetailStatus{
+  display:inline-flex;
+  align-items:center;
+  min-height:28px;
+  padding:5px 10px;
+  border-radius:999px;
+  border:1px solid rgba(30,78,51,.12);
+  background:rgba(30,78,51,.07);
+  color:var(--g900);
+  font-size:12px;
+  font-weight:900;
+}
+.menuDetailBody .menuDetailStatus[data-status="missing"]{
+  border-color:rgba(178,72,38,.22);
+  background:rgba(178,72,38,.10);
+  color:#7a351f;
+}
+.menuDetailBody .menuDetailStatus[data-status="incomplete"]{
+  border-color:rgba(167,120,32,.24);
+  background:rgba(243,194,71,.16);
+  color:#725112;
+}
+.menuDetailBody .menuDetailBlock{margin-top:14px}
+.menuDetailBody .menuDetailBlockTitle{
+  font-weight:900;
+  color:var(--ink900);
+  margin-bottom:8px;
+}
+.menuDetailBody .menuDetailAside{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+.menuDetailMealList{
+  display:grid;
+  gap:12px;
+}
+.menuDetailMeal{
+  border-radius:20px;
+  border:1px solid rgba(31,42,36,.08);
+  background:rgba(255,255,255,.64);
+  padding:12px;
+}
+.menuDetailMealHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+.menuDetailMealHead b{color:var(--ink900)}
+.menuDetailMealHead span{font-size:12px;color:var(--ink500);font-weight:800}
+.menuDetailLines{
+  display:grid;
+  gap:8px;
+}
+.menuDetailLine{
+  display:grid;
+  grid-template-columns:8px 1fr;
+  gap:10px;
+  align-items:stretch;
+  border-radius:16px;
+  border:1px solid rgba(31,42,36,.08);
+  background:rgba(250,248,242,.72);
+  padding:10px;
+}
+.menuDetailLine::before{
+  content:"";
+  border-radius:999px;
+  background:linear-gradient(180deg, rgba(231,174,47,1), rgba(163,107,19,.9));
+}
+.menuDetailLine[data-kind="ingredient"]::before{background:linear-gradient(180deg, rgba(30,78,51,.95), rgba(62,138,90,.88))}
+.menuDetailLine[data-kind="note"]::before{background:linear-gradient(180deg, rgba(96,108,118,.95), rgba(140,151,160,.88))}
+.menuDetailLine[data-linked="false"][data-kind]:not([data-kind="note"])::before{background:linear-gradient(180deg, rgba(178,72,38,.95), rgba(126,50,28,.88))}
+.menuDetailLineTitle{font-weight:900;color:var(--ink900);line-height:1.2}
+.menuDetailLineMeta{font-size:12px;color:var(--ink600);line-height:1.35;margin-top:4px}
+.menuDetailEmpty{
+  border-radius:18px;
+  border:1px dashed rgba(31,42,36,.16);
+  background:rgba(250,248,242,.72);
+  padding:14px;
+  color:var(--ink600);
+  font-size:13px;
+  line-height:1.45;
+}
+.menuDetailPrep{
+  border-radius:18px;
+  border:1px solid rgba(31,42,36,.08);
+  background:rgba(250,248,242,.72);
+  padding:12px 14px;
+  color:var(--ink700);
+  font-size:13px;
+  line-height:1.45;
+  white-space:pre-wrap;
+}
+.menuDetailActions{margin-top:14px}

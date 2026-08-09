@@ -42,16 +42,32 @@
   const quickNoteText = document.getElementById('menuQuickNoteText');
   const summaryMeals = document.getElementById('mealSummaryMeals');
   const summaryRecipes = document.getElementById('mealSummaryRecipes');
-  const summaryIngredients = document.getElementById('mealSummaryIngredients');
-  const summaryNotes = document.getElementById('mealSummaryNotes');
-  const summaryNote = document.getElementById('mealSummaryNote');
+    const summaryIngredients = document.getElementById('mealSummaryIngredients');
+    const summaryNotes = document.getElementById('mealSummaryNotes');
+    const summaryNote = document.getElementById('mealSummaryNote');
+    const detailOverlay = document.getElementById('menuDetailOverlay');
+    const detailTitle = document.getElementById('menuDetailTitle');
+    const detailBody = document.getElementById('menuDetailBody');
+    const detailClose = document.getElementById('menuDetailClose');
+    const menuFilterSearch = document.getElementById('menuFilterSearch');
+    const menuFilterCategory = document.getElementById('menuFilterCategory');
+    const menuFilterStatus = document.getElementById('menuFilterStatus');
+    const menuFilterContent = document.getElementById('menuFilterContent');
 
   let activeView = 'library';
-  let activeLane = 'breakfast';
-  let activeSourceKind = 'recipe';
-  let currentMenuId = '';
+    let activeLane = 'breakfast';
+    let activeSourceKind = 'recipe';
+    let currentMenuId = '';
+    let activeDetailMenu = null;
 
-  const laneMap = { breakfast: 'Matin', lunch: 'Midi', dinner: 'Soir', snack: 'Snack' };
+    const laneMap = { breakfast: 'Matin', lunch: 'Midi', dinner: 'Soir', snack: 'Snack' };
+    const statusLabels = {
+      draft: 'Brouillon',
+      complete: 'Complet',
+      incomplete: 'Incomplet',
+      missing: 'Source absente',
+      inspiration: 'Inspiration'
+    };
 
   function escapeHtml(v){
     return String(v ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
@@ -107,9 +123,9 @@
       kind,
       sourceId: String(raw.sourceId || raw.recipeId || raw.ingredientId || ''),
       name: String(raw.name || raw.title || raw.label || '').trim() || 'Sans titre',
-      meta: String(raw.meta || raw.note || '').trim(),
-      linked: kind !== 'note'
-    };
+        meta: String(raw.meta || raw.note || '').trim(),
+        linked: kind !== 'note' && !!String(raw.sourceId || raw.recipeId || raw.ingredientId || '').trim()
+      };
   }
 
   function normalizeMenu(raw){
@@ -140,19 +156,59 @@
     };
   }
 
-  function menuStats(lines){
-    const stats = { meals: 0, recipes: 0, ingredients: 0, notes: 0, linked: 0 };
-    const activeMeals = new Set();
-    (lines || []).forEach(line => {
-      if (!line) return;
+    function menuStats(lines){
+      const stats = { meals: 0, recipes: 0, ingredients: 0, notes: 0, linked: 0 };
+      const activeMeals = new Set();
+      (lines || []).forEach(line => {
+        if (!line) return;
       activeMeals.add(line.lane);
-      if (line.kind === 'recipe') { stats.recipes += 1; stats.linked += 1; }
-      else if (line.kind === 'ingredient') { stats.ingredients += 1; stats.linked += 1; }
+        if (line.kind === 'recipe') { stats.recipes += 1; if (line.sourceId) stats.linked += 1; }
+        else if (line.kind === 'ingredient') { stats.ingredients += 1; if (line.sourceId) stats.linked += 1; }
       else { stats.notes += 1; }
     });
-    stats.meals = activeMeals.size;
-    return stats;
-  }
+      stats.meals = activeMeals.size;
+      return stats;
+    }
+
+    function menuHasMissingSource(menu){
+      return (menu?.lines || []).some(line => {
+        if (!line || line.kind === 'note' || !line.sourceId) return false;
+        return !hydrateLineFromLibrary(line).linked;
+      });
+    }
+
+    function menuStatus(menu, fallback){
+      if (fallback === 'inspiration') return 'inspiration';
+      const stats = menuStats(menu?.lines || []);
+      if (!stats.meals) return 'draft';
+      if (menuHasMissingSource(menu)) return 'missing';
+      if (!stats.linked) return 'incomplete';
+      return 'complete';
+    }
+
+    function menuStatusLabel(status){
+      return statusLabels[status] || 'Menu';
+    }
+
+    function splitTags(tags){
+      return String(tags || '').split(',').map(x => x.trim()).filter(Boolean);
+    }
+
+    function lineMatchesKind(menu, contentKind){
+      if (!contentKind) return true;
+      return (menu?.lines || []).some(line => line && line.kind === contentKind);
+    }
+
+    function menuSearchText(menu){
+      return [
+        menu?.title,
+        menu?.category,
+        menu?.tags,
+        menu?.objective,
+        menu?.prep,
+        ...(menu?.lines || []).map(line => `${line?.name || ''} ${line?.meta || ''}`)
+      ].join(' ').toLowerCase();
+    }
 
   function setView(next){
     activeView = next;
@@ -272,10 +328,16 @@
     };
   }
 
-  function updateDraftCard(){
-    const snap = getEditorSnapshot();
-    const stats = menuStats(snap.lines);
-    if (draftTitle) draftTitle.textContent = snap.title || 'Commencer un menu';
+    function updateDraftCard(){
+      const snap = getEditorSnapshot();
+      const stats = menuStats(snap.lines);
+      if (draftCard) {
+        const draftMenu = normalizeMenu({ ...snap, title: snap.title || 'Commencer un menu', origin: 'draft' });
+        draftCard.dataset.menuCategory = snap.category || '';
+        draftCard.dataset.menuStatus = menuStatus(draftMenu);
+        draftCard.dataset.menuSearch = menuSearchText(draftMenu) || 'nouveau brouillon menu';
+      }
+      if (draftTitle) draftTitle.textContent = snap.title || 'Commencer un menu';
     if (draftMeta) draftMeta.textContent = stats.meals ? `${stats.meals} repas structurés` : 'À composer';
     if (draftDescription) {
       const bits = [snap.category, snap.tags, snap.objective].filter(Boolean).join(' · ');
@@ -317,23 +379,55 @@
     if (editorStatus && opts && opts.status) editorStatus.textContent = opts.status;
   }
 
-  function emptyEditor(){
-    currentMenuId = '';
-    if (mealName) mealName.value = '';
-    if (mealCategory) mealCategory.value = '';
-    if (mealTags) mealTags.value = '';
+    function emptyEditor(){
+      currentMenuId = '';
+      if (mealName) mealName.value = '';
+      if (mealCategory) mealCategory.value = '';
+      if (mealTags) mealTags.value = '';
     if (mealNote) mealNote.value = '';
     if (mealPrep) mealPrep.value = '';
     if (sourceSearch) sourceSearch.value = '';
     if (quickNoteText) quickNoteText.value = '';
     clearLaneItems();
-    syncLane('breakfast');
-    onEditorChanged({ status: 'Menu vide. Choisis maintenant des recettes ou ingrédients depuis la bibliothèque.' });
-  }
+      syncLane('breakfast');
+      onEditorChanged({ status: 'Menu vide. Choisis maintenant des recettes ou ingrédients depuis la bibliothèque.' });
+    }
 
-  function loadMenuIntoEditor(menu, mode){
-    const normalized = normalizeMenu(menu);
-    if (!normalized) return;
+    function applySeedToEditor(seed){
+      const data = seed || {};
+      emptyEditor();
+      if (mealName) mealName.value = String(data.title || data.name || '').trim();
+      if (mealCategory) mealCategory.value = String(data.category || '').trim();
+      if (mealTags) mealTags.value = Array.isArray(data.tags) ? data.tags.join(', ') : String(data.tags || '').trim();
+      if (mealNote) mealNote.value = String(data.objective || '').trim();
+      if (mealPrep) mealPrep.value = String(data.prep || '').trim();
+      onEditorChanged({ status: 'Brouillon prêt. Ajoute maintenant des recettes, ingrédients ou notes.' });
+    }
+
+    function createMenuShell(seed){
+      const data = seed || {};
+      const menu = normalizeMenu({
+        id: uid('menu'),
+        title: String(data.title || data.name || '').trim() || 'Menu sans titre',
+        category: String(data.category || '').trim(),
+        tags: Array.isArray(data.tags) ? data.tags.join(', ') : String(data.tags || '').trim(),
+        objective: String(data.objective || '').trim(),
+        prep: String(data.prep || '').trim(),
+        lines: [],
+        origin: 'saved',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+      const list = readMenus();
+      list.unshift(menu);
+      writeMenus(list);
+      renderSavedMenuCards();
+      return menu;
+    }
+
+    function loadMenuIntoEditor(menu, mode){
+      const normalized = normalizeMenu(menu);
+      if (!normalized) return;
     emptyEditor();
     currentMenuId = mode === 'duplicate' ? '' : normalized.id;
     if (mealName) mealName.value = mode === 'duplicate' ? `${normalized.title} (copie)` : normalized.title;
@@ -376,22 +470,23 @@
     };
   }
 
-  function menuCardMarkup(menu){
-    const stats = menuStats(menu.lines);
-    const labels = Array.from(new Set(menu.lines.map(line => laneMap[line.lane]).filter(Boolean)));
-    const preview = menu.lines.slice(0,3).map(line => line.name);
-    const meta = [menu.category, menu.tags].filter(Boolean).join(' · ') || 'Brouillon enregistré';
-    const search = [menu.title, menu.category, menu.tags, menu.objective, ...menu.lines.map(line => line.name)].join(' ').toLowerCase();
-    return `
-<article class="menuLibraryCard" data-menu-id="${escapeHtml(menu.id)}" data-menu-kind="saved" data-menu-search="${escapeHtml(search)}">
-  <div class="menuLibraryCover">
-    <div class="menuLibraryTopline">
-      <span class="menuLibraryTag">Sauvé</span>
-      <span class="menuLibraryMeta">${stats.meals} repas · ${stats.linked} liens réels</span>
-    </div>
-    <div class="menuLibraryTitleWrap">
-      <h4>${escapeHtml(menu.title)}</h4>
-      <p>${escapeHtml(meta)}</p>
+    function menuCardMarkup(menu){
+      const stats = menuStats(menu.lines);
+      const labels = Array.from(new Set(menu.lines.map(line => laneMap[line.lane]).filter(Boolean)));
+      const preview = menu.lines.slice(0,3).map(line => line.name);
+      const meta = [menu.category, menu.tags].filter(Boolean).join(' · ') || 'Brouillon enregistré';
+      const search = [menu.title, menu.category, menu.tags, menu.objective, ...menu.lines.map(line => line.name)].join(' ').toLowerCase();
+      const status = menuStatus(menu);
+      return `
+<article class="menuLibraryCard" data-menu-id="${escapeHtml(menu.id)}" data-menu-kind="saved" data-menu-category="${escapeHtml(menu.category || '')}" data-menu-status="${escapeHtml(status)}" data-menu-search="${escapeHtml(search)}">
+    <div class="menuLibraryCover">
+      <div class="menuLibraryTopline">
+        <span class="menuLibraryTag">${escapeHtml(menuStatusLabel(status))}</span>
+        <span class="menuLibraryMeta">${stats.meals} repas · ${stats.linked} liens réels</span>
+      </div>
+      <div class="menuLibraryTitleWrap">
+        <h4>${escapeHtml(menu.title)}</h4>
+        <p>${escapeHtml(meta)}</p>
     </div>
   </div>
   <div class="menuLibraryBody">
@@ -402,19 +497,19 @@
       <div><b>${stats.recipes}</b><span>Recettes</span></div>
       <div><b>${stats.ingredients}</b><span>Ingrédients</span></div>
       <div><b>${stats.notes}</b><span>Notes</span></div>
+      </div>
+      <div class="menuLibraryActions">
+        <button class="btn" data-menu-open-detail="saved" type="button">Fiche</button>
+        <button class="btn ghost" data-menu-open-editor="saved" type="button">Modifier</button>
+      </div>
     </div>
-    <div class="menuLibraryActions">
-      <button class="btn" data-menu-open-editor="saved" type="button">Ouvrir</button>
-      <button class="btn ghost" data-menu-open-editor="saved-copy" type="button">Dupliquer</button>
-    </div>
-  </div>
-</article>`;
-  }
+  </article>`;
+    }
 
-  function renderSavedMenuCards(){
-    if (!libraryGrid) return;
-    libraryGrid.querySelectorAll('.menuLibraryCard[data-menu-kind="saved"]').forEach(node => node.remove());
-    const saved = readMenus().sort((a,b) => String(b.updatedAt || '').localeCompare(String(a.updatedAt || '')));
+    function renderSavedMenuCards(){
+      if (!libraryGrid) return;
+      libraryGrid.querySelectorAll('.menuLibraryCard[data-menu-kind="saved"]').forEach(node => node.remove());
+      const saved = readMenus().sort((a,b) => String(b.updatedAt || '').localeCompare(String(a.updatedAt || '')));
     const draftAnchor = draftCard ? draftCard.nextSibling : null;
     let insertBefore = draftAnchor;
     saved.forEach(menu => {
@@ -423,11 +518,187 @@
       const card = wrapper.firstElementChild;
       if (card && libraryGrid) libraryGrid.insertBefore(card, insertBefore);
     });
-    if (menuCount) menuCount.textContent = String(saved.length);
-    filterLibrary();
-  }
+      if (menuCount) menuCount.textContent = String(saved.length);
+      filterLibrary();
+    }
 
-  function saveDraft(){
+    function groupedMenuLines(menu){
+      const groups = { breakfast: [], lunch: [], dinner: [], snack: [] };
+      (menu?.lines || []).forEach(line => {
+        const lane = groups[line?.lane] ? line.lane : 'breakfast';
+        groups[lane].push(hydrateLineFromLibrary(line));
+      });
+      return groups;
+    }
+
+    function menuDetailMarkup(menu, origin){
+      const normalized = normalizeMenu(menu);
+      const status = menuStatus(normalized, origin === 'inspiration' ? 'inspiration' : '');
+      const stats = menuStats(normalized.lines);
+      const tagPills = splitTags(normalized.tags).map(tag => `<span class="pill">${escapeHtml(tag)}</span>`).join('');
+      const groups = groupedMenuLines(normalized);
+      const mealBlocks = Object.entries(groups).map(([lane, lines]) => {
+        const rows = lines.length ? lines.map(line => `
+          <article class="menuDetailLine" data-kind="${escapeHtml(line.kind)}" data-linked="${line.linked ? 'true' : 'false'}">
+            <div>
+              <div class="menuDetailLineTitle">${escapeHtml(line.name)}</div>
+              <div class="menuDetailLineMeta">${escapeHtml(line.meta || (line.kind === 'note' ? 'Note libre' : 'Source liée'))}</div>
+            </div>
+          </article>
+        `).join('') : '<div class="menuDetailEmpty">Aucun élément dans ce repas.</div>';
+        return `
+          <section class="menuDetailMeal">
+            <div class="menuDetailMealHead"><b>${escapeHtml(laneMap[lane] || lane)}</b><span>${lines.length} élément${lines.length > 1 ? 's' : ''}</span></div>
+            <div class="menuDetailLines">${rows}</div>
+          </section>
+        `;
+      }).join('');
+      const canDelete = origin !== 'inspiration' && !!normalized.id;
+      return `
+        <section class="ingLeadCard">
+          <div class="ingLeadTop">
+            <div class="ingLeadThumb">🍽️</div>
+            <div>
+              <h3 class="ingLeadName">${escapeHtml(normalized.title || 'Menu')}</h3>
+              <div class="menuDetailPills">
+                <span class="menuDetailStatus" data-status="${escapeHtml(status)}">${escapeHtml(menuStatusLabel(status))}</span>
+                ${normalized.category ? `<span class="pill">${escapeHtml(normalized.category)}</span>` : ''}
+                ${tagPills}
+              </div>
+            </div>
+          </div>
+          <div class="ingKv recipeDetailKv">
+            <div class="k">Objectif</div><div class="v">${escapeHtml(normalized.objective || '—')}</div>
+            <div class="k">Repas</div><div class="v">${stats.meals}</div>
+            <div class="k">Recettes liées</div><div class="v">${stats.recipes}</div>
+            <div class="k">Ingrédients liés</div><div class="v">${stats.ingredients}</div>
+            <div class="k">Notes libres</div><div class="v">${stats.notes}</div>
+          </div>
+          <div class="ingMacroGrid">
+            <div class="ingMacroCell"><div class="ingMacroVal">${stats.meals}</div><div class="ingMacroLbl">Repas</div></div>
+            <div class="ingMacroCell"><div class="ingMacroVal">${stats.recipes}</div><div class="ingMacroLbl">Recettes</div></div>
+            <div class="ingMacroCell"><div class="ingMacroVal">${stats.ingredients}</div><div class="ingMacroLbl">Ingrédients</div></div>
+            <div class="ingMacroCell"><div class="ingMacroVal">${stats.notes}</div><div class="ingMacroLbl">Notes</div></div>
+          </div>
+          <div class="menuDetailActions">
+            <button class="btn btnGold" data-menu-detail-action="edit" type="button">${origin === 'inspiration' ? 'Utiliser dans le studio' : 'Modifier'}</button>
+            <button class="btn ghost" data-menu-detail-action="duplicate" type="button">Dupliquer</button>
+            ${canDelete ? `<button class="btn ghost" data-exchange-share="menu" data-exchange-id="${escapeHtml(normalized.id || '')}" type="button">Partager la carte</button>` : ''}
+            <button class="btn ghost" data-menu-detail-action="export" type="button">Exporter JSON</button>
+            ${canDelete ? '<button class="btn ghost" data-menu-detail-action="delete" type="button">Supprimer</button>' : ''}
+          </div>
+        </section>
+        <aside class="ingAsideCard menuDetailAside">
+          <section>
+            <div class="bigTitle" style="margin-top:0;font-size:20px;">Repas inclus</div>
+            <div class="createHint" style="margin-bottom:12px;">Lecture seule. Les liens absents restent visibles pour éviter les menus fantômes.</div>
+            <div class="menuDetailMealList">${mealBlocks}</div>
+          </section>
+          <section>
+            <div class="bigTitle" style="margin-top:0;font-size:20px;">Préparation / note</div>
+            <div class="menuDetailPrep">${escapeHtml(normalized.prep || 'Aucune note de préparation.')}</div>
+          </section>
+        </aside>
+      `;
+    }
+
+    function openMenuDetail(menu, origin){
+      if (!detailOverlay || !detailBody) return;
+      const normalized = normalizeMenu(menu);
+      if (!normalized) return;
+      activeDetailMenu = normalized;
+      detailOverlay.dataset.menuId = normalized.id || '';
+      detailOverlay.dataset.menuOrigin = origin || normalized.origin || 'saved';
+      if (detailTitle) detailTitle.textContent = normalized.title || 'Fiche menu';
+      detailBody.innerHTML = menuDetailMarkup(normalized, detailOverlay.dataset.menuOrigin);
+      detailOverlay.classList.add('show');
+      detailOverlay.setAttribute('aria-hidden', 'false');
+      try{ detailOverlay.inert = false; }catch(_e){}
+      document.body.style.overflow = 'hidden';
+      try{ detailClose?.focus(); }catch(_e){}
+    }
+
+    function closeMenuDetail(){
+      if (!detailOverlay) return;
+      try{
+        const active = document.activeElement;
+        if (active && detailOverlay.contains(active) && typeof active.blur === 'function') active.blur();
+      }catch(_e){}
+      detailOverlay.classList.remove('show');
+      detailOverlay.setAttribute('aria-hidden', 'true');
+      try{ detailOverlay.inert = true; }catch(_e){}
+      document.body.style.overflow = '';
+      activeDetailMenu = null;
+    }
+
+    function menuForCard(card){
+      if (!card) return null;
+      const kind = card.dataset.menuKind || '';
+      if (kind === 'saved' && card.dataset.menuId) {
+        return readMenus().find(entry => String(entry.id) === String(card.dataset.menuId)) || null;
+      }
+      if (kind === 'inspiration') return seedCardToMenu(card);
+      if (kind === 'draft') return normalizeMenu({ title: mealName?.value || 'Commencer un menu', category: mealCategory?.value || '', tags: mealTags?.value || '', objective: mealNote?.value || '', prep: mealPrep?.value || '', lines: serializeLines(), origin: 'draft' });
+      return null;
+    }
+
+    function buildMenuExportPayload(menu, opts){
+      const normalized = normalizeMenu(menu);
+      const payload = {
+        meta: {
+          app: 'NutriApp',
+          schema: 'menu.v1',
+          exportedAt: new Date().toISOString(),
+          bundle: !!(opts && opts.bundle)
+        },
+        menu: {
+          ...normalized,
+          tags: splitTags(normalized.tags),
+          lines: normalized.lines.map(line => ({
+            id: line.id,
+            lane: line.lane,
+            kind: line.kind,
+            sourceId: line.sourceId,
+            nameSnapshot: line.name,
+            note: line.kind === 'note' ? line.name : line.meta || ''
+          }))
+        }
+      };
+      if (opts && opts.bundle) {
+        const recipeIds = new Set(normalized.lines.filter(line => line.kind === 'recipe' && line.sourceId).map(line => String(line.sourceId)));
+        const ingredientIds = new Set(normalized.lines.filter(line => line.kind === 'ingredient' && line.sourceId).map(line => String(line.sourceId)));
+        payload.recipes = recipeSource().filter(recipe => recipeIds.has(String(recipe?.id || '')));
+        payload.ingredients = ingredientSource().filter(ingredient => ingredientIds.has(String(ingredient?.id || '')));
+      }
+      return payload;
+    }
+
+    function downloadMenuJson(menu){
+      const payload = buildMenuExportPayload(menu, { bundle: true });
+      const name = String(menu?.title || 'menu').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'menu';
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `nutriapp-${name}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 800);
+    }
+
+    function deleteMenuById(id){
+      if (!id) return false;
+      const list = readMenus();
+      const next = list.filter(menu => String(menu.id) !== String(id));
+      if (next.length === list.length) return false;
+      writeMenus(next);
+      renderSavedMenuCards();
+      closeMenuDetail();
+      return true;
+    }
+
+    function saveDraft(){
     const snap = getEditorSnapshot();
     if (!snap.title && !snap.lines.length) {
       if (editorStatus) editorStatus.textContent = 'Rien à enregistrer. Donne un nom ou ajoute au moins une ligne liée.';
@@ -453,17 +724,31 @@
     setView('library');
   }
 
-  function filterLibrary(){
-    const query = (searchInput?.value || '').trim().toLowerCase();
-    let visible = 0;
-    Array.from(page.querySelectorAll('.menuLibraryCard')).forEach(card => {
-      const haystack = (card.dataset.menuSearch || card.textContent || '').toLowerCase();
-      const show = !query || haystack.includes(query);
-      card.style.display = show ? '' : 'none';
-      if (show) visible += 1;
-    });
-    if (searchEmpty) searchEmpty.hidden = visible !== 0;
-  }
+    function filterLibrary(){
+      const pageQuery = (searchInput?.value || '').trim().toLowerCase();
+      const modalQuery = (menuFilterSearch?.value || '').trim().toLowerCase();
+      const category = String(menuFilterCategory?.value || '').trim().toLowerCase();
+      const status = String(menuFilterStatus?.value || '').trim();
+      const content = String(menuFilterContent?.value || '').trim();
+      let visible = 0;
+      Array.from(page.querySelectorAll('.menuLibraryCard')).forEach(card => {
+        const haystack = (card.dataset.menuSearch || card.textContent || '').toLowerCase();
+        const cardCategory = String(card.dataset.menuCategory || '').trim().toLowerCase();
+        const cardStatus = String(card.dataset.menuStatus || '').trim();
+        const menu = menuForCard(card);
+        const menuText = menuSearchText(menu);
+        const okPageQuery = !pageQuery || haystack.includes(pageQuery) || menuText.includes(pageQuery);
+        const okModalQuery = !modalQuery || haystack.includes(modalQuery) || menuText.includes(modalQuery);
+        const okQuery = okPageQuery && okModalQuery;
+        const okCategory = !category || cardCategory === category || String(menu?.category || '').trim().toLowerCase() === category;
+        const okStatus = !status || cardStatus === status || menuStatus(menu, card.dataset.menuKind === 'inspiration' ? 'inspiration' : '') === status;
+        const okContent = lineMatchesKind(menu, content);
+        const show = okQuery && okCategory && okStatus && okContent;
+        card.style.display = show ? '' : 'none';
+        if (show) visible += 1;
+      });
+      if (searchEmpty) searchEmpty.hidden = visible !== 0;
+    }
 
   function sourceItems(){
     const query = slug(sourceSearch?.value || '');
@@ -547,16 +832,24 @@
       return;
     }
 
-    const sourceAdd = e.target.closest('[data-add-source-kind]');
-    if (sourceAdd) {
-      addSourceById(sourceAdd.dataset.addSourceKind, sourceAdd.dataset.addSourceId);
-      return;
-    }
+      const sourceAdd = e.target.closest('[data-add-source-kind]');
+      if (sourceAdd) {
+        addSourceById(sourceAdd.dataset.addSourceKind, sourceAdd.dataset.addSourceId);
+        return;
+      }
 
-    const openBtn = e.target.closest('[data-menu-open-editor]');
-    if (openBtn) {
-      const mode = openBtn.dataset.menuOpenEditor;
-      const card = openBtn.closest('.menuLibraryCard');
+      const detailBtn = e.target.closest('[data-menu-open-detail]');
+      if (detailBtn) {
+        const card = detailBtn.closest('.menuLibraryCard');
+        const menu = menuForCard(card);
+        if (menu) openMenuDetail(menu, card?.dataset.menuKind || 'saved');
+        return;
+      }
+
+      const openBtn = e.target.closest('[data-menu-open-editor]');
+      if (openBtn) {
+        const mode = openBtn.dataset.menuOpenEditor;
+        const card = openBtn.closest('.menuLibraryCard');
       if (mode === 'blank') emptyEditor();
       else if ((mode === 'saved' || mode === 'saved-copy') && card?.dataset.menuId) {
         const menu = readMenus().find(entry => String(entry.id) === String(card.dataset.menuId));
@@ -564,9 +857,16 @@
       } else if (card) {
         loadMenuIntoEditor(seedCardToMenu(card), mode === 'seed-copy' ? 'duplicate' : 'seed');
       }
-      setView('editor');
-      return;
-    }
+        setView('editor');
+        return;
+      }
+
+      const cardHit = e.target.closest('.menuLibraryCard');
+      if (cardHit && !e.target.closest('button, a, input, select, textarea, label')) {
+        const menu = menuForCard(cardHit);
+        if (menu) openMenuDetail(menu, cardHit.dataset.menuKind || 'saved');
+        return;
+      }
 
     if (e.target.closest('#btnMenuStart') || e.target.closest('#btnMenuJumpStudio')) {
       emptyEditor();
@@ -655,8 +955,12 @@
     }
   });
 
-  searchInput?.addEventListener('input', filterLibrary);
-  sourceSearch?.addEventListener('input', renderSourceResults);
+    searchInput?.addEventListener('input', filterLibrary);
+    menuFilterSearch?.addEventListener('input', filterLibrary);
+    menuFilterCategory?.addEventListener('change', filterLibrary);
+    menuFilterStatus?.addEventListener('change', filterLibrary);
+    menuFilterContent?.addEventListener('change', filterLibrary);
+    sourceSearch?.addEventListener('input', renderSourceResults);
   quickNoteText?.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -671,14 +975,88 @@
     });
   });
 
-  if (window.NutriStore && typeof window.NutriStore.subscribe === 'function') {
-    try {
-      window.NutriStore.subscribe('recipes:changed', () => renderSourceResults());
-      window.NutriStore.subscribe('ingredients:changed', () => renderSourceResults());
-    } catch(_) { }
-  }
+    if (window.NutriStore && typeof window.NutriStore.subscribe === 'function') {
+      try {
+        window.NutriStore.subscribe('recipes:changed', () => renderSourceResults());
+        window.NutriStore.subscribe('ingredients:changed', () => renderSourceResults());
+      } catch(_) { }
+    }
 
-  syncLane('breakfast');
+    document.getElementById('btnFilterApply')?.addEventListener('click', () => {
+      const ctx = window.NutriAppFilterModal && typeof window.NutriAppFilterModal.getCurrentContext === 'function'
+        ? window.NutriAppFilterModal.getCurrentContext()
+        : '';
+      if (ctx !== 'menus') return;
+      if (searchInput && menuFilterSearch && menuFilterSearch.value.trim()) searchInput.value = menuFilterSearch.value.trim();
+      filterLibrary();
+    }, { capture:true });
+
+    document.getElementById('btnFilterReset')?.addEventListener('click', () => {
+      const ctx = window.NutriAppFilterModal && typeof window.NutriAppFilterModal.getCurrentContext === 'function'
+        ? window.NutriAppFilterModal.getCurrentContext()
+        : '';
+      if (ctx !== 'menus') return;
+      if (menuFilterSearch) menuFilterSearch.value = '';
+      if (menuFilterCategory) menuFilterCategory.value = '';
+      if (menuFilterStatus) menuFilterStatus.value = '';
+      if (menuFilterContent) menuFilterContent.value = '';
+      if (searchInput) searchInput.value = '';
+      filterLibrary();
+    }, { capture:true });
+
+    detailClose?.addEventListener('click', closeMenuDetail);
+    detailOverlay?.addEventListener('click', (e) => { if (e.target === detailOverlay) closeMenuDetail(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && detailOverlay?.classList.contains('show')) closeMenuDetail(); });
+    detailOverlay?.addEventListener('click', (e) => {
+      const actionBtn = e.target.closest('[data-menu-detail-action]');
+      if (!actionBtn) return;
+      const id = detailOverlay.dataset.menuId || '';
+      const origin = detailOverlay.dataset.menuOrigin || 'saved';
+      const sourceMenu = origin === 'inspiration'
+        ? null
+        : (readMenus().find(menu => String(menu.id) === String(id)) || null);
+      const activeMenu = sourceMenu || activeDetailMenu;
+      const action = actionBtn.dataset.menuDetailAction;
+      if (action === 'edit') {
+        if (sourceMenu) loadMenuIntoEditor(sourceMenu, 'saved');
+        else if (activeMenu) loadMenuIntoEditor(activeMenu, 'duplicate');
+        closeMenuDetail();
+        setView('editor');
+        return;
+      }
+      if (action === 'duplicate') {
+        if (activeMenu) loadMenuIntoEditor(activeMenu, 'duplicate');
+        closeMenuDetail();
+        setView('editor');
+        return;
+      }
+      if (action === 'export') {
+        if (activeMenu) downloadMenuJson(activeMenu);
+        return;
+      }
+      if (action === 'delete') {
+        const ok = confirm('Supprimer ce menu de la bibliothèque ?');
+        if (ok) deleteMenuById(id);
+      }
+    });
+
+    window.NutriMenus = Object.assign({}, window.NutriMenus || {}, {
+      openMenuDetail,
+      closeMenuDetail,
+      createMenuShell,
+      openEditorWithSeed(seed){ applySeedToEditor(seed); setView('editor'); },
+      createAndOpenEditor(seed){
+        const menu = createMenuShell(seed);
+        loadMenuIntoEditor(menu, 'saved');
+        setView('editor');
+        return menu;
+      },
+      renderSavedMenuCards,
+      filterLibrary,
+      exportMenu(menu){ return buildMenuExportPayload(menu, { bundle:true }); }
+    });
+
+    syncLane('breakfast');
   setView('library');
   renderSavedMenuCards();
   updateDraftCard();
@@ -686,3 +1064,91 @@
   renderSourceResults();
   filterLibrary();
 })();
+
+(function(){
+  const openBtn = document.getElementById('btnOpenCreateMenu');
+  const overlay = document.getElementById('menuCreateOverlay');
+  const modal = document.getElementById('menuCreateModal');
+  const closeBtn = document.getElementById('btnMenuCreateClose');
+  const backBtn = document.getElementById('btnMenuCreateBack');
+    const jumpBtn = document.getElementById('btnMenuCreateJumpStudio');
+    const studioBtn = document.getElementById('btnMenuJumpStudio');
+    const saveDraftBtn = document.getElementById('btnMenuCreateSaveDraft');
+    const nameInput = document.getElementById('menuCreateName');
+    const categoryInput = document.getElementById('menuCreateCategory');
+    const objectiveInput = document.getElementById('menuCreateObjective');
+    const tagsInput = document.getElementById('menuCreateTags');
+    const statusEl = document.getElementById('menuCreateStatus');
+    if(!openBtn || !overlay || !modal) return;
+
+    function readSeed(){
+      return {
+        title: nameInput?.value.trim() || '',
+        category: categoryInput?.value || '',
+        objective: objectiveInput?.value.trim() || '',
+        tags: tagsInput?.value.trim() || ''
+      };
+    }
+
+    function resetForm(){
+      if(nameInput) nameInput.value = '';
+      if(categoryInput) categoryInput.value = '';
+      if(objectiveInput) objectiveInput.value = '';
+      if(tagsInput) tagsInput.value = '';
+      if(statusEl) statusEl.textContent = '';
+    }
+
+    function ensureSeedTitle(seed){
+      if(seed.title || seed.objective || seed.category || seed.tags) return true;
+      if(statusEl) statusEl.textContent = 'Donne au moins un nom, une catégorie ou un objectif.';
+      try{ nameInput?.focus(); }catch(_e){}
+      return false;
+    }
+
+    function open(){
+      overlay.classList.remove('hidden');
+      overlay.setAttribute('aria-hidden', 'false');
+      try{ overlay.inert = false; }catch(_e){}
+      try{ nameInput?.focus(); }catch(_e){}
+    }
+
+  function close(){
+    try{
+      const active = document.activeElement;
+      if(active && overlay.contains(active) && typeof active.blur === 'function') active.blur();
+    }catch(_e){}
+      overlay.classList.add('hidden');
+      overlay.setAttribute('aria-hidden', 'true');
+      try{ overlay.inert = true; }catch(_e){}
+    }
+
+  openBtn.addEventListener('click', (e)=>{
+    e.preventDefault();
+    open();
+  });
+  closeBtn?.addEventListener('click', close);
+  backBtn?.addEventListener('click', close);
+  overlay.addEventListener('click', (e)=>{
+    if(e.target === overlay) close();
+  });
+  document.addEventListener('keydown', (e)=>{
+    if(e.key === 'Escape' && !overlay.classList.contains('hidden')) close();
+  });
+    jumpBtn?.addEventListener('click', ()=>{
+      const seed = readSeed();
+      if(!ensureSeedTitle(seed)) return;
+      close();
+      if(window.NutriMenus && typeof window.NutriMenus.createAndOpenEditor === 'function') window.NutriMenus.createAndOpenEditor(seed);
+      else if(studioBtn && typeof studioBtn.click === 'function') studioBtn.click();
+      resetForm();
+    });
+    saveDraftBtn?.addEventListener('click', ()=>{
+      const seed = readSeed();
+      if(!ensureSeedTitle(seed)) return;
+      if(window.NutriMenus && typeof window.NutriMenus.createMenuShell === 'function'){
+        window.NutriMenus.createMenuShell(seed);
+        if(statusEl) statusEl.textContent = 'Brouillon enregistré dans la bibliothèque Menus.';
+        setTimeout(()=>{ close(); resetForm(); }, 250);
+      }
+    });
+  })();

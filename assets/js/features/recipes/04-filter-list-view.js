@@ -201,7 +201,7 @@ function renderRecipeList(){
             <h3 class="recipeTitle" title="${escapeHtml(String(r.name || "Recette"))}"><span class="recipeTitleText">${escapeHtml(String(r.name || "Recette"))}</span></h3>
             <div class="metaRow libCardMeta">
               <div class="metaTop recipeUsageRow">
-                <button class="pill portionsPill" type="button" aria-label="Ouvrir le scénario du jour pour ${escapeHtml(String(r.name || "Recette"))}" title="Portions ${escapeHtml(String(parts || 1))}"><span class="pillText"><b>${escapeHtml(String(parts || 1))}</b> Portions</span></button>
+                <button class="pill portionsPill portionsPill--scenario" type="button" aria-label="Adapter les quantités de la recette ${escapeHtml(String(r.name || "Recette"))}" title="Cliquer pour adapter les quantités de la recette"><span class="pillText"><b>${escapeHtml(String(parts || 1))}</b> Portions</span><span class="portionsClickHint" aria-hidden="true">Adapter</span></button>
                 <span class="dotSep" aria-hidden="true"></span>
                 <span class="pill recipeIngredientCountPill" title="${escapeHtml(String(ingredientCount))} ingrédient${ingredientCount > 1 ? 's' : ''}"><span class="pillText">${escapeHtml(String(ingredientCount))} ingrédients</span></span>
                 ${prepLabel ? `<span class="dotSep" aria-hidden="true"></span><span class="pill prepTimePill" title="Temps de préparation : ${escapeHtml(String(prepLabel))}"><span class="pillText">${escapeHtml(String(prepLabel))}</span></span>` : ''}
@@ -223,18 +223,36 @@ function renderRecipeList(){
 
     const thumbEl = card.querySelector('[data-thumb]');
     renderRecipeThumb(thumbEl, r);
+    if(thumbEl){
+      thumbEl.removeAttribute("aria-hidden");
+      thumbEl.setAttribute("role", "button");
+      thumbEl.setAttribute("tabindex", "0");
+      thumbEl.setAttribute("aria-label", `Importer une image pour ${String(r.name || "Recette")}`);
+      thumbEl.setAttribute("title", "Importer une vignette (max 94 KB)");
+      thumbEl.addEventListener("click", (e)=>{
+        e.preventDefault();
+        e.stopPropagation();
+        openThumbImportForRecipe(r.id);
+      });
+      thumbEl.addEventListener("keydown", (e)=>{
+        if(e.key !== "Enter" && e.key !== " ") return;
+        e.preventDefault();
+        e.stopPropagation();
+        openThumbImportForRecipe(r.id);
+      });
+    }
 
     applyTheme(card.querySelector("[data-cat]"), catId);
     applyRecipePremiumTheme(card, catId);
 
     const openHit = card.querySelector('[data-open-detail]');
     openHit?.addEventListener("click", (e)=>{
-      if(e.target && e.target.closest && (e.target.closest(".portionsPill") || e.target.closest(".kebabBtn") || e.target.closest("#kebabPopover"))) return;
+      if(e.target && e.target.closest && (e.target.closest(".portionsPill") || e.target.closest(".recipeCardMedia") || e.target.closest(".kebabBtn") || e.target.closest("#kebabPopover"))) return;
       openRecipeDetail(r.id);
     });
     openHit?.addEventListener("keydown", (e)=>{
       if(e.key !== 'Enter' && e.key !== ' ') return;
-      if(e.target && e.target.closest && e.target.closest(".portionsPill")) return;
+      if(e.target && e.target.closest && (e.target.closest(".portionsPill") || e.target.closest(".recipeCardMedia"))) return;
       e.preventDefault();
       openRecipeDetail(r.id);
     });

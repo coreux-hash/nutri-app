@@ -75,16 +75,18 @@
 })();
 
 
-  // Sidebar navigation: switch visible page panels (Ingredients / Recipes / Menus / System)
+  // Sidebar navigation: switch visible page panels (Ingredients / Recipes / Menus / Echanges)
   (function(){
     const nav = document.querySelector('nav.nav');
     if(!nav) return;
     const heroTitle = document.getElementById('heroPageTitle') || document.querySelector('.hero .title');
+    const topMetaRail = document.getElementById('topMetaRail');
+    const topFilterBtn = document.querySelector('.topbar .iconbtn');
     const panelTitles = {
       ingredients: 'Mes Ingrédients',
       recipes: 'Mes Recettes',
       menus: 'Mes Menus',
-      system: 'Système',
+      system: 'Échanges',
     };
     const panels = {
       ingredients: document.getElementById('pageIngredients'),
@@ -92,12 +94,76 @@
       menus: document.getElementById('pageMenus'),
       system: document.getElementById('pageSystem'),
     };
+    const pageHeadMeta = {
+      ingredients: document.querySelector('#pageIngredients .pageHeadMeta'),
+      recipes: document.querySelector('#pageRecipes .pageHeadMeta'),
+      menus: document.querySelector('#pageMenus .pageHeadMeta'),
+    };
+    const pageHeadPills = {
+      ingredients: document.querySelector('#pageIngredients .pageHeadPill'),
+      recipes: document.querySelector('#pageRecipes .pageHeadPill'),
+      menus: document.querySelector('#pageMenus .pageHeadPill'),
+    };
+    const filterButtons = {
+      ingredients: document.getElementById('btnOpenFilters'),
+      recipes: document.getElementById('btnOpenFiltersRecipes'),
+      menus: document.getElementById('btnOpenFiltersMenus'),
+    };
+    const filterLabels = {
+      ingredients: 'Ouvrir les filtres ingrédients',
+      recipes: 'Ouvrir les filtres recettes',
+      menus: 'Ouvrir les filtres menus',
+    };
     function syncFabs(key){
       const fabIng = document.getElementById('btnOpenCreate');
       const fabRec = document.getElementById('btnOpenCreateRecipe');
+      const fabMen = document.getElementById('btnOpenCreateMenu');
       if(fabIng) fabIng.style.display = (key === 'ingredients') ? '' : 'none';
       if(fabRec) fabRec.style.display = (key === 'recipes') ? '' : 'none';
+      if(fabMen) fabMen.style.display = (key === 'menus') ? '' : 'none';
     }
+    function syncTopMeta(key){
+      if(!topMetaRail) return;
+      Object.entries(pageHeadPills).forEach(([k,pill])=>{
+        const home = pageHeadMeta[k];
+        if(!pill || !home) return;
+        if(k === key){
+          topMetaRail.appendChild(pill);
+        }else if(pill.parentElement !== home){
+          home.appendChild(pill);
+        }
+      });
+      topMetaRail.classList.toggle('is-empty', !pageHeadPills[key]);
+    }
+    function syncTopFilter(key){
+      if(!topFilterBtn) return;
+      const hasFilter = !!filterButtons[key];
+      topFilterBtn.classList.add('topFilterBtn');
+      topFilterBtn.classList.toggle('is-disabled', !hasFilter);
+      topFilterBtn.disabled = !hasFilter;
+      topFilterBtn.dataset.filterContext = hasFilter ? key : '';
+      topFilterBtn.setAttribute('aria-label', hasFilter ? filterLabels[key] : 'Filtres indisponibles');
+      topFilterBtn.setAttribute('title', hasFilter ? filterLabels[key] : '');
+      if(!topFilterBtn.querySelector('.topFilterGlyph')){
+        topFilterBtn.innerHTML = '<span class="topFilterGlyph" aria-hidden="true"><span></span><span></span><span></span></span>';
+      }
+    }
+    function openTopFilter(){
+      if(!topFilterBtn || topFilterBtn.disabled) return;
+      const ctx = String(topFilterBtn.dataset.filterContext || '').trim();
+      if(!ctx) return;
+      const api = window.NutriAppFilterModal;
+      if(api && typeof api.open === 'function'){
+        api.open(ctx);
+        return;
+      }
+      const fallback = filterButtons[ctx];
+      if(fallback && typeof fallback.click === 'function') fallback.click();
+    }
+    topFilterBtn?.addEventListener('click', (e)=>{
+      e.preventDefault();
+      openTopFilter();
+    });
     function show(key){
       const finalKey = panels[key] ? key : 'ingredients';
       Object.entries(panels).forEach(([k,el])=>{
@@ -107,6 +173,8 @@
 
       if(heroTitle) heroTitle.textContent = panelTitles[finalKey] || panelTitles.ingredients;
       syncFabs(finalKey);
+      syncTopMeta(finalKey);
+      syncTopFilter(finalKey);
 
       nav.querySelectorAll('a[data-page]').forEach(a=>{
         a.classList.toggle('active', a.dataset.page === finalKey);
@@ -124,6 +192,11 @@
     });
 
     nav.addEventListener('click', (e)=>{
+      const pending = e.target.closest('a[data-nav-placeholder]');
+      if(pending){
+        e.preventDefault();
+        return;
+      }
       const a = e.target.closest('a[data-page]');
       if(!a) return;
       e.preventDefault();
@@ -330,6 +403,9 @@
           <div class="ingMacroCell"><div class="ingMacroVal">${fmt(ing?.fat)}</div><div class="ingMacroLbl">L /100g</div></div>
         </div>
         ${ing?.note ? `<div class="ingNoteBox"><b>Note</b><div style="margin-top:8px">${escapeHtml(ing.note)}</div></div>` : ''}
+        <div class="exchangeDetailActions">
+          <button class="btn ghost" data-exchange-share="ingredient" data-exchange-id="${escapeHtml(ing?.id || '')}" type="button">Partager la carte</button>
+        </div>
       </section>
       <aside class="ingAsideCard">
         <div class="bigTitle" style="margin-top:0;font-size:20px;">Conversions</div>
