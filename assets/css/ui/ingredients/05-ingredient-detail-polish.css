@@ -1,15 +1,12 @@
 /* Ingredient library/detail micro-pass: spacing, sticky detail header, responsive facts. */
 
-#pageIngredients .pageBody--library .libraryGrid,
-#pageIngredients .libraryGrid,
-#pageIngredients #ingGrid{
-  padding-top:14px !important;
+#pageIngredients #ingGrid.libraryGrid{
+  margin-top:0 !important;
+  padding-top:0 !important;
 }
 
 @media (min-width: 960px){
-  #pageIngredients .pageBody--library .libraryGrid,
-  #pageIngredients .libraryGrid,
-  #pageIngredients #ingGrid{
+  #pageIngredients #ingGrid.libraryGrid{
     padding-top:18px !important;
   }
 }
