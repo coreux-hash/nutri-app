@@ -103,9 +103,11 @@ const cm = {
   defaultUnit: el.ingDefaultUnit,
   allowG: el.allowG,
   allowPiece: el.allowPiece,
+  allowMl: el.allowMl,
   allowTbsp: el.allowTbsp,
   allowTsp: el.allowTsp,
   pieceWeightG: el.pieceWeightG,
+  mlWeightG: el.mlWeightG,
   tbspWeightG: el.tbspWeightG,
   tspWeightG: el.tspWeightG,
   unitsGrid: el.ingUnitsGrid,
@@ -123,7 +125,8 @@ const cm = {
 
   const ING_UNIT_META = [
     { id:'g', label:'g', profiles:['solid','liquid'] },
-    { id:'piece', label:'pièce', profiles:['solid','liquid'] },
+    { id:'ml', label:'ml', profiles:['liquid'] },
+    { id:'piece', label:'pièce', profiles:['solid'] },
     { id:'tbsp', label:'càs', profiles:['solid','liquid'] },
     { id:'tsp', label:'càc', profiles:['solid','liquid'] },
   ];
@@ -145,6 +148,8 @@ const cm = {
   function applyProfileDefaults(profile, opts = {}){
     const force = !!opts.force;
     if(profile === 'liquid'){
+      if(cm.mlWeightG && (force || !String(cm.mlWeightG.value || '').trim())) cm.mlWeightG.value = '1';
+      if(cm.allowMl && force) cm.allowMl.checked = true;
       if(cm.pieceWeightG && force && !cm.allowPiece?.checked) cm.pieceWeightG.value = cm.pieceWeightG.value || '';
       if(cm.tbspWeightG && (force || !String(cm.tbspWeightG.value || '').trim())) cm.tbspWeightG.value = '15';
       if(cm.tspWeightG && (force || !String(cm.tspWeightG.value || '').trim())) cm.tspWeightG.value = '5';
@@ -156,6 +161,7 @@ const cm = {
 
   function getAllowedUnitsFromForm(){
     const units = ['g'];
+    if(cm.allowMl?.checked) units.push('ml');
     if(cm.allowPiece?.checked) units.push('piece');
     if(cm.allowTbsp?.checked) units.push('tbsp');
     if(cm.allowTsp?.checked) units.push('tsp');
@@ -175,6 +181,7 @@ const cm = {
 
   function syncUnitCards(){
     setUnitCardState('g', true);
+    setUnitCardState('ml', !!cm.allowMl?.checked);
     setUnitCardState('piece', !!cm.allowPiece?.checked);
     setUnitCardState('tbsp', !!cm.allowTbsp?.checked);
     setUnitCardState('tsp', !!cm.allowTsp?.checked);
@@ -217,7 +224,7 @@ const cm = {
 
   function syncProfileRules(){
     const profile = getProfileFromForm();
-    const allowMap = { piece: cm.allowPiece, tbsp: cm.allowTbsp, tsp: cm.allowTsp };
+    const allowMap = { ml: cm.allowMl, piece: cm.allowPiece, tbsp: cm.allowTbsp, tsp: cm.allowTsp };
     for(const meta of ING_UNIT_META){
       if(meta.id === 'g') continue;
       const input = allowMap[meta.id];
@@ -238,10 +245,12 @@ const cm = {
     const profile = (ing && ing.profile) ? String(ing.profile) : 'solid';
     setProfileInForm(profile, { applyDefaults:false });
     const allowed = Array.isArray(ing?.allowedUnits) && ing.allowedUnits.length ? ing.allowedUnits.map(String) : ['g'];
+    if(cm.allowMl) cm.allowMl.checked = allowed.includes('ml');
     if(cm.allowPiece) cm.allowPiece.checked = allowed.includes('piece');
     if(cm.allowTbsp) cm.allowTbsp.checked = allowed.includes('tbsp');
     if(cm.allowTsp) cm.allowTsp.checked = allowed.includes('tsp');
     if(cm.pieceWeightG) cm.pieceWeightG.value = ing?.conversions?.pieceWeightG ?? '';
+    if(cm.mlWeightG) cm.mlWeightG.value = ing?.conversions?.mlWeightG ?? '';
     if(cm.tbspWeightG) cm.tbspWeightG.value = ing?.conversions?.tbspWeightG ?? '';
     if(cm.tspWeightG) cm.tspWeightG.value = ing?.conversions?.tspWeightG ?? '';
     applyProfileDefaults(getProfileFromForm(), { force:false });
@@ -252,7 +261,7 @@ const cm = {
   }
 
   function initIngredientUnitUi(){
-    [cm.allowPiece, cm.allowTbsp, cm.allowTsp].filter(Boolean).forEach(inp => inp.addEventListener('change', ()=>{ syncUnitCards(); syncDefaultUnitOptions(); }));
+    [cm.allowMl, cm.allowPiece, cm.allowTbsp, cm.allowTsp].filter(Boolean).forEach(inp => inp.addEventListener('change', ()=>{ syncUnitCards(); syncDefaultUnitOptions(); }));
     const bindProfile = (target) => {
       target?.addEventListener('change', ()=>{
         if(target === cm.profileSolid && cm.profileSolid.checked){

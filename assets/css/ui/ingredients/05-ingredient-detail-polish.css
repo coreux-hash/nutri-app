@@ -1,0 +1,98 @@
+/* Ingredient library/detail micro-pass: spacing, sticky detail header, responsive facts. */
+
+#pageIngredients .pageBody--library .libraryGrid,
+#pageIngredients .libraryGrid,
+#pageIngredients #ingGrid{
+  padding-top:14px !important;
+}
+
+@media (min-width: 960px){
+  #pageIngredients .pageBody--library .libraryGrid,
+  #pageIngredients .libraryGrid,
+  #pageIngredients #ingGrid{
+    padding-top:18px !important;
+  }
+}
+
+#ingredientDetailModal{
+  position:relative;
+}
+
+#ingredientDetailModal .ingDetailHead{
+  position:sticky;
+  top:0;
+  z-index:4;
+  border-bottom:1px solid rgba(216,210,198,.72);
+  background:linear-gradient(180deg, rgba(238,241,232,.98), rgba(250,248,242,.94));
+  backdrop-filter:blur(8px);
+}
+
+.ingLeadCard{
+  display:flex;
+  flex-direction:column;
+}
+
+.ingKv{
+  grid-template-columns:1fr;
+  gap:0;
+}
+
+.ingKvItem{
+  display:grid;
+  grid-template-columns:180px minmax(0,1fr);
+  gap:12px;
+  border-bottom:1px dashed rgba(216,210,198,.95);
+}
+
+.ingKvItem .k,
+.ingKvItem .v{
+  border-bottom:0;
+}
+
+.ingAsideCard .createHint{
+  margin-bottom:0 !important;
+}
+
+.ingAsideCard .createHint + .ingConvList{
+  margin-top:18px;
+}
+
+.ingConvList{
+  gap:14px;
+}
+
+.ingLeadCard > .exchangeDetailActions{
+  margin-top:auto;
+  padding-top:18px;
+}
+
+@media (max-width: 860px){
+  .ingKv{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:10px;
+  }
+
+  .ingKvItem{
+    display:block;
+    min-width:0;
+    padding:10px 12px;
+    border:1px solid rgba(216,210,198,.95);
+    border-radius:14px;
+    background:rgba(250,248,242,.58);
+  }
+
+  .ingKvItem .k,
+  .ingKvItem .v{
+    padding:0;
+  }
+
+  .ingKvItem .v{
+    margin-top:6px;
+  }
+}
+
+@media (max-width: 360px){
+  .ingKv{
+    grid-template-columns:1fr;
+  }
+}

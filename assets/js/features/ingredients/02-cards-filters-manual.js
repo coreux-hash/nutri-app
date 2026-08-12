@@ -487,6 +487,28 @@ function applyIngredientFilters(){
     const it = filtered[i];
     if(it && it.id) upsertCard(it, usageIndex);
   }
+
+  const filterState = window.NutriAppState
+    ? window.NutriAppState.getFilterState('ingredients', f0)
+    : { type:'ingredients', active:!!(f0.q || f0.cat || f0.usageStars), criteria:f0 };
+  const libraryState = window.NutriAppState
+    ? window.NutriAppState.getLibraryState('ingredients', source, filtered, filterState)
+    : { totalCount:source.length, visibleCount:filtered.length, storageEmpty:source.length === 0, filteredEmpty:source.length > 0 && filtered.length === 0 };
+  window.NutriAppState?.publishFilterState?.('ingredients', filterState);
+  window.NutriAppState?.publishLibraryState?.('ingredients', libraryState);
+  const countEl = document.getElementById('ingCount');
+  if(countEl){
+    countEl.textContent = String(libraryState.totalCount);
+    countEl.dataset.visibleCount = String(libraryState.visibleCount);
+  }
+  const emptyEl = document.getElementById('ingEmpty');
+  if(emptyEl){
+    emptyEl.style.display = libraryState.emptyKind ? 'block' : 'none';
+    emptyEl.textContent = libraryState.storageEmpty
+      ? 'Aucun ingrédient enregistré. Utilise le bouton + pour créer la première carte.'
+      : (libraryState.filteredEmpty ? 'Aucun ingrédient ne correspond aux filtres actifs.' : '');
+  }
+  return libraryState;
 }
 
 // expose helper for other flows
@@ -557,7 +579,7 @@ function readManual(){
     defaultUnit: allowedUnits.includes(cm.defaultUnit?.value) ? cm.defaultUnit.value : (allowedUnits[0] || 'g'),
     conversions: {
       pieceWeightG: numOr0(cm.pieceWeightG?.value),
-      mlWeightG: 0,
+      mlWeightG: numOr0(cm.mlWeightG?.value),
       tbspWeightG: numOr0(cm.tbspWeightG?.value),
       tspWeightG: numOr0(cm.tspWeightG?.value),
     },
@@ -571,7 +593,11 @@ function readManual(){
 }
 
 function saveManual(){
-  const data = normalizeIngredient(readManual());
+  const previous = editingId ? getIngredientStoreSnapshot().find(it => String(it?.id) === String(editingId)) : null;
+  const data = normalizeIngredient({ ...(previous || {}), ...readManual() });
+  const now = new Date().toISOString();
+  if(!data.createdAt) data.createdAt = now;
+  data.updatedAt = now;
   const k = nameKey(data.name);
 
   // Politique A : unicité stricte (par nom normalisé)
@@ -591,6 +617,9 @@ function saveManual(){
       if(!ok) return; // on garde la modale ouverte
       data.id = String(existing.id); // on écrase l'existant
       editingId = String(existing.id);
+      if(existing.thumb && !data.thumb) data.thumb = existing.thumb;
+      if(existing.sourceId && !data.sourceId) data.sourceId = existing.sourceId;
+      if(existing.createdAt) data.createdAt = existing.createdAt;
     }
   }
 

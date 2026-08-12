@@ -954,10 +954,10 @@ function renderRecipeDetail(recipe){
       </div>
 
       <div class="ingKv recipeDetailKv">
-        <div class="k">Catégorie</div><div class="v">${escapeHtml(catLabel)}</div>
-        <div class="k">Portions de base</div><div class="v">${parts}</div>
-        <div class="k">Temps</div><div class="v">${escapeHtml(String(recipe?.prepTime || "—"))}</div>
-        <div class="k">Lignes</div><div class="v">${Array.isArray(recipe?.rows) ? recipe.rows.length : 0}</div>
+        <div class="ingKvItem"><div class="k">Catégorie</div><div class="v">${escapeHtml(catLabel)}</div></div>
+        <div class="ingKvItem"><div class="k">Portions de base</div><div class="v">${parts}</div></div>
+        <div class="ingKvItem"><div class="k">Temps</div><div class="v">${escapeHtml(String(recipe?.prepTime || "—"))}</div></div>
+        <div class="ingKvItem"><div class="k">Lignes</div><div class="v">${Array.isArray(recipe?.rows) ? recipe.rows.length : 0}</div></div>
       </div>
 
       <div class="recipeDetailBlock">

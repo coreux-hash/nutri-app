@@ -44,6 +44,13 @@
     function normalizeIngredient(raw){
       if(!raw || typeof raw !== 'object') return null;
 
+      if(window.NutriAppState && typeof window.NutriAppState.normalizeIngredient === 'function'){
+        const fallbackId = String(raw.id || raw._id || raw.uid || raw.key || ('ing_' + Date.now().toString(36) + Math.random().toString(36).slice(2,6)));
+        const catPicked = raw.categoryId ?? raw.category_id ?? raw.catId ?? raw.cat_id ?? raw.category ?? raw.cat ?? raw.ingCategory ?? raw.cmCategory ?? '';
+        const catNorm = normalizeCategory(catPicked);
+        return window.NutriAppState.normalizeIngredient({ ...raw, categoryId:catNorm.id, categoryLabel:raw.categoryLabel || catNorm.label || '—' }, { fallbackId, categoryLabel:catNorm.label || '—' });
+      }
+
       // Support éventuel: valeurs stockées sous un sous-objet (ex: macros)
       const macros = (raw.macros && typeof raw.macros === 'object') ? raw.macros : null;
 
@@ -75,7 +82,7 @@
       const allowedUnitsRaw = pick(raw.allowedUnits, raw.unitsAllowed, raw.units, raw.allowed_units, null);
       let allowedUnits = Array.isArray(allowedUnitsRaw) ? allowedUnitsRaw.map(v=>String(v).trim()).filter(Boolean) : [];
       if(!allowedUnits.includes('g')) allowedUnits.unshift('g');
-      allowedUnits = Array.from(new Set(allowedUnits)).filter(u=>['g','piece','tbsp','tsp'].includes(u));
+      allowedUnits = Array.from(new Set(allowedUnits)).filter(u=>['g','piece','ml','tbsp','tsp'].includes(u));
       if(!allowedUnits.length) allowedUnits = ['g'];
 
       const conversionsRaw = (raw.conversions && typeof raw.conversions === 'object') ? raw.conversions : {};
@@ -105,6 +112,7 @@
         note
       };
 
+      ['sourceId','createdAt','updatedAt'].forEach(key=>{ if(raw[key] !== undefined) out[key] = raw[key]; });
       return out;
     }
 
@@ -221,6 +229,7 @@ function migrateIfNeeded(){
         const it = list[i];
         if(it && it.id) upsertCard(it);
       }
+      try{ window.NutriIngredients?.ui?.applyIngredientFilters?.(); }catch(_){ }
     })();
 
     function upsertIngredientInStore(data){
@@ -244,6 +253,9 @@ function migrateIfNeeded(){
       }
       function normalizeMenuBackup(raw){
         if(!raw || typeof raw !== 'object') return null;
+        if(window.NutriAppState && typeof window.NutriAppState.normalizeMenu === 'function'){
+          return window.NutriAppState.normalizeMenu(raw, { idFactory:uid, now:new Date().toISOString() });
+        }
         const lines = [];
         const normalizeLine = (line, fallbackLane)=>{
           if(!line) return null;
@@ -310,6 +322,9 @@ function migrateIfNeeded(){
         return Array.from(dup);
       }
       function validateBackupPayload(payload){
+        if(window.NutriAppState && typeof window.NutriAppState.validateBackupPayload === 'function'){
+          return window.NutriAppState.validateBackupPayload(payload);
+        }
         const report = {
           ok:false,
           schema:String(payload && payload.meta && payload.meta.schema || ''),
@@ -388,12 +403,35 @@ function migrateIfNeeded(){
         }catch(_){}
       }
 
+      function commitStorageSnapshot(snapshot){
+        const normalized = {
+          ingredients:asArray(snapshot && snapshot.ingredients).map(normalizeIngredient).filter(Boolean),
+          recipes:asArray(snapshot && snapshot.recipes).map(normalizeRecipeSafe).filter(Boolean),
+          menus:asArray(snapshot && snapshot.menus).map(normalizeMenuBackup).filter(Boolean)
+        };
+        const entries = [[LS_KEYS.ingredients, normalized.ingredients], [LS_KEYS.recipes, normalized.recipes], [LS_KEYS.menus, normalized.menus]];
+        const transaction = window.NutriAppState?.commitStorageTransaction
+          ? window.NutriAppState.commitStorageTransaction(NutriStorage, entries)
+          : { ok:false, error:'Transaction de stockage indisponible.' };
+        if(!transaction.ok) return { ok:false, error:'Import non appliqué : le stockage local a été restauré.', cause:transaction.cause };
+        syncLegacyIngredientCache(normalized.ingredients);
+        try{
+          window.ingredients = normalized.ingredients.slice();
+          window.recipes = normalized.recipes.slice();
+          window.NutriStore?.emit?.('ingredients:changed', normalized.ingredients.slice());
+          window.NutriStore?.emit?.('recipes:changed', normalized.recipes.slice());
+          window.NutriStore?.emit?.('menus:changed', normalized.menus.slice());
+        }catch(_){ }
+        refreshAfterBackupImport();
+        return { ok:true, snapshot:normalized };
+      }
+
       // expose minimal API for backup modal (global)
       window.NutriAppData = {
         exportAll(){
           const ingredients = getIngredientStoreSnapshot();
           const recipes = getRecipeStoreSnapshot();
-          const menus = lsRead(LS_KEYS.menus, []);
+          const menus = asArray(lsRead(LS_KEYS.menus, [])).map(normalizeMenuBackup).filter(Boolean);
           return {
             meta:{
               app:'NutriApp',
@@ -421,6 +459,8 @@ function migrateIfNeeded(){
           const { normalized, ...publicReport } = report;
           return publicReport;
         },
+
+        commitStorageSnapshot,
 
       // Ingredients helpers (used by UI actions)
       getIngredients(){
@@ -450,6 +490,8 @@ function migrateIfNeeded(){
           const incomingRecipes = validation.normalized.recipes;
           const incomingMenus = validation.normalized.menus;
           let nextIngredients = [];
+          let nextRecipes = [];
+          let nextMenus = [];
           const stats = {
             mode,
             ingredients:{ incoming:incoming.length, added:0, updated:0, final:0 },
@@ -524,9 +566,8 @@ function migrateIfNeeded(){
               else stats.recipes.added += 1;
               recipeMap.set(rid, { ...r, id: rid });
             });
-            const mergedRecipes = Array.from(recipeMap.values()).map(normalizeRecipeSafe);
-            stats.recipes.final = mergedRecipes.length;
-            setRecipeStoreSnapshot(mergedRecipes);
+            nextRecipes = Array.from(recipeMap.values()).map(normalizeRecipeSafe);
+            stats.recipes.final = nextRecipes.length;
 
             const baseMenus = lsRead(LS_KEYS.menus, []);
             const menuMap = new Map();
@@ -540,26 +581,23 @@ function migrateIfNeeded(){
               else stats.menus.added += 1;
               menuMap.set(mid, { ...m, id: mid });
             });
-            const mergedMenus = Array.from(menuMap.values()).map(normalizeMenuBackup).filter(Boolean);
-            stats.menus.final = mergedMenus.length;
-            lsWrite(LS_KEYS.menus, mergedMenus);
+            nextMenus = Array.from(menuMap.values()).map(normalizeMenuBackup).filter(Boolean);
+            stats.menus.final = nextMenus.length;
           }
           else{
             nextIngredients = incoming.slice();
-            const nextRecipes = incomingRecipes.map(normalizeRecipeSafe);
-            const nextMenus = incomingMenus.map(normalizeMenuBackup).filter(Boolean);
+            nextRecipes = incomingRecipes.map(normalizeRecipeSafe);
+            nextMenus = incomingMenus.map(normalizeMenuBackup).filter(Boolean);
             stats.ingredients.added = nextIngredients.length;
             stats.recipes.added = nextRecipes.length;
             stats.menus.added = nextMenus.length;
             stats.ingredients.final = nextIngredients.length;
             stats.recipes.final = nextRecipes.length;
             stats.menus.final = nextMenus.length;
-            setRecipeStoreSnapshot(nextRecipes);
-            lsWrite(LS_KEYS.menus, nextMenus);
           }
 
-          setIngredientStoreSnapshot(nextIngredients);
-          refreshAfterBackupImport();
+          const commit = commitStorageSnapshot({ ingredients:nextIngredients, recipes:nextRecipes, menus:nextMenus });
+          if(!commit.ok) return { ok:false, error:commit.error, report:validation };
 
           return {
             ok:true,

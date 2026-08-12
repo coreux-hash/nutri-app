@@ -33,6 +33,8 @@
 <!-- Variante Top Trumps active. Remplacer 03 par 01 ou 02 pour tester une autre direction. -->
 <link href="assets/css/ui/shared/08-card-skin-04-fenetre-index.css" rel="stylesheet"/>
 <link href="assets/css/ui/shared/09-responsive-cousin-fix.css" rel="stylesheet"/>
+<link href="assets/css/ui/ingredients/05-ingredient-detail-polish.css" rel="stylesheet"/>
+<link href="assets/css/ui/recipes/06-recipe-mobile-polish.css" rel="stylesheet"/>
 </head>
 <body>
 <div class="app app--nutri">
@@ -40,11 +42,11 @@
 <div class="topSticky">
 <div class="topbar">
 <div class="brand">
-<div class="logo">🥗</div>
+<div aria-expanded="false" aria-label="Ouvrir le menu de navigation" class="logo" role="button" tabindex="0">🥗</div>
 <div>NutriApp</div>
 </div>
 <div class="actions">
-<button class="iconbtn" title="Menu">⋯</button>
+<button class="iconbtn" id="topFilterButton" title="Filtres" type="button">⋯</button>
 </div>
 </div>
 <div class="hero">
@@ -66,19 +68,19 @@
 <nav class="nav">
 <div class="navGroup" aria-label="Bibliothèques">
 <div class="navGroupLabel">Bibliothèques</div>
-<a class="active" data-page="ingredients" href="#ingredients"><span class="dot">🥕</span> Ingrédients</a>
-<a data-page="recipes" href="#recipes"><span class="dot">📒</span> Recettes</a>
-<a data-page="menus" href="#menus"><span class="dot">🍽️</span> Menus</a>
+<a class="active" data-nav-key="ingredients" data-page="ingredients" href="#ingredients"><span class="dot">🥕</span> <span data-nav-label="">Ingrédients</span></a>
+<a data-nav-key="recipes" data-page="recipes" href="#recipes"><span class="dot">📒</span> <span data-nav-label="">Recettes</span></a>
+<a data-nav-key="menus" data-page="menus" href="#menus"><span class="dot">🍽️</span> <span data-nav-label="">Menus</span></a>
 </div>
 <div class="navGroup" aria-label="Usage">
 <div class="navGroupLabel">Usage</div>
-<a aria-disabled="true" class="navLink--pending" data-nav-placeholder="suivi" href="#suivi" title="Le suivi sera cadré dans une passe dédiée."><span class="dot">📊</span> Suivi</a>
-<a data-page="system" href="#system"><span class="dot">⇄</span> Échanges</a>
+<a aria-disabled="true" class="navLink--pending" data-nav-key="suivi" data-nav-placeholder="suivi" href="#suivi" title="Le suivi sera cadré dans une passe dédiée."><span class="dot">📊</span> <span data-nav-label="">Suivi</span></a>
+<a data-nav-key="system" data-page="system" href="#system"><span class="dot">⇄</span> <span data-nav-label="">Échanges</span></a>
 </div>
 <div class="navGroup navGroup--secondary" aria-label="Secondaire">
 <div class="navGroupLabel">Secondaire</div>
-<a aria-disabled="true" class="navLink--pending" data-nav-placeholder="settings" href="#settings" title="Les réglages seront cadrés dans une passe dédiée."><span class="dot">⚙️</span> Réglages</a>
-<a aria-disabled="true" class="navLink--pending" data-nav-placeholder="help" href="#help" title="L’aide sera cadrée dans une passe dédiée."><span class="dot">?</span> Aide</a>
+<a aria-disabled="true" class="navLink--pending" data-nav-key="settings" data-nav-placeholder="settings" href="#settings" title="Les réglages seront cadrés dans une passe dédiée."><span class="dot">⚙️</span> <span data-nav-label="">Réglages</span></a>
+<a aria-disabled="true" class="navLink--pending" data-nav-key="help" data-nav-placeholder="help" href="#help" title="L’aide sera cadrée dans une passe dédiée."><span class="dot">?</span> <span data-nav-label="">Aide</span></a>
 </div>
 </nav>
 <div class="drawerFoot">
@@ -100,7 +102,7 @@
 </div>
 <div class="pageBody pageBody--library"><div class="grid libraryGrid" id="ingGrid">
 <!-- (vide) les cartes sont générées par la CreateModal -->
-</div></div>
+</div><div class="muted" id="ingEmpty" style="display:none;margin-top:10px;"></div></div>
 </section><section aria-label="Bibliothèque recettes" class="page pagePanel pageSpace pageSpace--recipes" id="pageRecipes">
 <div class="pageHead">
 <div class="pageHeadTitleBlock">
@@ -115,7 +117,7 @@
 </div><div class="pageBody pageBody--recipes"><section class="view show" id="viewList">
 <div aria-label="Liste recettes" class="listWrap" id="recipeList"></div>
 <div class="muted" id="recipeEmpty" style="display:none;margin-top:10px;">
-              Aucune recette en base. Clique ⇪ pour injecter des recettes démo.
+              Aucune recette enregistrée.
             </div>
 </section><section class="view" id="viewRecipe">
 <div class="recipeViewTop">
@@ -310,6 +312,10 @@
 </div>
 </div>
 </article>
+</div>
+<div class="menusSearchEmpty" hidden="" id="menusStorageEmpty">
+<h4>Aucun menu enregistré</h4>
+<p>Le brouillon et les inspirations restent disponibles pour commencer.</p>
 </div>
 <div class="menusSearchEmpty" hidden="" id="menusSearchEmpty">
 <h4>Aucun menu visible</h4>
@@ -803,6 +809,16 @@
 <div class="ingUnitLock"><span class="dot"></span><span>Base du moteur</span></div>
 </div>
 </div>
+<div class="ingUnitCard" data-unit="ml">
+<div class="ingUnitHead">
+<div><div class="ingUnitTitle">Millilitres (ml)</div><div class="ingUnitSub">Liquides uniquement · conversion explicite vers les grammes</div></div>
+<label class="ingUnitToggle"><input aria-label="Activer les millilitres" id="allowMl" type="checkbox"/></label>
+</div>
+<div class="ingUnitConv">
+<div class="ingUnitConvLabel">1 ml = [x] g</div>
+<div class="control"><span class="ic">⚙️</span><input id="mlWeightG" inputmode="decimal" min="0" placeholder="ex: 1" step="0.01" type="number"/></div>
+</div>
+</div>
 <div class="ingUnitCard" data-unit="piece">
 <div class="ingUnitHead">
 <div><div class="ingUnitTitle">Quantité / pièce</div><div class="ingUnitSub">Œuf, banane, biscuit, tranche…</div></div>
@@ -845,6 +861,7 @@
 <div class="control" style="display:none"><span class="ic">▾</span><select id="ingDefaultUnit"></select></div>
 <div class="ingDefaultGrid" id="ingDefaultGrid">
 <label class="ingDefaultChoice" data-unit="g"><input name="ingDefaultUnitChoice" type="radio" value="g"/><span class="ingDefaultChoiceLabel">g</span></label>
+<label class="ingDefaultChoice" data-unit="ml"><input name="ingDefaultUnitChoice" type="radio" value="ml"/><span class="ingDefaultChoiceLabel">ml</span></label>
 <label class="ingDefaultChoice" data-unit="piece"><input name="ingDefaultUnitChoice" type="radio" value="piece"/><span class="ingDefaultChoiceLabel">pièce</span></label>
 <label class="ingDefaultChoice" data-unit="tbsp"><input name="ingDefaultUnitChoice" type="radio" value="tbsp"/><span class="ingDefaultChoiceLabel">càs <span class="ingInfoDot" title="Le choix càs utilisera la valeur définie plus haut pour cet ingrédient.">i</span></span></label>
 <label class="ingDefaultChoice" data-unit="tsp"><input name="ingDefaultUnitChoice" type="radio" value="tsp"/><span class="ingDefaultChoiceLabel">càc</span></label>
@@ -1028,6 +1045,10 @@
 <!-- compat: recipePortions (v3_5_4) = parts -->
 <input id="recipePortions" inputmode="numeric" min="0" placeholder="Parts" step="1" type="number"/>
 </div>
+<div class="control">
+<span class="ic">⏱️</span>
+<input id="recipePrepTime" placeholder="Temps (ex: 20 min)"/>
+</div>
 </div>
 <div class="bigTitle bigTitle--withAction" id="recipeCatsTitle"><span>Catégorie &amp; tags</span><button aria-label="Supprimer la catégorie" class="modalIconBtn" id="btnDeleteRecipeCategory" title="Supprimer la catégorie sélectionnée" type="button">🗑️</button></div>
 <div class="formRow">
@@ -1094,7 +1115,6 @@
 <div class="recipeLinesToolbarMain">
 <button class="pillBtn green" id="btnAddRow" type="button">+ ingrédient</button>
 <button class="pillBtn gray" id="btnRecipeLinesLibrary" type="button">Bibliothèque</button>
-<button class="pillBtn danger" id="btnClearRecipeRows" type="button">Vider</button>
 </div>
 <div class="recipeLinesToolbarHint">Une carte par ingrédient. Les totaux se recalculent automatiquement.</div>
 </div>
@@ -1330,7 +1350,7 @@ miel: 10 g" rows="6"></textarea>
 <input accept=".json,application/json" class="hidden" id="backupFileInput" type="file"/>
 <button class="pillBtn gray" id="btnBackupLoadFile" type="button">Charger fichier</button>
 <button class="pillBtn gray" id="btnIngJsonValidate" type="button">Valider</button>
-<button class="pillBtn green" id="btnIngJsonApply" type="button">Appliquer</button>
+<button class="pillBtn green" disabled="" id="btnIngJsonApply" type="button">Appliquer</button>
 <button class="pillBtn gray" id="btnIngJsonClose" type="button">Fermer</button>
 </div>
 </div>
@@ -1460,6 +1480,8 @@ miel: 10 g" rows="6"></textarea>
 </div>
 </div><script src="assets/js/core/00-app-shell.js"></script>
 <script src="assets/js/core/01-dom-refs-and-storage.js"></script>
+<script src="assets/js/core/04-data-contracts-and-state.js"></script>
+<script src="assets/js/core/05-navigation-and-overlays.js"></script>
 <script src="assets/js/ui/app/01-filters-shell.js"></script>
 <script src="assets/js/core/02-modal-and-form-runtime.js"></script>
 <script src="assets/js/features/ingredients/01-create-modal-and-categories.js"></script>

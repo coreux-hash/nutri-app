@@ -81,6 +81,12 @@ function sanitizeImageSrc(v){
 }
 
 function normalizeIngredient(raw){
+  if(window.NutriAppState && typeof window.NutriAppState.normalizeIngredient === 'function'){
+    const base = window.NutriAppState.normalizeIngredient(raw || {}, { fallbackId:String(raw?.id ?? raw?.uuid ?? raw?._id ?? raw?.key ?? '') });
+    const categoryId = normalizeCategoryId(base?.categoryId || 'autre');
+    const kcal = toNum(base?.kcal), p = toNum(base?.p), g = toNum(base?.carbs), l = toNum(base?.fat);
+    return { ...base, categoryId, kcal100:kcal, p100:p, g100:g, l100:l, kcal, p, carbs:g, fat:l, thumb:sanitizeImageSrc(base?.thumb) };
+  }
   const id = raw.id ?? raw.uuid ?? raw._id ?? raw.key;
   const name = raw.name ?? raw.nom ?? raw.title ?? "";
   const kcal = raw.kcal100 ?? raw.kcal ?? raw.kcal_100 ?? raw.kcalPer100 ?? raw.energyKcal ?? 0;
@@ -129,6 +135,9 @@ function normalizeIngredient(raw){
 }
 
 function normalizeRecipe(raw){
+  if(window.NutriAppState && typeof window.NutriAppState.normalizeRecipe === 'function'){
+    return window.NutriAppState.normalizeRecipe(raw || {}, { fallbackId:String(raw?.id || raw?.uuid || raw?._id || ('r_' + Math.random().toString(16).slice(2))) });
+  }
   const id = String(raw?.id || raw?.uuid || raw?._id || ("r_" + Math.random().toString(16).slice(2)));
   const name = String(raw?.name || raw?.nom || "Recette").trim();
   const rawRecipeCategory = raw?.categoryId ?? raw?.category ?? "autre";
@@ -154,7 +163,18 @@ function normalizeRecipe(raw){
       macrosResolved: { kcal, p, c, f },
     };
   }) : [];
-  return { id, name, categoryId, parts, prep, prepTime, rows };
+  return {
+    id, name, categoryId,
+    tags:Array.isArray(raw?.tags) ? raw.tags.join(', ') : String(raw?.tags || ''),
+    parts,
+    cookedWeight:toNum(raw?.cookedWeight ?? raw?.poidsCuit ?? 0),
+    prep, prepTime,
+    thumbDataUrl:sanitizeImageSrc(raw?.thumbDataUrl ?? raw?.thumb ?? raw?.image ?? ''),
+    rows,
+    ...(raw?.sourceId ? {sourceId:raw.sourceId} : {}),
+    ...(raw?.createdAt ? {createdAt:raw.createdAt} : {}),
+    ...(raw?.updatedAt ? {updatedAt:raw.updatedAt} : {})
+  };
 }
 
 function loadRecipes(){

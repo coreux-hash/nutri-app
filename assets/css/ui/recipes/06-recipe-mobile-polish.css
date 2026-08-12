@@ -1,0 +1,222 @@
+/* Recipe mobile/editor polish: dense two-column controls and sticky detail header. */
+
+#recipeDetailModal{
+  position:relative;
+}
+
+#recipeDetailModal .ingDetailHead{
+  position:sticky;
+  top:0;
+  z-index:4;
+  border-bottom:1px solid rgba(216,210,198,.72);
+  background:linear-gradient(180deg, rgba(238,241,232,.98), rgba(250,248,242,.94));
+  backdrop-filter:blur(8px);
+}
+
+#recipeCreateOverlay .cmStepBtn,
+#recipeCreateOverlay .cmStepBtn > div{
+  min-width:0;
+}
+
+#recipeCreateOverlay .cmStepBtn b,
+#recipeCreateOverlay .cmStepBtn small{
+  display:block;
+  max-width:100%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+@keyframes recipePortionsPulse{
+  0%, 100%{
+    border-color:rgba(224,178,46,.72);
+    box-shadow:0 0 0 0 rgba(224,178,46,.20);
+  }
+  50%{
+    border-color:rgba(224,178,46,1);
+    box-shadow:0 0 0 3px rgba(224,178,46,.14);
+  }
+}
+
+@media (min-width:920px){
+  #pageRecipes #recipeList{
+    padding-top:14px !important;
+    box-sizing:border-box !important;
+  }
+}
+
+#pageRecipes #recipeList > .recipeCard.libCardShell .metaRow.libCardMeta{
+  display:flex !important;
+  align-items:center !important;
+  box-sizing:border-box !important;
+  width:100% !important;
+  height:auto !important;
+  min-height:32px !important;
+  padding:5px 0 !important;
+  overflow:hidden !important;
+}
+
+#pageRecipes #recipeList > .recipeCard.libCardShell .metaTop.recipeUsageRow{
+  display:flex !important;
+  flex-wrap:nowrap !important;
+  align-items:center !important;
+  align-content:center !important;
+  gap:6px !important;
+  width:100% !important;
+  min-height:22px !important;
+  height:auto !important;
+  overflow:hidden !important;
+}
+
+#pageRecipes #recipeList > .recipeCard.libCardShell .metaTop.recipeUsageRow > .portionsPill{
+  flex:0 0 auto !important;
+  width:auto !important;
+  max-width:56% !important;
+  min-height:20px !important;
+  padding:0 8px !important;
+  border:1px solid rgba(224,178,46,.72) !important;
+  border-radius:999px !important;
+  background:rgba(247,214,91,.20) !important;
+  animation:recipePortionsPulse 1.8s ease-in-out infinite;
+  box-shadow:none !important;
+}
+
+#pageRecipes #recipeList > .recipeCard.libCardShell .metaTop.recipeUsageRow > .recipeIngredientCountPill{
+  flex:0 1 auto !important;
+  max-width:44% !important;
+  min-width:0 !important;
+  margin-left:auto !important;
+  justify-content:flex-end !important;
+  text-align:right !important;
+}
+
+#pageRecipes #recipeList > .recipeCard.libCardShell .metaTop.recipeUsageRow > .prepTimePill{
+  flex:0 2 auto !important;
+  max-width:28% !important;
+  min-width:0 !important;
+}
+
+#pageRecipes #recipeList > .recipeCard.libCardShell .metaTop.recipeUsageRow > .portionsPill + .dotSep,
+#pageRecipes #recipeList > .recipeCard.libCardShell .metaTop.recipeUsageRow > .recipeIngredientCountPill + .dotSep{
+  display:none !important;
+}
+
+#pageRecipes #recipeList > .recipeCard.libCardShell .metaTop.recipeUsageRow .pillText{
+  min-width:0 !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  white-space:nowrap !important;
+}
+
+#recipeDetailModal .recipeDetailKv{
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  gap:10px !important;
+  margin:12px 0 0 !important;
+}
+
+#recipeDetailModal .recipeDetailKv .ingKvItem{
+  display:block !important;
+  min-width:0 !important;
+  padding:10px 12px !important;
+  border:1px solid rgba(216,210,198,.95) !important;
+  border-radius:14px !important;
+  background:rgba(250,248,242,.58) !important;
+}
+
+#recipeDetailModal .recipeDetailKv .k,
+#recipeDetailModal .recipeDetailKv .v{
+  padding:0 !important;
+  border-bottom:0 !important;
+}
+
+#recipeDetailModal .recipeDetailKv .v{
+  margin-top:6px !important;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineSummaryMeta{
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  gap:7px !important;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineSummaryChip{
+  min-height:30px !important;
+  padding:0 9px !important;
+  justify-content:center !important;
+  font-size:12px !important;
+  line-height:1.05 !important;
+  min-width:0 !important;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineSummaryChip--state.is-ok{
+  display:none !important;
+}
+
+#recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineSummaryChip--state:not(.is-ok){
+  grid-column:1 / -1 !important;
+}
+
+#pageIngredients .pageBody--library .libraryGrid,
+#pageIngredients .libraryGrid,
+#pageIngredients #ingGrid{
+  padding-top:14px !important;
+}
+
+@media (min-width:960px){
+  #pageIngredients .pageBody--library .libraryGrid,
+  #pageIngredients .libraryGrid,
+  #pageIngredients #ingGrid{
+    padding-top:18px !important;
+  }
+}
+
+@media (max-width:680px){
+  #pageRecipes #recipeList > .recipeCard.libCardShell .metaRow.libCardMeta{
+    min-height:34px !important;
+    padding:6px 0 !important;
+  }
+
+  #pageRecipes #recipeList > .recipeCard.libCardShell .metaTop.recipeUsageRow{
+    min-height:22px !important;
+  }
+
+  #recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLinesToolbarMain{
+    display:grid !important;
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:6px !important;
+    align-items:stretch !important;
+  }
+
+  #recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLinesToolbarMain .pillBtn{
+    width:100% !important;
+    min-width:0 !important;
+    min-height:36px !important;
+    padding:0 8px !important;
+    border-radius:12px !important;
+    font-size:12px !important;
+  }
+
+  #recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineInputGrid{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:8px !important;
+  }
+
+  #recipeCreateOverlay #recipePanelManual #cmRecipeResults .recipeSummaryMetrics,
+  #recipeCreateOverlay #recipePanelManual #cmRecipeResults .recipeSummaryMetrics.recipeSummaryMetrics--base{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:8px !important;
+  }
+
+  #recipeCreateOverlay #recipePanelManual #cmRecipeResults .recipeSummaryDetail{
+    display:block !important;
+    grid-column:1 / -1 !important;
+  }
+}
+
+@media (max-width:340px){
+  #recipeDetailModal .recipeDetailKv,
+  #recipeCreateOverlay #recipePanelManual [data-manual-step-panel="lines"] .recipeLineInputGrid{
+    grid-template-columns:1fr !important;
+  }
+}

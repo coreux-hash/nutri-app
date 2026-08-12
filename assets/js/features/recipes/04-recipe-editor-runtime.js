@@ -82,7 +82,8 @@
           qty,
           unit,
           gramsResolved,
-          macrosResolved: { kcal, p, c, f }
+          macrosResolved: { kcal, p, c, f },
+          ...(x?.sourceIngredientId ? {sourceIngredientId:String(x.sourceIngredientId)} : {})
         };
       })
       .filter(x=> (x.ingredientId || x.ingredientName || x.qty>0 || x.gramsResolved>0));
@@ -280,7 +281,12 @@
       if(this.editId){
         const existing = getRecipes().find(x=>String(x.id)===String(this.editId));
         if(existing?.thumbDataUrl) r.thumbDataUrl = existing.thumbDataUrl;
+        if(existing?.sourceId) r.sourceId = existing.sourceId;
+        if(existing?.createdAt) r.createdAt = existing.createdAt;
       }
+      const now = new Date().toISOString();
+      if(!r.createdAt) r.createdAt = now;
+      r.updatedAt = now;
 
       const body = $("cmRecipeBody");
       const rows = [];
@@ -313,7 +319,8 @@
             ...baseRow,
             categoryId: persistedCategoryId,
             gramsResolved: resolved.gramsResolved,
-            macrosResolved: { ...resolved.macrosResolved }
+            macrosResolved: { ...resolved.macrosResolved },
+            ...(card.dataset.sourceIngredientId ? {sourceIngredientId:card.dataset.sourceIngredientId} : {})
           });
         });
       }
@@ -353,6 +360,7 @@
       card.className = "recipeLineCard rRow";
       card.dataset.resolveState = "idle";
       card.dataset.expanded = "0";
+      card.dataset.sourceIngredientId = String(initial.sourceIngredientId || '');
 
       const top = document.createElement("div");
       top.className = "recipeLineTop";
@@ -802,7 +810,8 @@
           ingredientId: row.ingredientId || "",
           ingredientName: row.ingredientName || "",
           qty: row.qty ?? "",
-          unit: row.unit || "g"
+          unit: row.unit || "g",
+          sourceIngredientId: row.sourceIngredientId || ""
         });
       });
 

@@ -14,6 +14,7 @@ if(typeof window.byId!=="function"){ window.byId = function(id){ return document
     const jsonBox  = byId('ingJsonBox');
     const reportEl = byId('backupReport');
     const fileInput = byId('backupFileInput');
+    const applyBtn = byId('btnIngJsonApply');
 
     const setStatus = (msg)=>{ if(statusEl) statusEl.textContent = msg || ''; };
     function escapeHtml(v){
@@ -60,6 +61,7 @@ if(typeof window.byId!=="function"){ window.byId = function(id){ return document
       catch(_){ return { ok:false, error:'JSON invalide (parse).' }; }
     }
     function validateCurrentJson(){
+      if(applyBtn) applyBtn.disabled = true;
       if(typeof NutriAppData !== 'object' || typeof NutriAppData.validateAll !== 'function'){
         setStatus('Validation indisponible: NutriAppData.validateAll manquant.');
         return null;
@@ -73,6 +75,7 @@ if(typeof window.byId!=="function"){ window.byId = function(id){ return document
       const report = NutriAppData.validateAll(parsed.value);
       renderReport(report, report && report.ok ? 'Sauvegarde valide' : 'Sauvegarde invalide');
       setStatus(report && report.ok ? 'Validation OK.' : 'Validation échouée.');
+      if(applyBtn) applyBtn.disabled = !(report && report.ok);
       return { parsed: parsed.value, report };
     }
     function downloadJsonFromBox(){
@@ -95,7 +98,7 @@ if(typeof window.byId!=="function"){ window.byId = function(id){ return document
 
   // Template (aligné sur le format courant NutriApp)
   const getTemplate = ()=> JSON.stringify({
-    meta:{ app:'NutriApp', schema:'backup.v2', exportedAt:new Date().toISOString() },
+    meta:{ app:'NutriApp', schema:'backup.v3', exportedAt:new Date().toISOString() },
     ingredients:[
       {
         id:'ing_demo_1',
@@ -105,10 +108,10 @@ if(typeof window.byId!=="function"){ window.byId = function(id){ return document
         allowedUnits:['g','tbsp'],
         defaultUnit:'g',
         conversions:{ pieceWeightG:0, mlWeightG:0, tbspWeightG:9, tspWeightG:3 },
-        kcal100:358,
-        p100:13,
-        g100:60,
-        l100:7,
+        kcal:358,
+        p:13,
+        carbs:60,
+        fat:7,
         note:'Source: étiquette / CIQUAL'
       }
     ],
@@ -117,9 +120,12 @@ if(typeof window.byId!=="function"){ window.byId = function(id){ return document
         id:'rec_demo_1',
         name:'Porridge avoine',
         categoryId:'autre',
+        tags:'petit-déjeuner, batch',
         parts:1,
+        cookedWeight:300,
         prepTime:'5 min',
         prep:'Mélanger puis chauffer.',
+        thumbDataUrl:'',
         rows:[
           {
             categoryId:'cereales_feculents',
@@ -200,6 +206,7 @@ if(typeof window.byId!=="function"){ window.byId = function(id){ return document
 // Buttons inside modal (IDs v3_5_4)
   byId('btnIngJsonTemplate')?.addEventListener('click', ()=>{
     if(jsonBox) jsonBox.value = getTemplate();
+    if(applyBtn) applyBtn.disabled = true;
     setStatus('Template inséré.');
   });
 
@@ -218,6 +225,7 @@ if(typeof window.byId!=="function"){ window.byId = function(id){ return document
         if(jsonBox) jsonBox.value = JSON.stringify(payload, null, 2);
         if(typeof NutriAppData.validateAll === 'function') renderReport(NutriAppData.validateAll(payload), 'Export généré');
         setStatus('Export généré. Tu peux maintenant le télécharger ou le copier.');
+        if(applyBtn) applyBtn.disabled = true;
       }catch(err){
         setStatus('Erreur export.');
         console.error(err);
@@ -279,6 +287,12 @@ if(typeof window.byId!=="function"){ window.byId = function(id){ return document
     });
 
     byId('btnIngJsonValidate')?.addEventListener('click', validateCurrentJson);
+
+    jsonBox?.addEventListener('input', ()=>{
+      if(applyBtn) applyBtn.disabled = true;
+      clearReport();
+      setStatus('Contenu modifié. Valide le JSON avant de l’appliquer.');
+    });
 
     byId('btnIngJsonApply')?.addEventListener('click', ()=>{
       if(typeof NutriAppData !== 'object' || typeof NutriAppData.importAll !== 'function'){

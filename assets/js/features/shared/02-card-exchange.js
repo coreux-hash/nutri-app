@@ -208,6 +208,9 @@
   }
 
   function validatePack(pack){
+    if(window.NutriAppState && typeof window.NutriAppState.validateExchangePack === 'function'){
+      return window.NutriAppState.validateExchangePack(pack);
+    }
     const report = { ok:false, schema:String(pack && pack.meta && pack.meta.schema || ""), errors:[], warnings:[], info:[], counts:{ ingredients:0, recipes:0, menus:0 } };
     if(!pack || typeof pack !== "object"){
       report.errors.push("JSON invalide : la racine doit être un objet.");
@@ -352,10 +355,15 @@
       return copy;
     });
 
-    setIngredients(baseIngredients.concat(incomingIngredients));
-    setRecipes(baseRecipes.concat(incomingRecipes));
-    setMenus(incomingMenus.concat(baseMenus));
-    refreshUi();
+    if(!window.NutriAppData || typeof window.NutriAppData.commitStorageSnapshot !== 'function'){
+      return { ok:false, error:'Import indisponible : transaction de stockage absente.' };
+    }
+    const commit = window.NutriAppData.commitStorageSnapshot({
+      ingredients:baseIngredients.concat(incomingIngredients),
+      recipes:baseRecipes.concat(incomingRecipes),
+      menus:incomingMenus.concat(baseMenus)
+    });
+    if(!commit || !commit.ok) return { ok:false, error:(commit && commit.error) || 'Import non appliqué.' };
 
     return {
       ok:true,
@@ -721,6 +729,12 @@
       }
     });
     validateBtn?.addEventListener("click", validateCurrent);
+    jsonBox?.addEventListener("input", () => {
+      currentPack = null;
+      if(importBtn) importBtn.disabled = true;
+      setPreview("");
+      setStatus("Contenu modifié. Valide le paquet avant de l’appliquer.");
+    });
     clearBtn?.addEventListener("click", () => {
       if(jsonBox) jsonBox.value = "";
       currentPack = null;

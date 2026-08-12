@@ -172,8 +172,19 @@ function renderRecipeList(){
     return String(a.r?.name || "").localeCompare(String(b.r?.name || ""), "fr");
   });
 
+  const filterState = window.NutriAppState
+    ? window.NutriAppState.getFilterState('recipes', { query:q, filter:filt, sort })
+    : { type:'recipes', active:!!(q || filt !== 'all'), criteria:{ query:q, filter:filt, sort } };
+  const libraryState = window.NutriAppState
+    ? window.NutriAppState.getLibraryState('recipes', recipes, filtered.map(item => item.r), filterState)
+    : { totalCount:recipes.length, visibleCount:filtered.length, storageEmpty:recipes.length === 0, filteredEmpty:recipes.length > 0 && filtered.length === 0 };
+  window.NutriAppState?.publishFilterState?.('recipes', filterState);
+  window.NutriAppState?.publishLibraryState?.('recipes', libraryState);
   const countEl = byId("recipeCount");
-  if(countEl) countEl.textContent = String(recipes.length);
+  if(countEl){
+    countEl.textContent = String(libraryState.totalCount);
+    countEl.dataset.visibleCount = String(libraryState.visibleCount);
+  }
 
   for(const {r,t,partCount,ingredientCount,per} of filtered){
     const card = document.createElement("article");
@@ -201,7 +212,7 @@ function renderRecipeList(){
             <h3 class="recipeTitle" title="${escapeHtml(String(r.name || "Recette"))}"><span class="recipeTitleText">${escapeHtml(String(r.name || "Recette"))}</span></h3>
             <div class="metaRow libCardMeta">
               <div class="metaTop recipeUsageRow">
-                <button class="pill portionsPill portionsPill--scenario" type="button" aria-label="Adapter les quantités de la recette ${escapeHtml(String(r.name || "Recette"))}" title="Cliquer pour adapter les quantités de la recette"><span class="pillText"><b>${escapeHtml(String(parts || 1))}</b> Portions</span><span class="portionsClickHint" aria-hidden="true">Adapter</span></button>
+                <button class="pill portionsPill portionsPill--scenario" type="button" aria-label="Adapter les quantités de la recette ${escapeHtml(String(r.name || "Recette"))}" title="Cliquer pour adapter les quantités de la recette"><span class="pillText"><b>${escapeHtml(String(parts || 1))}</b> Portions</span></button>
                 <span class="dotSep" aria-hidden="true"></span>
                 <span class="pill recipeIngredientCountPill" title="${escapeHtml(String(ingredientCount))} ingrédient${ingredientCount > 1 ? 's' : ''}"><span class="pillText">${escapeHtml(String(ingredientCount))} ingrédients</span></span>
                 ${prepLabel ? `<span class="dotSep" aria-hidden="true"></span><span class="pill prepTimePill" title="Temps de préparation : ${escapeHtml(String(prepLabel))}"><span class="pillText">${escapeHtml(String(prepLabel))}</span></span>` : ''}
@@ -274,7 +285,13 @@ function renderRecipeList(){
   }
 
   const emptyEl = byId("recipeEmpty");
-  if(emptyEl) emptyEl.style.display = (filtered.length===0) ? "block" : "none";
+  if(emptyEl){
+    emptyEl.style.display = libraryState.emptyKind ? "block" : "none";
+    emptyEl.textContent = libraryState.storageEmpty
+      ? "Aucune recette enregistrée. Utilise le bouton + pour créer la première carte."
+      : (libraryState.filteredEmpty ? "Aucune recette ne correspond aux filtres actifs." : "");
+  }
+  return libraryState;
 }
 
 
@@ -285,11 +302,12 @@ const RecipeListView = {
   __initialized: false,
   __unsubs: [],
   getState(){
-    return {
+    const raw = {
       query: String(byId("recipeSearch")?.value || "").trim().toLowerCase(),
       filter: String(byId("recipeFilter")?.value || "all").trim() || "all",
       sort: String(byId("recipeSort")?.value || "name").trim() || "name"
     };
+    return window.NutriAppState?.getFilterState?.('recipes', raw) || raw;
   },
   render(){
     return renderRecipeList();

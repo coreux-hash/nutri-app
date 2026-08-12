@@ -13,6 +13,7 @@
   const searchInput = document.getElementById('menuSearchInput');
   const toneButtons = Array.from(page.querySelectorAll('.menuTone'));
   const searchEmpty = document.getElementById('menusSearchEmpty');
+  const storageEmpty = document.getElementById('menusStorageEmpty');
   const libraryGrid = document.getElementById('menusLibraryGrid');
   const draftCard = document.getElementById('menuDraftCard');
   const mealName = document.getElementById('mealName');
@@ -111,6 +112,9 @@
   function findIngredient(id){ return ingredientSource().find(r => String(r?.id) === String(id || '')) || null; }
 
   function normalizeLine(raw, fallbackLane){
+    if(window.NutriAppState && typeof window.NutriAppState.normalizeMenuLine === 'function'){
+      return window.NutriAppState.normalizeMenuLine(raw, fallbackLane, { fallbackId:uid('line') });
+    }
     if (!raw) return null;
     if (typeof raw === 'string') {
       return { id: uid('line'), lane: fallbackLane || 'breakfast', kind: 'note', sourceId: '', name: String(raw), meta: 'Note libre', linked: false };
@@ -129,6 +133,9 @@
   }
 
   function normalizeMenu(raw){
+    if(window.NutriAppState && typeof window.NutriAppState.normalizeMenu === 'function'){
+      return window.NutriAppState.normalizeMenu(raw, { idFactory:uid, now:new Date().toISOString() });
+    }
     if (!raw || typeof raw !== 'object') return null;
     const lines = [];
     if (Array.isArray(raw.lines)) {
@@ -157,6 +164,7 @@
   }
 
     function menuStats(lines){
+      if(window.NutriAppState && typeof window.NutriAppState.menuStats === 'function') return window.NutriAppState.menuStats(lines);
       const stats = { meals: 0, recipes: 0, ingredients: 0, notes: 0, linked: 0 };
       const activeMeals = new Set();
       (lines || []).forEach(line => {
@@ -171,6 +179,9 @@
     }
 
     function menuHasMissingSource(menu){
+      if(window.NutriAppState && typeof window.NutriAppState.menuHasMissingSource === 'function'){
+        return window.NutriAppState.menuHasMissingSource(menu, { findRecipe, findIngredient });
+      }
       return (menu?.lines || []).some(line => {
         if (!line || line.kind === 'note' || !line.sourceId) return false;
         return !hydrateLineFromLibrary(line).linked;
@@ -178,6 +189,9 @@
     }
 
     function menuStatus(menu, fallback){
+      if(window.NutriAppState && typeof window.NutriAppState.getMenuStatus === 'function'){
+        return window.NutriAppState.getMenuStatus(menu, { findRecipe, findIngredient }, fallback);
+      }
       if (fallback === 'inspiration') return 'inspiration';
       const stats = menuStats(menu?.lines || []);
       if (!stats.meals) return 'draft';
@@ -519,6 +533,7 @@
       if (card && libraryGrid) libraryGrid.insertBefore(card, insertBefore);
     });
       if (menuCount) menuCount.textContent = String(saved.length);
+      if(storageEmpty) storageEmpty.hidden = saved.length !== 0;
       filterLibrary();
     }
 
@@ -704,15 +719,17 @@
       if (editorStatus) editorStatus.textContent = 'Rien à enregistrer. Donne un nom ou ajoute au moins une ligne liée.';
       return;
     }
+    const list = readMenus();
+    const existing = currentMenuId ? list.find(item => String(item.id) === String(currentMenuId)) : null;
     const menu = normalizeMenu({
       ...snap,
       id: currentMenuId || uid('menu'),
       title: snap.title || 'Menu sans titre',
-      createdAt: currentMenuId ? undefined : new Date().toISOString(),
+      createdAt: existing?.createdAt || new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      origin: 'saved'
+      origin: 'saved',
+      ...(existing?.sourceId ? {sourceId:existing.sourceId} : {})
     });
-    const list = readMenus();
     const idx = list.findIndex(m => String(m.id) === String(menu.id));
     if (idx >= 0) list[idx] = { ...list[idx], ...menu, updatedAt: new Date().toISOString() };
     else list.unshift(menu);
@@ -731,6 +748,7 @@
       const status = String(menuFilterStatus?.value || '').trim();
       const content = String(menuFilterContent?.value || '').trim();
       let visible = 0;
+      let visibleSaved = 0;
       Array.from(page.querySelectorAll('.menuLibraryCard')).forEach(card => {
         const haystack = (card.dataset.menuSearch || card.textContent || '').toLowerCase();
         const cardCategory = String(card.dataset.menuCategory || '').trim().toLowerCase();
@@ -746,8 +764,32 @@
         const show = okQuery && okCategory && okStatus && okContent;
         card.style.display = show ? '' : 'none';
         if (show) visible += 1;
+        if (show && card.dataset.menuKind === 'saved') visibleSaved += 1;
       });
       if (searchEmpty) searchEmpty.hidden = visible !== 0;
+      const saved = readMenus();
+      const filterState = window.NutriAppState
+        ? window.NutriAppState.getFilterState('menus', { query:pageQuery, modalQuery, category, status, content })
+        : { type:'menus', active:!!(pageQuery || modalQuery || category || status || content), criteria:{ query:pageQuery, modalQuery, category, status, content } };
+      const visibleSavedMenus = saved.filter(menu => {
+        const text = menuSearchText(menu);
+        const okPageQuery = !pageQuery || text.includes(pageQuery);
+        const okModalQuery = !modalQuery || text.includes(modalQuery);
+        const okCategory = !category || String(menu.category || '').trim().toLowerCase() === category;
+        const okStatus = !status || menuStatus(menu) === status;
+        return okPageQuery && okModalQuery && okCategory && okStatus && lineMatchesKind(menu, content);
+      });
+      const libraryState = window.NutriAppState
+        ? window.NutriAppState.getLibraryState('menus', saved, visibleSavedMenus, filterState)
+        : { totalCount:saved.length, visibleCount:visibleSaved, storageEmpty:saved.length === 0, filteredEmpty:saved.length > 0 && visibleSaved === 0 };
+      window.NutriAppState?.publishFilterState?.('menus', filterState);
+      window.NutriAppState?.publishLibraryState?.('menus', libraryState);
+      if(menuCount){
+        menuCount.textContent = String(libraryState.totalCount);
+        menuCount.dataset.visibleCount = String(libraryState.visibleCount);
+      }
+      if(storageEmpty) storageEmpty.hidden = !libraryState.storageEmpty;
+      return libraryState;
     }
 
   function sourceItems(){

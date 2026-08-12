@@ -45,173 +45,8 @@
     else upsertCard(copy);
     return true;
   }
-  // Mobile drawer: open/close on logo click
-  (function(){
-    const logo = document.querySelector('.brand .logo');
-    const drawer = document.querySelector('aside.drawer');
-    const overlay = document.getElementById('drawerOverlay');
-    if(!logo || !drawer || !overlay) return;
-
-    function open(){
-      drawer.classList.add('open');
-      overlay.classList.remove('hidden');
-      overlay.setAttribute('aria-hidden','false');
-    }
-    function close(){
-      drawer.classList.remove('open');
-      overlay.classList.add('hidden');
-      overlay.setAttribute('aria-hidden','true');
-    }
-    function toggle(){
-      drawer.classList.contains('open') ? close() : open();
-    }
-
-    logo.addEventListener('click', (e)=>{ e.preventDefault(); toggle(); });
-    overlay.addEventListener('click', close);
-    drawer.addEventListener('click', (e)=>{
-      const link = e.target.closest('a');
-      if(link) close();
-    });
-})();
-
-
-  // Sidebar navigation: switch visible page panels (Ingredients / Recipes / Menus / Echanges)
-  (function(){
-    const nav = document.querySelector('nav.nav');
-    if(!nav) return;
-    const heroTitle = document.getElementById('heroPageTitle') || document.querySelector('.hero .title');
-    const topMetaRail = document.getElementById('topMetaRail');
-    const topFilterBtn = document.querySelector('.topbar .iconbtn');
-    const panelTitles = {
-      ingredients: 'Mes Ingrédients',
-      recipes: 'Mes Recettes',
-      menus: 'Mes Menus',
-      system: 'Échanges',
-    };
-    const panels = {
-      ingredients: document.getElementById('pageIngredients'),
-      recipes: document.getElementById('pageRecipes'),
-      menus: document.getElementById('pageMenus'),
-      system: document.getElementById('pageSystem'),
-    };
-    const pageHeadMeta = {
-      ingredients: document.querySelector('#pageIngredients .pageHeadMeta'),
-      recipes: document.querySelector('#pageRecipes .pageHeadMeta'),
-      menus: document.querySelector('#pageMenus .pageHeadMeta'),
-    };
-    const pageHeadPills = {
-      ingredients: document.querySelector('#pageIngredients .pageHeadPill'),
-      recipes: document.querySelector('#pageRecipes .pageHeadPill'),
-      menus: document.querySelector('#pageMenus .pageHeadPill'),
-    };
-    const filterButtons = {
-      ingredients: document.getElementById('btnOpenFilters'),
-      recipes: document.getElementById('btnOpenFiltersRecipes'),
-      menus: document.getElementById('btnOpenFiltersMenus'),
-    };
-    const filterLabels = {
-      ingredients: 'Ouvrir les filtres ingrédients',
-      recipes: 'Ouvrir les filtres recettes',
-      menus: 'Ouvrir les filtres menus',
-    };
-    function syncFabs(key){
-      const fabIng = document.getElementById('btnOpenCreate');
-      const fabRec = document.getElementById('btnOpenCreateRecipe');
-      const fabMen = document.getElementById('btnOpenCreateMenu');
-      if(fabIng) fabIng.style.display = (key === 'ingredients') ? '' : 'none';
-      if(fabRec) fabRec.style.display = (key === 'recipes') ? '' : 'none';
-      if(fabMen) fabMen.style.display = (key === 'menus') ? '' : 'none';
-    }
-    function syncTopMeta(key){
-      if(!topMetaRail) return;
-      Object.entries(pageHeadPills).forEach(([k,pill])=>{
-        const home = pageHeadMeta[k];
-        if(!pill || !home) return;
-        if(k === key){
-          topMetaRail.appendChild(pill);
-        }else if(pill.parentElement !== home){
-          home.appendChild(pill);
-        }
-      });
-      topMetaRail.classList.toggle('is-empty', !pageHeadPills[key]);
-    }
-    function syncTopFilter(key){
-      if(!topFilterBtn) return;
-      const hasFilter = !!filterButtons[key];
-      topFilterBtn.classList.add('topFilterBtn');
-      topFilterBtn.classList.toggle('is-disabled', !hasFilter);
-      topFilterBtn.disabled = !hasFilter;
-      topFilterBtn.dataset.filterContext = hasFilter ? key : '';
-      topFilterBtn.setAttribute('aria-label', hasFilter ? filterLabels[key] : 'Filtres indisponibles');
-      topFilterBtn.setAttribute('title', hasFilter ? filterLabels[key] : '');
-      if(!topFilterBtn.querySelector('.topFilterGlyph')){
-        topFilterBtn.innerHTML = '<span class="topFilterGlyph" aria-hidden="true"><span></span><span></span><span></span></span>';
-      }
-    }
-    function openTopFilter(){
-      if(!topFilterBtn || topFilterBtn.disabled) return;
-      const ctx = String(topFilterBtn.dataset.filterContext || '').trim();
-      if(!ctx) return;
-      const api = window.NutriAppFilterModal;
-      if(api && typeof api.open === 'function'){
-        api.open(ctx);
-        return;
-      }
-      const fallback = filterButtons[ctx];
-      if(fallback && typeof fallback.click === 'function') fallback.click();
-    }
-    topFilterBtn?.addEventListener('click', (e)=>{
-      e.preventDefault();
-      openTopFilter();
-    });
-    function show(key){
-      const finalKey = panels[key] ? key : 'ingredients';
-      Object.entries(panels).forEach(([k,el])=>{
-        if(!el) return;
-        el.classList.toggle('active', k === finalKey);
-      });
-
-      if(heroTitle) heroTitle.textContent = panelTitles[finalKey] || panelTitles.ingredients;
-      syncFabs(finalKey);
-      syncTopMeta(finalKey);
-      syncTopFilter(finalKey);
-
-      nav.querySelectorAll('a[data-page]').forEach(a=>{
-        a.classList.toggle('active', a.dataset.page === finalKey);
-      });
-
-      try{ document.body.dataset.activePage = finalKey; }catch(_e){}
-      return finalKey;
-    }
-    window.NutriAppNav = Object.assign({}, window.NutriAppNav || {}, {
-      showPage: show,
-      getActivePage(){
-        try{ return document.body.dataset.activePage || 'ingredients'; }catch(_e){}
-        return 'ingredients';
-      }
-    });
-
-    nav.addEventListener('click', (e)=>{
-      const pending = e.target.closest('a[data-nav-placeholder]');
-      if(pending){
-        e.preventDefault();
-        return;
-      }
-      const a = e.target.closest('a[data-page]');
-      if(!a) return;
-      e.preventDefault();
-      const shown = show(a.dataset.page);
-      /* Chromium traite chaque URL file:// comme une origine opaque distincte.
-         La vue change déjà via show(); l'URL n'est synchronisée qu'en HTTP(S). */
-      if(location.protocol === 'http:' || location.protocol === 'https:'){
-        try{ history.replaceState(null, '', a.getAttribute('href') || ('#' + shown)); }catch(_e){}
-      }
-    });
-
-    const h = (location.hash || '').replace('#','');
-    if(h && panels[h]) show(h);
-    else show('ingredients');
-  })();
+  // Le drawer est piloté avec la navigation et la pile d’overlays centrales.
+  // La navigation globale est pilotée par NAV_REGISTRY dans core/05-navigation-and-overlays.js.
 
 
 
@@ -314,6 +149,7 @@
           console.warn('[NutriApp] Delete: id introuvable ou store indisponible:', id);
         }
         card.remove();
+        try{ window.NutriIngredients?.ui?.applyIngredientFilters?.(); }catch(_){ }
       }
 
       e.stopPropagation();
@@ -391,10 +227,10 @@
           </div>
         </div>
         <div class="ingKv">
-          <div class="k">Catégorie</div><div class="v">${escapeHtml(ing?.categoryLabel || '—')}</div>
-          <div class="k">Profil</div><div class="v">${formatProfileLabel(ing?.profile)}</div>
-          <div class="k">Unités autorisées</div><div class="v">${allowed.map(formatUnitLabel).join(' · ')}</div>
-          <div class="k">Unité par défaut</div><div class="v">${formatUnitLabel(ing?.defaultUnit || 'g')}</div>
+          <div class="ingKvItem"><div class="k">Catégorie</div><div class="v">${escapeHtml(ing?.categoryLabel || '—')}</div></div>
+          <div class="ingKvItem"><div class="k">Profil</div><div class="v">${formatProfileLabel(ing?.profile)}</div></div>
+          <div class="ingKvItem"><div class="k">Unités autorisées</div><div class="v">${allowed.map(formatUnitLabel).join(' · ')}</div></div>
+          <div class="ingKvItem"><div class="k">Unité par défaut</div><div class="v">${formatUnitLabel(ing?.defaultUnit || 'g')}</div></div>
         </div>
         <div class="ingMacroGrid">
           <div class="ingMacroCell"><div class="ingMacroVal">${fmt(ing?.kcal)}</div><div class="ingMacroLbl">Kcal /100g</div></div>
@@ -460,44 +296,7 @@
   document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && overlay.classList.contains('show')) closeDetail(); });
 })();
 
-// ===== Unified Escape handler (drawer / filtres / create / backup / kebab) =====
-(function(){
-  const isShown = (el)=> !!(el && !el.classList.contains('hidden') && el.getAttribute('aria-hidden') !== 'true');
-
-  document.addEventListener('keydown', (e)=>{
-    if(e.key !== 'Escape') return;
-
-    // Priority: close top-most blocking overlays first
-    const backupOverlay = document.getElementById('backupOverlay');
-    if(isShown(backupOverlay)){
-      (document.getElementById('btnBackupClose') || document.getElementById('btnBackupBack'))?.click?.();
-      return;
-    }
-
-    const createOverlay = document.getElementById('createOverlay');
-    if(isShown(createOverlay)){
-      (document.getElementById('btnCreateClose') || document.getElementById('btnCreateBack'))?.click?.();
-      return;
-    }
-
-    const filterOverlay = document.getElementById('filterOverlay');
-    if(isShown(filterOverlay)){
-      (document.getElementById('btnFilterClose') || document.getElementById('btnFilterBack'))?.click?.();
-      return;
-    }
-
-    // Drawer (mobile)
-    const drawer = document.querySelector('aside.drawer');
-    if(drawer && drawer.classList.contains('open')){
-      document.getElementById('drawerOverlay')?.click?.(); // overlay click already closes drawer
-      return;
-    }
-
-    // Close kebab + note popovers (best-effort)
-    document.querySelectorAll('#pageIngredients .kebabMenu:not(.hidden), #pageIngredients .notePop:not(.hidden)')
-      .forEach(el=> el.classList.add('hidden'));
-  });
-})();
+// Échap est capturé une seule fois par NutriOverlayManager.
 
 
 // Thumb upload (max 94 KB) for ingredient vignettes
