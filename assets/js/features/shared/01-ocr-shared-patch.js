@@ -137,7 +137,8 @@
 
   // Modern OCR wrapper: avoids v5 deprecated warnings when possible.
   let __ocrWorkerPatched = null;
-  const oldEnsureTesseractLoaded = (typeof ensureTesseractLoaded === 'function') ? ensureTesseractLoaded : null;
+  const oldEnsureTesseractLoaded = (typeof window.ensureTesseractLoaded === 'function') ? window.ensureTesseractLoaded
+    : ((typeof ensureTesseractLoaded === 'function') ? ensureTesseractLoaded : null);
   window.ocrRecognizeFileToText = async function(file, onProgress){
     if(!file) return '';
     const ok = oldEnsureTesseractLoaded ? await oldEnsureTesseractLoaded() : !!window.Tesseract;
