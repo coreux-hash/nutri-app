@@ -229,7 +229,20 @@ function migrateIfNeeded(){
         const it = list[i];
         if(it && it.id) upsertCard(it);
       }
-      try{ window.NutriIngredients?.ui?.applyIngredientFilters?.(); }catch(_){ }
+      // First-paint filtered/empty-state render. It must run after every ingredient
+      // store module is wired: called inline it executes before this module finishes
+      // exposing the real ns.store snapshot (end of file), so the snapshot resolver in
+      // 02-cards-filters-manual.js still self-delegates and the render throws (swallowed),
+      // leaving the empty-state hidden on a fresh library and the count/library unrefreshed.
+      // Defer one pass to DOMContentLoaded so it renders against the real store.
+      var __ingFirstRender = function(){
+        try{
+          var api = window.NutriIngredients && window.NutriIngredients.ui;
+          if(api && typeof api.applyIngredientFilters === 'function') api.applyIngredientFilters();
+        }catch(_){ }
+      };
+      if(document.readyState === 'complete') setTimeout(__ingFirstRender, 0);
+      else document.addEventListener('DOMContentLoaded', __ingFirstRender, { once:true });
     })();
 
     function upsertIngredientInStore(data){

@@ -17,7 +17,11 @@
   const ING_CAT_LABEL_BY_ID = (ns.domain && ns.domain.ING_CAT_LABEL_BY_ID) || {};
   const ING_CAT_COLOR = (ns.domain && ns.domain.ING_CAT_COLOR) || { get(){ return { bg:'var(--chipMutedBg)', fg:'var(--chipMutedFg)' }; } };
   function getIngredientStoreSnapshot(){
-    if(ns.store && typeof ns.store.getIngredientStoreSnapshot === 'function'){
+    // Guard against self-delegation: at the end of this file this same function is
+    // registered as ns.store.getIngredientStoreSnapshot, so until 03-storage-and-backup.js
+    // overrides that reference the call below would recurse into itself (RangeError:
+    // Maximum call stack size exceeded). Skip the delegate when it points back to us.
+    if(ns.store && typeof ns.store.getIngredientStoreSnapshot === 'function' && ns.store.getIngredientStoreSnapshot !== getIngredientStoreSnapshot){
       return ns.store.getIngredientStoreSnapshot();
     }
     if(typeof window.getIngredientStoreSnapshot === 'function'){
@@ -29,7 +33,10 @@
     return [];
   }
   function upsertIngredientInStore(data){
-    if(ns.store && typeof ns.store.upsertIngredientInStore === 'function'){
+    // Same self-delegation guard as getIngredientStoreSnapshot: prevents an infinite
+    // recursion (and a lost save) if this runs before 03-storage-and-backup.js overrides
+    // ns.store.upsertIngredientInStore with the real persistence implementation.
+    if(ns.store && typeof ns.store.upsertIngredientInStore === 'function' && ns.store.upsertIngredientInStore !== upsertIngredientInStore){
       return ns.store.upsertIngredientInStore(data);
     }
     if(typeof window.upsertIngredientInStore === 'function'){
