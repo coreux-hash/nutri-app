@@ -122,6 +122,26 @@ function refreshRecipeFilter(){
 // Expose / sync filters when recipe categories change (CreateModal → Filters modal)
 window.addEventListener("na:recipeCategoriesChanged", ()=>{ refreshRecipeFilter(); });
 /* store subscriptions are bound by RecipeListView.bindStore() in Phase 3 */
+/* Suivi calories — recettes proposées dans SuiviCalorieApp (même origine, lecture seule côté Suivi).
+   Clé dédiée, liste d'identifiants. Clé absente = toutes proposées (comportement d'avant). Le premier
+   décochage fige la liste à « toutes sauf celle-ci » ; une recette créée ensuite n'est pas proposée
+   tant qu'elle n'est pas cochée. Les données des recettes ne sont pas modifiées. */
+const SUIVI_EXPORT_KEY = 'nutriapp.suiviExport.v1';
+function readSuiviExport(){
+  try{
+    const raw = localStorage.getItem(SUIVI_EXPORT_KEY);
+    if(raw === null) return null;
+    const list = JSON.parse(raw);
+    return Array.isArray(list) ? list.map(String) : null;
+  }catch(_){ return null; }
+}
+function writeSuiviExport(id, on, allIds){
+  const current = readSuiviExport();
+  const set = new Set(current === null ? allIds : current);
+  if(on) set.add(String(id)); else set.delete(String(id));
+  try{ localStorage.setItem(SUIVI_EXPORT_KEY, JSON.stringify(Array.from(set))); }catch(_){}
+}
+
 function renderRecipeList(){
   const listEl = byId("recipeList");
   if(!listEl) return;
@@ -135,6 +155,8 @@ function renderRecipeList(){
   const sort = String(sortEl?.value || "name").trim() || "name";
 
   const recipes = getRuntimeRecipes();
+  const suiviSelection = readSuiviExport();
+  const allRecipeIds = recipes.map(x => String(x?.id || '')).filter(Boolean);
 
   listEl.innerHTML = "";
 
@@ -200,6 +222,10 @@ function renderRecipeList(){
 
     card.innerHTML = `
       <div class="libCardTop recipeCardTop">
+        <label class="suiviExportToggle" title="Proposer cette recette dans Suivi calories">
+          <input type="checkbox" data-suivi-export="${escapeHtml(String(r.id || ''))}" ${(suiviSelection === null || suiviSelection.includes(String(r.id || ''))) ? 'checked' : ''} aria-label="Proposer ${escapeHtml(String(r.name || 'Recette'))} dans Suivi calories"/>
+          <span aria-hidden="true">Suivi</span>
+        </label>
         <div class="recipeActions libCardActions">
           <button class="kebabBtn" type="button" aria-label="Actions recette" title="Actions">⋯</button>
         </div>
@@ -274,6 +300,10 @@ function renderRecipeList(){
       e.stopPropagation();
       openRecipeScenario(r.id);
     });
+
+    const suiviBox = card.querySelector('[data-suivi-export]');
+    suiviBox?.addEventListener("click", (e)=>{ e.stopPropagation(); });
+    suiviBox?.addEventListener("change", ()=>{ writeSuiviExport(r.id, suiviBox.checked, allRecipeIds); });
 
     const kebabBtn = card.querySelector(".kebabBtn");
     kebabBtn?.addEventListener("click", (e)=>{

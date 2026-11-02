@@ -954,6 +954,10 @@
   window.recipeMacrosFromGrams = recipeMacrosFromGrams;
   window.recipeFindIngredientByRow = recipeFindIngredientByRow;
   window.recipeConvertQtyToGrams = recipeConvertQtyToGrams;
+  /* Le premier rendu de la liste a lieu avant ce fichier : sans `resolveRecipeRow`, les unités
+     (pièce, ml, cuillère) et les lignes repérées par nom n'étaient pas calculées. On redessine
+     la liste une fois le calcul complet disponible. */
+  try{ window.NutriRecipes?.ui?.RecipeListView?.render?.(); }catch(_){}
 
   // --- Wire buttons ---
   $("btnAddRow")?.addEventListener("click", ()=>RecipeEditor.addRow());
