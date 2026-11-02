@@ -2262,3 +2262,17 @@
     font-size:clamp(28px, 8.8vw, 42px);
   }
 }
+
+/* Suivi calories — case « Suivi » posée sur la vignette de la carte recette. */
+#pageRecipes #recipeList > .recipeCard.libCardShell{position:relative;}
+#pageRecipes .recipeCard .suiviExportToggle{
+  position:absolute; top:14px; left:14px; z-index:3;
+  display:inline-flex; align-items:center; gap:5px;
+  padding:3px 8px 3px 5px; border-radius:999px;
+  border:1px solid rgba(31,42,36,.12); background:rgba(255,255,255,.90);
+  color:var(--ink700); font-size:11px; font-weight:800; line-height:1; letter-spacing:.02em;
+  cursor:pointer; user-select:none;
+}
+#pageRecipes .recipeCard .suiviExportToggle input{width:14px; height:14px; margin:0; accent-color:var(--ink700); cursor:pointer;}
+#pageRecipes .recipeCard .suiviExportToggle:has(input:not(:checked)){opacity:.72;}
+#pageRecipes .recipeCard .suiviExportToggle:focus-within{outline:2px solid var(--ink500); outline-offset:2px;}
