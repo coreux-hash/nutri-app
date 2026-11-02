@@ -157,16 +157,11 @@
   grid-column:1 / -1 !important;
 }
 
-#pageIngredients #ingGrid.libraryGrid{
-  margin-top:0 !important;
-  padding-top:0 !important;
-}
-
-@media (min-width:960px){
-  #pageIngredients #ingGrid.libraryGrid{
-    padding-top:18px !important;
-  }
-}
+/* Note v16: the #pageIngredients #ingGrid.libraryGrid top-spacing rule (0 on mobile,
+   18px from 960px) was duplicated verbatim here and in
+   assets/css/ui/ingredients/05-ingredient-detail-polish.css. It is an ingredient-page
+   rule, so the single source of truth is kept in 05; the identical copy has been
+   removed here to eliminate dead/duplicated CSS. No visual change (rules were equal). */
 
 @media (max-width:680px){
   #pageRecipes #recipeList > .recipeCard.libCardShell .metaRow.libCardMeta{
