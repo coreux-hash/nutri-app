@@ -48,6 +48,9 @@ function isFileProtocol(){
   return String(location?.protocol || "").toLowerCase() === "file:";
 }
 
+/* Chargeur à la demande, exposé pour le module OCR partagé (01-ocr-shared-patch.js), qui ne le voyait
+   pas à l'intérieur de ce module : sans script tesseract en <head>, l'OCR renvoyait toujours un texte vide. */
+window.ensureTesseractLoaded = ensureTesseractLoaded;
 async function ensureTesseractLoaded(){
   if (window.Tesseract && (window.Tesseract.createWorker || window.Tesseract.recognize)) return true;
 
