@@ -181,7 +181,12 @@ function getCardTone(catId){
     produits_laitiers:{ main:'#DDB54A', deep:'#A77B18' },
     proteines_vegetales:{ main:'#A3A93A', deep:'#727823' },
     sucrants:{ main:'#9D8DB7', deep:'#705F89' },
-    viandes_volailles:{ main:'#B93B27', deep:'#882919' }
+    viandes_volailles:{ main:'#B93B27', deep:'#882919' },
+    charcuterie_salaisons:{ main:'#B5526A', deep:'#83344A' },
+    fromages:{ main:'#E39A2D', deep:'#A86A12' },
+    fruits_coque_graines:{ main:'#9A6B3F', deep:'#6B4627' },
+    tartinables_confitures:{ main:'#8E4A8C', deep:'#653163' },
+    condiments_sauces:{ main:'#3E8C7A', deep:'#28655A' }
   };
   return tones[String(catId || 'autre').trim()] || tones.autre;
 }
@@ -521,6 +526,9 @@ function applyIngredientFilters(){
 // expose helper for other flows
 window.NutriAppFilters = window.NutriAppFilters || {};
 window.NutriAppFilters.applyIngredients = applyIngredientFilters;
+// v17.6 — un flux qui modifie les ingrédients hors de cette page (ex. « Créer comme ingrédient »
+// depuis une recette) émet na:ingredientsChanged : on rafraîchit grille + compteur du hero.
+window.addEventListener('na:ingredientsChanged', ()=>{ try{ applyIngredientFilters(); }catch(_){ } });
 
 // wiring: page search
 if(ingQuery){
