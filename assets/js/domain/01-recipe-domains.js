@@ -6,21 +6,26 @@
    - catégories recettes + custom (héritées v3_5_4)
 ========================= */
 window.ING_CATEGORY_ITEMS = window.ING_CATEGORY_ITEMS || [
-  { id: "viandes_volailles",  label: "Viande & volaille" },
-  { id: "poissons",           label: "Poisson" },
-  { id: "fruits_de_mer",      label: "Fruits de mer" },
-  { id: "oeufs",              label: "Œufs" },
-  { id: "produits_laitiers",  label: "Produits laitiers" },
+  { id: "cereales_feculents", label: "Céréales & féculents" },
+  { id: "legumes", label: "Légumes" },
+  { id: "fruits", label: "Fruits" },
+  { id: "viandes_volailles", label: "Viande & volaille" },
+  { id: "charcuterie_salaisons", label: "Charcuterie & salaisons" },
+  { id: "poissons", label: "Poisson" },
+  { id: "fruits_de_mer", label: "Fruits de mer" },
+  { id: "oeufs", label: "Œufs" },
   { id: "proteines_vegetales", label: "Protéines végétales" },
-  { id: "cereales_feculents",  label: "Céréales & féculents" },
-  { id: "legumes",             label: "Légumes" },
-  { id: "fruits",              label: "Fruits" },
-  { id: "matieres_grasses",    label: "Matières grasses / oléagineux" },
-  { id: "sucrants",            label: "Sucrants" },
-  { id: "liquides_boissons",   label: "Liquides & boissons" },
-  { id: "aides_techniques",    label: "Aides techniques (levure, gélifiants…)" },
-  { id: "epices_aromes",       label: "Épices, herbes & arômes" },
-  { id: "autre",               label: "Autres / divers" }
+  { id: "fromages", label: "Fromages" },
+  { id: "produits_laitiers", label: "Produits laitiers" },
+  { id: "matieres_grasses", label: "Matières grasses" },
+  { id: "fruits_coque_graines", label: "Fruits à coque & graines" },
+  { id: "sucrants", label: "Sucrants" },
+  { id: "tartinables_confitures", label: "Tartinables & confitures" },
+  { id: "aides_techniques", label: "Aides techniques (levure, gélifiants…)" },
+  { id: "epices_aromes", label: "Épices, herbes & arômes" },
+  { id: "condiments_sauces", label: "Condiments, sauces & vinaigres" },
+  { id: "liquides_boissons", label: "Liquides & boissons" },
+  { id: "autre", label: "Autres / divers" }
 ];
 
 /* U1 — ADN couleur unifié : couleurs de base calées sur la palette canonique (mains ingrédient).
