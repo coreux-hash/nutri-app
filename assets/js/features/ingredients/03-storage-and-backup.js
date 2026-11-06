@@ -399,7 +399,14 @@ function migrateIfNeeded(){
         return report;
       }
       function refreshAfterBackupImport(){
-        if(ingGrid){
+        // v17.6 — passe par le filtre ingrédients : reconstruit la grille ET met à jour
+        // le compteur du hero (#ingCount), l'état vide et les filtres actifs.
+        let refreshed = false;
+        try{
+          const applyIng = window.NutriIngredients?.ui?.applyIngredientFilters || window.NutriAppFilters?.applyIngredients;
+          if(typeof applyIng === 'function'){ applyIng(); refreshed = true; }
+        }catch(_){}
+        if(!refreshed && ingGrid){
           ingGrid.innerHTML = '';
           const list = getIngredientStoreSnapshot().slice();
           for(let i=list.length-1;i>=0;i--){
@@ -490,6 +497,17 @@ function migrateIfNeeded(){
         const changed = next.length < base.length;
         if(changed) setIngredientStoreSnapshot(next);
         return changed;
+      },
+      // v17.2 — retrait groupé (archivage) : même chemin que deleteIngredientById, une seule écriture,
+      // seule la clé ingrédients est réécrite (recettes et menus intacts).
+      deleteIngredientsByIds(ids){
+        const drop = new Set((Array.isArray(ids) ? ids : []).map(String).filter(Boolean));
+        if(!drop.size) return { ok:false, removed:0 };
+        const base = getIngredientStoreSnapshot();
+        const next = base.filter(x=>!drop.has(String(x && x.id)));
+        const removed = base.length - next.length;
+        if(removed) setIngredientStoreSnapshot(next);
+        return { ok:removed > 0, removed };
       },
 
         importAll(payload, opts){
