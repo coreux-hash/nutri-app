@@ -234,6 +234,7 @@
       ['backup','backupOverlay',visibleByHiddenClass,'btnBackupClose'],
       ['exchangeShare','exchangeShareOverlay',visibleByHiddenClass,'btnExchangeShareClose'],
       ['exchangeImport','exchangeImportOverlay',visibleByHiddenClass,'btnExchangeClose'],
+      ['archive','archiveOverlay',visibleByHiddenClass,'btnArchiveClose'],
       ['recipeConvert','recipeConvertOverlay',visibleByHiddenClass,'btnRecipeConvertCancel']
     ];
     definitions.forEach(([id, elementId, visible, closeButtonId]) => register({

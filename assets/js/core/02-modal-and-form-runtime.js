@@ -72,6 +72,14 @@ if(typeof window.byId!=="function"){ window.byId = function(id){ return document
         renderReport({ counts:{ingredients:0,recipes:0,menus:0}, errors:[parsed.error] }, 'Validation impossible');
         return null;
       }
+      const schema = String(parsed.value && parsed.value.meta && parsed.value.meta.schema || '');
+      if(/^exchange\./.test(schema)){
+        renderReport({ counts:{ingredients:0,recipes:0,menus:0}, warnings:['Ce fichier est un paquet de cartes (' + schema + '), pas une sauvegarde complète. Il s’importe dans « Recevoir des cartes », sans rien écraser.'] }, 'Mauvaise fenêtre');
+        reportEl && reportEl.insertAdjacentHTML('beforeend', '<button class="pillBtn green backupToExchangeBtn" type="button" data-backup-to-exchange>Ouvrir dans « Recevoir des cartes »</button>');
+        setStatus('Paquet de cartes détecté.');
+        try{ reportEl && reportEl.scrollIntoView({ block:'nearest', behavior:'smooth' }); }catch(_){}
+        return null;
+      }
       const report = NutriAppData.validateAll(parsed.value);
       renderReport(report, report && report.ok ? 'Sauvegarde valide' : 'Sauvegarde invalide');
       setStatus(report && report.ok ? 'Validation OK.' : 'Validation échouée.');
@@ -197,6 +205,23 @@ if(typeof window.byId!=="function"){ window.byId = function(id){ return document
     // If supported, inert prevents focus/interaction while hidden
     try{ overlay.inert = true; }catch(_){}
   }
+
+  function receiveText(text, sourceName){
+    open();
+    if(jsonBox) jsonBox.value = String(text || '');
+    const result = validateCurrentJson();
+    if(sourceName && result && result.report && result.report.ok) setStatus('Fichier chargé : ' + sourceName + '. Choisis le mode puis « Appliquer ».');
+    return result;
+  }
+  window.NutriBackupUI = Object.assign({}, window.NutriBackupUI || {}, { open, receiveText });
+  reportEl && reportEl.addEventListener('click', (e)=>{
+    const target = e.target instanceof Element ? e.target.closest('[data-backup-to-exchange]') : null;
+    if(!target) return;
+    e.preventDefault();
+    const text = jsonBox ? jsonBox.value : '';
+    close();
+    if(window.NutriExchangeUI && typeof window.NutriExchangeUI.receiveText === 'function') window.NutriExchangeUI.receiveText(text, 'transfert depuis la sauvegarde technique');
+  });
 
   // Open/close wiring
   if(openBtn) openBtn.addEventListener('click', (e)=>{ e.preventDefault(); open(); });
