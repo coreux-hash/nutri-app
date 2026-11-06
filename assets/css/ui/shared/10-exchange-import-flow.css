@@ -1,0 +1,81 @@
+/* v17 — parcours d'import simplifié (chargé en dernier). Ne change ni les données ni le moteur. */
+
+/* Page Échanges : point d'entrée unique */
+.systemBackupActions{ flex-wrap:wrap; }
+.systemImportStatus{
+  margin:10px 0 0;
+  min-height:1.2em;
+  font-size:13px;
+  font-weight:700;
+  color:#8a3b22;
+}
+.systemImportStatus:empty{ display:none; }
+
+/* Recevoir des cartes : JSON brut replié */
+#exchangeImportOverlay .exchangeActionRail{
+  display:grid !important;
+  grid-template-columns:1fr !important;
+}
+#exchangeImportOverlay .exchangeJsonDetails{
+  margin-top:10px;
+  border-radius:18px;
+  border:1px dashed rgba(31,42,36,.16);
+  padding:4px 12px;
+  background:rgba(255,255,255,.55);
+}
+#exchangeImportOverlay .exchangeJsonDetails > summary{
+  cursor:pointer;
+  padding:8px 0;
+  font-size:13px;
+  font-weight:800;
+  color:var(--g900, #1f4d36);
+  list-style-position:inside;
+}
+#exchangeImportOverlay .exchangeJsonDetails[open]{ padding-bottom:12px; }
+#exchangeImportOverlay .exchangeJsonDetails[open] > .exchangeJsonBox{ margin:4px 0 10px; }
+
+/* Puces de cartes : plafond lisible */
+#exchangeImportOverlay .exchangeCardChip--more{
+  font-weight:800;
+  opacity:.75;
+}
+
+/* Bouton d'ajout toujours visible en bas de la fenêtre */
+#exchangeImportOverlay .exchangeFooterActions{
+  position:sticky;
+  bottom:-18px;
+  z-index:3;
+  margin:0 -18px -18px;
+  padding:12px 18px calc(12px + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg, rgba(250,248,242,.86), rgba(250,248,242,.98) 40%);
+  border-top:1px solid rgba(31,42,36,.08);
+  backdrop-filter:blur(6px);
+  grid-template-columns:minmax(0,1fr) minmax(0,2fr) !important;
+}
+@media (max-width:699px){
+  #exchangeImportOverlay .exchangeFooterActions{
+    bottom:calc(-18px - env(safe-area-inset-bottom));
+    margin:0 -12px calc(-18px - env(safe-area-inset-bottom));
+    padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+  }
+}
+
+/* Sauvegarde : bouton de transfert vers Recevoir des cartes */
+#backupReport .backupToExchangeBtn{
+  width:100%;
+  min-height:44px;
+  margin-top:10px;
+  justify-content:center;
+  border-radius:999px;
+  font-weight:900;
+}
+
+/* Mobile : un plafond générique (.createBody, 01-core.css) laissait ~90 px vides sous le pied de fenêtre */
+#exchangeImportOverlay .exchangeBody{ max-height:none !important; }
+
+/* Bouton principal de la page Échanges */
+#btnSystemImportFile{
+  background:var(--g800, #2B6542) !important;
+  color:#fff !important;
+  border-color:transparent !important;
+}

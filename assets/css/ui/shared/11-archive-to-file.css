@@ -1,0 +1,122 @@
+/* v17.2 — fenêtre « Archiver dans un fichier » (même habillage que Recevoir des cartes). */
+#archiveOverlay .exchangeModal{
+  width:min(860px,100%) !important;
+  max-height:calc(100dvh - 36px) !important;
+  display:flex !important;
+  flex-direction:column !important;
+  overflow:hidden !important;
+  border-radius:30px !important;
+  border:1px solid rgba(31,42,36,.10) !important;
+  background:linear-gradient(180deg, rgba(255,255,255,.96), rgba(250,248,242,.98)) !important;
+  box-shadow:0 26px 70px rgba(19,37,28,.30) !important;
+}
+#archiveOverlay .exchangeTop{
+  flex:0 0 auto !important;
+  min-height:76px;
+  padding:14px 18px !important;
+  border-bottom:1px solid rgba(31,42,36,.08) !important;
+  background:rgba(255,255,255,.66) !important;
+}
+#archiveOverlay .exchangeTitle{
+  color:var(--g900) !important;
+  font-size:clamp(22px,3vw,32px) !important;
+  line-height:1.05 !important;
+}
+#archiveOverlay .archiveBody{
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  max-height:none !important;
+  display:grid !important;
+  gap:12px;
+  align-content:start;
+  padding:16px 18px 18px !important;
+  overflow-x:hidden !important;
+  overflow-y:auto !important;
+  overscroll-behavior-y:contain !important;
+}
+#archiveOverlay .exchangeLead{
+  display:grid; gap:4px; margin:0 !important;
+  padding:14px 16px !important;
+  border-radius:20px !important;
+  border:1px solid rgba(30,78,51,.10) !important;
+  background:rgba(232,240,233,.7) !important;
+}
+#archiveOverlay .archiveStorage{
+  display:grid; gap:2px;
+  padding:10px 14px;
+  border-radius:16px;
+  background:rgba(243,194,71,.12);
+  border:1px solid rgba(243,194,71,.35);
+  font-size:13px;
+}
+#archiveOverlay .archiveStorage span{ color:#5d564b; }
+#archiveOverlay .archiveFilters{
+  display:grid;
+  grid-template-columns:minmax(0,2fr) minmax(0,1.3fr) auto;
+  gap:8px;
+}
+#archiveOverlay .archiveFilters input,
+#archiveOverlay .archiveFilters select{
+  min-height:44px; width:100%;
+  border-radius:999px;
+  border:1px solid rgba(31,42,36,.14);
+  padding:0 14px;
+  background:#fff;
+  font:inherit;
+}
+#archiveOverlay .archiveFilters .pillBtn{ min-height:44px; border-radius:999px; white-space:nowrap; }
+#archiveOverlay .archiveList{
+  display:grid; gap:6px;
+}
+#archiveOverlay .archiveRow{
+  display:grid;
+  grid-template-columns:auto 40px minmax(0,1fr);
+  align-items:center;
+  gap:10px;
+  padding:8px 12px;
+  border-radius:16px;
+  border:1px solid rgba(31,42,36,.08);
+  background:rgba(255,255,255,.8);
+  cursor:pointer;
+}
+#archiveOverlay .archiveRow input{ width:20px; height:20px; accent-color:var(--g800, #2B6542); }
+#archiveOverlay .archiveRow.is-checked{ border-color:rgba(43,101,66,.45); background:rgba(232,240,233,.9); }
+#archiveOverlay .archiveRow.is-locked{ opacity:.55; cursor:not-allowed; }
+#archiveOverlay .archiveThumb{
+  width:40px; height:40px; border-radius:10px;
+  object-fit:contain; background:#fff;
+  border:1px solid rgba(31,42,36,.08);
+  display:block;
+}
+#archiveOverlay .archiveThumb--empty{ background:rgba(236,226,200,.6); }
+#archiveOverlay .archiveRowText{ display:grid; min-width:0; }
+#archiveOverlay .archiveRowText b{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size:14px; }
+#archiveOverlay .archiveRowText small{ color:#6e665b; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#archiveOverlay .archiveEmpty{ padding:18px; text-align:center; color:#6e665b; }
+#archiveOverlay .archiveFooter{
+  position:sticky;
+  bottom:-18px;
+  z-index:3;
+  display:grid; gap:8px;
+  margin:0 -18px -18px;
+  padding:12px 18px calc(12px + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg, rgba(250,248,242,.88), rgba(250,248,242,.98) 40%);
+  border-top:1px solid rgba(31,42,36,.08);
+  backdrop-filter:blur(6px);
+}
+#archiveOverlay .archiveSummary{ font-size:13px; font-weight:700; color:var(--g900, #1E4E33); }
+#archiveOverlay .archiveActions{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+#archiveOverlay .archiveActions .pillBtn{ min-height:46px; border-radius:999px; justify-content:center; font-weight:900; width:100%; }
+#archiveOverlay .archiveActions .pillBtn:disabled{ opacity:.45; cursor:not-allowed; }
+@media (max-width:699px){
+  #archiveOverlay{ padding:0 !important; }
+  #archiveOverlay .exchangeModal{ width:100% !important; height:100dvh !important; max-height:none !important; border-radius:0 !important; }
+  #archiveOverlay .archiveBody{ padding:12px 12px calc(18px + env(safe-area-inset-bottom)) !important; }
+  #archiveOverlay .archiveFilters{ grid-template-columns:1fr 1fr; }
+  #archiveOverlay .archiveFilters input{ grid-column:1 / -1; }
+  #archiveOverlay .archiveFooter{
+    bottom:calc(-18px - env(safe-area-inset-bottom));
+    margin:0 -12px calc(-18px - env(safe-area-inset-bottom));
+    padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+  }
+}
