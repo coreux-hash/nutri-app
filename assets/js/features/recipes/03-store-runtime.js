@@ -24,6 +24,11 @@ const labelForIngredientCategoryId = (catId) => {
 
 const CAT_THEME = {
   viandes_volailles: { bg:"rgba(243,194,71,.22)", bd:"rgba(231,174,47,.55)", tx:"#2b3a30" },
+  charcuterie_salaisons: { bg:"rgba(181,82,106,.14)", bd:"rgba(181,82,106,.40)", tx:"#5a2232" },
+  fromages: { bg:"rgba(227,154,45,.16)", bd:"rgba(227,154,45,.45)", tx:"#5a3a0a" },
+  fruits_coque_graines: { bg:"rgba(154,107,63,.15)", bd:"rgba(154,107,63,.42)", tx:"#4a3019" },
+  tartinables_confitures: { bg:"rgba(142,74,140,.13)", bd:"rgba(142,74,140,.38)", tx:"#4a1f48" },
+  condiments_sauces: { bg:"rgba(62,140,122,.14)", bd:"rgba(62,140,122,.40)", tx:"#1d4a40" },
   poissons: { bg:"rgba(90,168,255,.18)", bd:"rgba(90,168,255,.45)", tx:"#1a3550" },
   fruits_de_mer: { bg:"rgba(150,220,255,.16)", bd:"rgba(150,220,255,.42)", tx:"#1a3f4b" },
   oeufs: { bg:"rgba(255,224,130,.20)", bd:"rgba(255,224,130,.55)", tx:"#3a2a10" },
