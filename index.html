@@ -34,6 +34,9 @@
 <link href="assets/css/ui/shared/09-responsive-cousin-fix.css" rel="stylesheet"/>
 <link href="assets/css/ui/ingredients/05-ingredient-detail-polish.css" rel="stylesheet"/>
 <link href="assets/css/ui/recipes/06-recipe-mobile-polish.css" rel="stylesheet"/>
+<link href="assets/css/ui/shared/10-exchange-import-flow.css" rel="stylesheet"/>
+<link href="assets/css/ui/ingredients/06-ingredient-thumb-visible-fix.css" rel="stylesheet"/>
+<link href="assets/css/ui/shared/11-archive-to-file.css" rel="stylesheet"/>
 </head>
 <body>
 <div class="app app--nutri">
@@ -517,19 +520,23 @@
 </div>
 <div class="systemBackupStep">
 <span>02</span>
-<b>Recevoir un paquet</b>
-<small>Charge un fichier exchange.v1, contrôle les dépendances, puis importe en copie locale.</small>
+<b>Importer un fichier</b>
+<small>Paquet de cartes (exchange.v1) ou sauvegarde complète (backup.v3) : NutriApp reconnaît le format et ouvre la bonne fenêtre.</small>
 </div>
 <div class="systemBackupStep">
 <span>03</span>
 <b>Sauvegarde technique</b>
-<small>Exporte ou restaure tout le stockage local via le JSON complet backup.v3.</small>
+<small>Exporte ou restaure tout le stockage local (JSON complet backup.v3).</small>
 </div>
 </div>
 <div class="systemBackupActions">
-<button class="btn btnPrimary" id="btnOpenExchangeImport" type="button">Recevoir des cartes</button>
-<button class="btn ghost" id="btnOpenBackup" type="button">Ouvrir la sauvegarde technique</button>
+<input accept=".json,application/json" class="hidden" id="systemImportFileInput" type="file"/>
+<button class="btn btnPrimary" id="btnSystemImportFile" type="button">Importer un fichier</button>
+<button class="btn ghost" id="btnOpenExchangeImport" type="button">Coller un paquet</button>
+<button class="btn ghost" id="btnOpenBackup" type="button">Sauvegarde technique</button>
+<button class="btn ghost" id="btnOpenArchive" type="button">Archiver des ingrédients</button>
 </div>
+<p class="systemImportStatus" id="systemImportStatus" aria-live="polite"></p>
 </section>
 </div>
 </section></div></main>
@@ -1408,21 +1415,52 @@ miel: 10 g" rows="6"></textarea>
 <div class="exchangeSectionHead">
 <div>
 <div class="exchangeEyebrow">Paquet reçu</div>
-<p>Colle un JSON de partage ou charge un fichier exporté depuis une fiche ingrédient, recette ou menu.</p>
+<p>Charge le fichier reçu : NutriApp le vérifie automatiquement avant tout ajout.</p>
 </div>
 </div>
 <div class="exchangeActionRail">
 <input accept=".json,application/json" class="hidden" id="exchangeFileInput" type="file"/>
-<button class="pillBtn gray" id="btnExchangeLoadFile" type="button">Charger fichier</button>
-<button class="pillBtn gray" id="btnExchangeValidate" type="button">Valider</button>
+<button class="pillBtn green" id="btnExchangeLoadFile" type="button">Charger un fichier</button>
 </div>
+<details class="exchangeJsonDetails" id="exchangeJsonDetails">
+<summary>Coller ou voir le JSON</summary>
 <textarea class="big exchangeJsonBox" id="exchangeJsonBox" placeholder="Colle ici un paquet NutriApp exchange.v1"></textarea>
+<button class="pillBtn gray" id="btnExchangeValidate" type="button">Valider le JSON collé</button>
+</details>
 <div class="subtle exchangeStatus" id="exchangeStatus"></div>
 </section>
 <section class="exchangePreview hidden" id="exchangePreview" aria-live="polite"></section>
 <div class="exchangeFooterActions">
 <button class="pillBtn gray" id="btnExchangeClear" type="button">Vider</button>
 <button class="pillBtn green" id="btnExchangeImport" type="button" disabled="">Ajouter à ma bibliothèque</button>
+</div>
+</div>
+</div>
+</div><div aria-hidden="true" class="createOverlay hidden" id="archiveOverlay">
+<div aria-label="Archiver des ingrédients dans un fichier" aria-modal="true" class="createModal exchangeModal archiveModal" id="archiveModal" role="dialog">
+<div class="createTop exchangeTop">
+<button class="modalIconBtn" id="btnArchiveBack" title="Retour" type="button">←</button>
+<h3 class="ctitle exchangeTitle">Archiver dans un fichier</h3>
+<button class="modalIconBtn" id="btnArchiveClose" title="Fermer" type="button">✕</button>
+</div>
+<div class="createBody exchangeBody archiveBody">
+<div class="createHint exchangeLead">
+<b>Libère de la place sans rien perdre.</b>
+<span>Les ingrédients choisis sont enregistrés dans un fichier, puis retirés de l’app. Pour les récupérer : Échanges → « Importer un fichier ». Un ingrédient utilisé dans une recette ou un menu ne peut pas être archivé.</span>
+</div>
+<div class="archiveStorage" id="archiveStorage" aria-live="polite"></div>
+<div class="archiveFilters">
+<input id="archiveSearch" type="search" placeholder="Rechercher un ingrédient" autocomplete="off"/>
+<select id="archiveCategory" aria-label="Catégorie"></select>
+<button class="pillBtn gray" id="btnArchiveSelectVisible" type="button">Tout cocher (liste affichée)</button>
+</div>
+<div class="archiveList" id="archiveList" role="list"></div>
+<div class="archiveFooter">
+<div class="archiveSummary" id="archiveSummary" aria-live="polite"></div>
+<div class="archiveActions">
+<button class="pillBtn green" id="btnArchiveDownload" type="button" disabled="">1. Télécharger l’archive</button>
+<button class="pillBtn gray" id="btnArchiveRemove" type="button" disabled="">2. Retirer de l’app</button>
+</div>
 </div>
 </div>
 </div>
@@ -1506,5 +1544,6 @@ miel: 10 g" rows="6"></textarea>
 <script src="assets/js/core/99-layer-registry.js"></script>
 <script src="assets/js/ui/menus/02-menus-studio.js"></script>
 <script src="assets/js/features/shared/02-card-exchange.js"></script>
+<script src="assets/js/features/shared/03-archive-to-file.js"></script>
 </div></body>
 </html>
