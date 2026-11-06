@@ -1,0 +1,38 @@
+/* v17.1 — Vignette ingrédient invisible après chargement.
+   Cause : 07-card-requalified.css force .thumbPlaceholder en display:flex !important + width:100%,
+   même quand le JS lui ajoute .hidden ; le monogramme prend toute la place et l'image passe à 0 px de large.
+   2e verrou : .thumb est une grille centrée à colonne « auto » ; l'image étant en position absolue,
+   la colonne retombe à 0 px dès que le monogramme est masqué.
+   Correctif : respecter .hidden, colonne pleine largeur, image affichée entière (sans recadrage). */
+#pageIngredients .thumbPlaceholder.hidden{ display:none !important; }
+#pageIngredients .thumbUpload > .thumbPreview:not(.hidden){
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+#pageIngredients .thumb.libCardMedia{ grid-template-columns:minmax(0,1fr) !important; }
+#pageIngredients .thumb.libCardMedia > .thumbUpload{ width:100% !important; justify-self:stretch; }
+
+/* v17.3 — l'image remplit l'encart (entière, sans recadrage), coins arrondis comme le cadre ;
+   la bordure du cadre et la barre de catégorie restent visibles (marge de 4 px). */
+#pageIngredients .thumb.libCardMedia:has(> .thumbUpload > .thumbPreview:not(.hidden)){
+  padding:4px !important;
+}
+#pageIngredients .thumb.libCardMedia > .thumbUpload:has(> .thumbPreview:not(.hidden)){
+  display:grid !important;
+  place-items:center;
+  height:100%;
+  min-height:0;
+  overflow:hidden;
+  border-radius:14px;
+}
+#pageIngredients .thumbUpload > .thumbPreview:not(.hidden){
+  position:static !important;
+  inset:auto !important;
+  width:auto !important;
+  height:auto !important;
+  max-width:100% !important;
+  max-height:100% !important;
+  object-fit:contain;
+  border-radius:14px;
+}
