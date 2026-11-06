@@ -632,6 +632,12 @@
     const previewEl = byId("exchangePreview");
     let currentPack = null;
 
+    const jsonDetails = byId("exchangeJsonDetails");
+    const IMPORT_LABEL = "Ajouter à ma bibliothèque";
+    function setImportLabel(total){
+      if(!importBtn) return;
+      importBtn.textContent = total > 0 ? `Ajouter ${total} carte${total > 1 ? "s" : ""} à ma bibliothèque` : IMPORT_LABEL;
+    }
     function setStatus(text){ if(status) status.textContent = text || ""; }
     function setPreview(html){
       if(!previewEl) return;
@@ -645,13 +651,26 @@
       document.body.style.overflow = "";
       try{ openBtn && openBtn.focus && openBtn.focus(); }catch(_){}
     }
-    function open(){
+    function open(opts){
       overlay.classList.remove("hidden");
       overlay.setAttribute("aria-hidden", "false");
       try{ overlay.inert = false; }catch(_){}
       document.body.style.overflow = "hidden";
-      try{ (jsonBox || closeBtn) && (jsonBox || closeBtn).focus(); }catch(_){}
+      const paste = !!(opts && opts.paste);
+      if(jsonDetails) jsonDetails.open = paste;
+      try{
+        const target = paste ? jsonBox : (loadBtn || closeBtn);
+        target && target.focus();
+      }catch(_){}
     }
+    function receiveText(text, sourceName){
+      open({ paste:false });
+      if(jsonBox) jsonBox.value = String(text || "");
+      const preview = validateCurrent();
+      if(sourceName && (!preview || preview.ok)) setStatus("Fichier chargé : " + sourceName + ". " + (status ? status.textContent : ""));
+      return preview;
+    }
+    window.NutriExchangeUI = Object.assign({}, window.NutriExchangeUI || {}, { open, receiveText });
     function parseBox(){
       const raw = String(jsonBox && jsonBox.value || "").trim();
       if(!raw) return { ok:false, error:"Zone JSON vide." };
@@ -663,22 +682,11 @@
       const missingRows = asArray(preview.missing).map(item => `<li><b>${escapeHtml(typeLabel(item.type))}</b> ${escapeHtml(item.id || "")}</li>`).join("");
       const warnRows = asArray(preview.report && preview.report.warnings).map(text => `<li>${escapeHtml(text)}</li>`).join("");
       const errRows = asArray(preview.report && preview.report.errors).map(text => `<li>${escapeHtml(text)}</li>`).join("");
-      const primaryRows = primary.map(item => `<span class="exchangeCardChip" data-type="${escapeHtml(item.type)}">${escapeHtml(typeLabel(item.type))} · ${escapeHtml(item.name || item.id)}</span>`).join("");
+      const CHIP_LIMIT = 12;
+      const primaryRows = primary.slice(0, CHIP_LIMIT).map(item => `<span class="exchangeCardChip" data-type="${escapeHtml(item.type)}">${escapeHtml(typeLabel(item.type))} · ${escapeHtml(item.name || item.id)}</span>`).join("")
+        + (primary.length > CHIP_LIMIT ? `<span class="exchangeCardChip exchangeCardChip--more">+ ${escapeHtml(primary.length - CHIP_LIMIT)} autre(s)</span>` : "");
       return `
         ${renderPackVisual(preview, { eyebrow:"Paquet reçu" })}
-        <div class="exchangePreviewHead">
-          <div>
-            <div class="exchangeEyebrow">Aperçu</div>
-            <h4>${escapeHtml(preview.title)}</h4>
-            ${preview.createdBy ? `<p class="exchangeSender">De ${escapeHtml(preview.createdBy)}</p>` : ""}
-            ${preview.message ? `<p>${escapeHtml(preview.message)}</p>` : ""}
-          </div>
-        </div>
-        <div class="exchangePreviewGrid">
-          <div><b>${escapeHtml(preview.counts.ingredients)}</b><span>Ingrédients</span></div>
-          <div><b>${escapeHtml(preview.counts.recipes)}</b><span>Recettes</span></div>
-          <div><b>${escapeHtml(preview.counts.menus)}</b><span>Menus</span></div>
-        </div>
         ${primaryRows ? `<div class="exchangeCardRail">${primaryRows}</div>` : ""}
         ${errRows ? `<div class="exchangeNotice exchangeNotice--error"><b>Bloquant</b><ul>${errRows}</ul></div>` : ""}
         ${warnRows ? `<div class="exchangeNotice exchangeNotice--warn"><b>À contrôler</b><ul>${warnRows}</ul></div>` : ""}
@@ -695,19 +703,37 @@
         setPreview("");
         return null;
       }
+      const schema = String(parsed.value && parsed.value.meta && parsed.value.meta.schema || "");
+      if(/^backup\./.test(schema)){
+        setImportLabel(0);
+        setStatus("Ce fichier est une sauvegarde complète (" + schema + "), pas un paquet de cartes.");
+        setPreview(`<div class="exchangeNotice exchangeNotice--warn"><b>Mauvaise fenêtre</b><p>Une sauvegarde complète se restaure dans la sauvegarde technique.</p><button class="pillBtn green" type="button" data-exchange-to-backup>Ouvrir dans la sauvegarde technique</button></div>`);
+        return null;
+      }
       const preview = buildImportPreview(parsed.value);
       setPreview(previewMarkup(preview));
       if(preview.ok){
         currentPack = parsed.value;
         if(importBtn) importBtn.disabled = false;
-        setStatus("Paquet valide. Import non destructif prêt.");
+        const total = (preview.counts.ingredients || 0) + (preview.counts.recipes || 0) + (preview.counts.menus || 0);
+        setImportLabel(total);
+        setStatus("Paquet valide. Rien ne sera écrasé : les cartes sont ajoutées en copie.");
       }else{
+        setImportLabel(0);
         setStatus("Paquet refusé : " + preview.report.errors.join(" · "));
       }
       return preview;
     }
 
-    openBtn?.addEventListener("click", (event) => { event.preventDefault(); open(); });
+    openBtn?.addEventListener("click", (event) => { event.preventDefault(); open({ paste:true }); });
+    previewEl?.addEventListener("click", (event) => {
+      const target = event.target instanceof Element ? event.target.closest("[data-exchange-to-backup]") : null;
+      if(!target) return;
+      event.preventDefault();
+      const text = jsonBox ? jsonBox.value : "";
+      close();
+      if(window.NutriBackupUI && typeof window.NutriBackupUI.receiveText === "function") window.NutriBackupUI.receiveText(text, "transfert depuis Recevoir des cartes");
+    });
     closeBtn?.addEventListener("click", close);
     backBtn?.addEventListener("click", close);
     overlay.addEventListener("click", (event) => { if(event.target === overlay) close(); });
@@ -719,8 +745,9 @@
       try{
         const text = await file.text();
         if(jsonBox) jsonBox.value = text;
-        setStatus("Fichier chargé : " + file.name);
-        validateCurrent();
+        if(jsonDetails) jsonDetails.open = false;
+        const preview = validateCurrent();
+        if(preview && preview.ok) setStatus("Fichier chargé : " + file.name + ". " + (status ? status.textContent : ""));
       }catch(err){
         console.error(err);
         setStatus("Lecture du fichier impossible.");
@@ -732,6 +759,7 @@
     jsonBox?.addEventListener("input", () => {
       currentPack = null;
       if(importBtn) importBtn.disabled = true;
+      setImportLabel(0);
       setPreview("");
       setStatus("Contenu modifié. Valide le paquet avant de l’appliquer.");
     });
@@ -739,6 +767,7 @@
       if(jsonBox) jsonBox.value = "";
       currentPack = null;
       if(importBtn) importBtn.disabled = true;
+      setImportLabel(0);
       setStatus("");
       setPreview("");
     });
@@ -753,8 +782,51 @@
         return;
       }
       if(importBtn) importBtn.disabled = true;
+      setImportLabel(0);
+      currentPack = null;
       setStatus(`Cartes ajoutées : ${result.counts.ingredients} ingrédient(s), ${result.counts.recipes} recette(s), ${result.counts.menus} menu(s).`);
       setPreview(`<div class="exchangeNotice exchangeNotice--ok"><b>Import terminé</b><p>Les cartes reçues ont été ajoutées comme copies locales. Les cartes existantes n'ont pas été écrasées.</p></div>`);
     });
   })();
+
+  // Point d'entrée unique : lit le fichier et ouvre la bonne fenêtre selon meta.schema.
+  function detectImportKind(value){
+    const schema = String(value && value.meta && value.meta.schema || "");
+    if(/^backup\./.test(schema)) return "backup";
+    if(/^exchange\./.test(schema)) return "exchange";
+    const hasLibraries = value && Array.isArray(value.ingredients) && Array.isArray(value.recipes) && Array.isArray(value.menus);
+    return hasLibraries ? "backup" : "exchange";
+  }
+  (function bindSystemImportRouter(){
+    const btn = byId("btnSystemImportFile");
+    const input = byId("systemImportFileInput");
+    const statusEl = byId("systemImportStatus");
+    if(!btn || !input) return;
+    const say = (text) => { if(statusEl) statusEl.textContent = text || ""; };
+    btn.addEventListener("click", () => { say(""); input.click(); });
+    input.addEventListener("change", async () => {
+      const file = input.files && input.files[0];
+      if(!file) return;
+      try{
+        const text = await file.text();
+        let value;
+        try{ value = JSON.parse(text); }
+        catch(_){ say("« " + file.name + " » n'est pas un JSON lisible."); return; }
+        const kind = detectImportKind(value);
+        if(kind === "backup" && window.NutriBackupUI && typeof window.NutriBackupUI.receiveText === "function"){
+          window.NutriBackupUI.receiveText(text, file.name);
+        }else if(window.NutriExchangeUI && typeof window.NutriExchangeUI.receiveText === "function"){
+          window.NutriExchangeUI.receiveText(text, file.name);
+        }else{
+          say("Import indisponible.");
+        }
+      }catch(err){
+        console.error(err);
+        say("Lecture du fichier impossible.");
+      }finally{
+        try{ input.value = ""; }catch(_){}
+      }
+    });
+  })();
+  window.NutriExchangeUI = Object.assign({}, window.NutriExchangeUI || {}, { detectImportKind });
 })();
