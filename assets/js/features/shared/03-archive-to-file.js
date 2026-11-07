@@ -40,6 +40,9 @@
     return Math.max(1, Math.round(chars / 1024)) + " Ko";
   }
   function storageChars(){
+    // v18 — avec le stockage séparé des images, compter l'occupation réelle de localStorage (références, pas images).
+    const store = window.NutriImageStore;
+    if(store && typeof store.isActive === "function" && store.isActive()) return store.stats().lsChars;
     let total = 0;
     try{ for(let i = 0; i < localStorage.length; i++){ const k = localStorage.key(i); total += k.length + String(localStorage.getItem(k) || "").length; } }catch(_){}
     return total;
@@ -116,6 +119,12 @@
   function renderStorage(){
     if(!storageEl) return;
     const total = storageChars();
+    const store = window.NutriImageStore;
+    if(store && typeof store.isActive === "function" && store.isActive()){
+      const st = store.stats();
+      storageEl.innerHTML = `<b>Données de l’app : ≈ ${esc(formatSize(total))} sur ≈ 5 Mo</b><span>${state.items.length} ingrédient(s). Les images (${st.imageCount}, ≈ ${esc(formatSize(st.imageChars))}) sont rangées à part et ne comptent pas dans cette limite.</span>`;
+      return;
+    }
     const thumbs = state.items.reduce((s, i) => s + String(i && i.thumb || "").length, 0);
     storageEl.innerHTML = `<b>Données de l’app : ≈ ${esc(formatSize(total))}</b><span>dont images d’ingrédients ≈ ${esc(formatSize(thumbs))} · ${state.items.length} ingrédient(s). La limite du navigateur est d’environ 5 Mo (variable selon le navigateur).</span>`;
   }
@@ -213,9 +222,14 @@
     if(!state.selected.size || state.downloadedKey !== key){ state.downloadedKey = ""; renderAll(); return; }
     const n = state.selected.size;
     const ok = window.confirm(`Retirer ${n} ingrédient(s) de l’app ?\n\nIls restent dans le fichier « ${state.lastFile || "archive"} ». Vérifie qu’il est bien enregistré avant de confirmer.`);
-    if(!ok) return;
+    if(!ok){
+      // v17.7 — jamais de retour silencieux : si le navigateur bloque les boîtes de dialogue,
+      // confirm() renvoie false sans rien afficher et l'utilisateur ne voyait aucun effet.
+      if(summaryEl) summaryEl.textContent = "Retrait annulé : rien n’a été retiré. Si aucune fenêtre de confirmation ne s’est ouverte, le navigateur bloque les boîtes de dialogue de cette page (recharge la page pour les réautoriser).";
+      return;
+    }
     if(!window.NutriAppData || typeof window.NutriAppData.deleteIngredientsByIds !== "function"){
-      if(summaryEl) summaryEl.textContent = "Retrait impossible : stockage indisponible. Rien n’a été modifié.";
+      if(summaryEl) summaryEl.textContent = "Retrait impossible : la fonction de retrait est absente, probablement une ancienne version de l’app gardée en cache. Recharge la page (deux fois si besoin) puis réessaie. Rien n’a été modifié.";
       return;
     }
     const removeIds = Array.from(state.selected);
