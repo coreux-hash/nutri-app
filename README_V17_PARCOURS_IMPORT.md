@@ -84,3 +84,29 @@ aides_techniques, epices_aromes, condiments_sauces, liquides_boissons, autre.
   Cause : l'événement `na:ingredientsChanged` était émis mais personne ne l'écoutait. Correctif : écouteur dans `02-cards-filters-manual.js`.
 - Compteur « Recettes » vérifié sans défaut : restauration remplacer/fusionner, dupliquer, supprimer, import d'un paquet d'échange recette + ingrédient, rechargement sur chaque page.
 - Test : `tests/pass8-hero-counters.test.js`. Vérifié : 62/62 ; parcours rejoués en Chrome headless.
+
+## v17.7 — archivage : plus de retrait « silencieux » (2026-11-06)
+- Constat utilisateur : archive téléchargée, puis « 2. Retirer de l'app » sans effet visible. Le parcours, rejoué en Chrome headless avec les 17 ingrédients de l'utilisateur, retire bien les 16 cartes quand la confirmation est acceptée.
+- Deux cas finissaient sans message : confirmation refusée ou boîtes de dialogue bloquées par le navigateur (`confirm()` renvoie false), et fonction de retrait absente (ancienne version d'un fichier JS servie par le cache du service worker, stratégie cache d'abord).
+- Correctif : `03-archive-to-file.js` affiche un message explicite dans les deux cas. Aucune donnée n'est modifiée dans ces cas.
+- Test : ajout dans `tests/pass8-hero-counters.test.js`. Vérifié : 63/63 ; retrait accepté et refusé rejoués en Chrome headless.
+
+## v18 — images rangées hors de localStorage (IndexedDB) (2026-11-07)
+Problème : localStorage est plafonné à ~5 Mo par origine ; les vignettes en occupaient ~90 % (bibliothèque de 473 fiches ≈ 3,2 Mo).
+- Nouveau `assets/js/core/00-image-store.js`, seul script chargé normalement par `index.html` ; les 30 scripts de l'app sont
+  déclarés en `type="text/x-nutriapp"` (même ordre) et exécutés par ce module une fois les images chargées.
+- À l'écriture des clés `nutriapp.ingredients.v2` (champ `thumb`) et `nutriapp.recipes.v2` (champ `thumbDataUrl`), chaque
+  data URL est rangée dans IndexedDB (base `nutriapp-images`, identifiant dérivé du contenu : une photo partagée n'est stockée
+  qu'une fois) et remplacée dans localStorage par `nutriimg:<id>`. À la lecture, les références sont remplacées par les images.
+- Transparent pour le reste du code : contrats, sauvegardes backup.v3, paquets exchange.v1 et archives contiennent toujours
+  les images complètes ; les imports s'écrivent automatiquement dans le nouveau format.
+- Migration au premier lancement : images écrites dans IndexedDB AVANT la réécriture de localStorage.
+- Nettoyage : une image qui n'est plus référencée par aucune fiche est supprimée d'IndexedDB (2 s après l'écriture).
+- Repli : IndexedDB absent ou muet (délai 4 s) → démarrage comme en v17, images dans localStorage. Référence sans image → conservée.
+- DOMContentLoaded / load posés pendant le chargement sont rejoués après le dernier script (enregistrement du service worker inclus).
+- Fenêtre Archiver : affiche l'occupation réelle de localStorage et, à part, le nombre et le poids des images.
+- Limites connues : une écriture IndexedDB est asynchrone ; une fermeture brutale de l'onglet dans les millisecondes qui suivent un
+  ajout d'image pourrait perdre cette image (la fiche reste). Les images restent propres à chaque navigateur, comme avant.
+- Tests : `tests/pass9-image-store.test.js` (68/68). Chrome headless : migration 473 fiches (localStorage 3,19 M → 0,36 M caractères,
+  423 images uniques), 1 500 fiches à images distinctes (11,2 M caractères) importées et relues, export complet, nettoyage,
+  repli sans IndexedDB, référence orpheline ; parcours v17 (compteurs, archivage, restauration desktop/mobile, 12 paquets) inchangés.
